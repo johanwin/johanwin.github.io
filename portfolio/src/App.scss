@@ -576,7 +576,7 @@ section {
           flex: 1;
         }
         ul {
-          margin-top: 3rem;
+          margin-top: 1rem;
           @include medium {
             margin-left: 0;
             padding-left: 0;
@@ -652,6 +652,17 @@ section {
           max-width: 200px;
           min-width: 200px;
         }
+      }
+    }
+    .profilePic {
+      max-width:260px;
+      clip-path: circle(125px at 50% 50%);
+      @include small {
+        margin-top:2rem;
+        margin-left:1rem;
+      }
+      @include medium {
+        margin-top:3rem;
       }
     }
   }

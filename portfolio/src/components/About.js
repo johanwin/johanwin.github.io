@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import {Helmet} from "react-helmet";
 import { Link } from 'react-router-dom'
 import resume from '..//docs/john-nguyen-resume-cv.pdf';
+import profilePic from '../images/john_nguyen.jpg';
 
 export default class About extends Component {
     render() {
@@ -56,6 +57,7 @@ export default class About extends Component {
                                 <p>Take a peek at <Link to="/">my past work</Link>. Then give me <Link to="/contact">a holla</Link>.</p>
                             </article>
                             <aside className="sidebar">
+                                <img src={profilePic} alt="John Nguyen" className="profilePic" />
                                 <ul>
                                     <li><a href={resume} className="aboutLink aboutLinkResume">Résumé/CV</a></li>
                                     <li><a href="https://www.linkedin.com/in/johannguyen/" className="aboutLink aboutLinkLinkedin">Linkedin Profile</a></li>

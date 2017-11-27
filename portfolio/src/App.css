@@ -476,7 +476,7 @@ section {
         .about .aboutHero .aboutHeroContent .sidebar {
           flex: 1; } }
       .about .aboutHero .aboutHeroContent .sidebar ul {
-        margin-top: 3rem; }
+        margin-top: 1rem; }
         @media (min-width: 600px) {
           .about .aboutHero .aboutHeroContent .sidebar ul {
             margin-left: 0;
@@ -543,6 +543,16 @@ section {
         .about .aboutHero .aboutHeroContent .aboutLink {
           max-width: 200px;
           min-width: 200px; } }
+  .about .aboutHero .profilePic {
+    max-width: 260px;
+    clip-path: circle(125px at 50% 50%); }
+    @media (max-width: 599px) {
+      .about .aboutHero .profilePic {
+        margin-top: 2rem;
+        margin-left: 1rem; } }
+    @media (min-width: 600px) {
+      .about .aboutHero .profilePic {
+        margin-top: 3rem; } }
 
 .contact .contactHero {
   background: url("images/hero-contact.jpg") no-repeat;
