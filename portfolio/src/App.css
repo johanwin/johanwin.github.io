@@ -38,9 +38,38 @@ section {
   padding: 10px 10px;
   text-decoration: none; }
 
+.error .errorHero {
+  background: url("images/404-image.png") no-repeat;
+  background-size: cover;
+  height: 200px; }
+  @media (min-width: 600px) {
+    .error .errorHero {
+      height: 430px; } }
+  @media (min-width: 900px) {
+    .error .errorHero {
+      background-position: 50% -162px;
+      height: 550px; } }
+
+.error .errorContent {
+  color: #FFFFFF;
+  padding-top: 2rem;
+  padding-bottom: 2rem; }
+  .error .errorContent a {
+    color: #00D8FF;
+    text-decoration: none; }
+  .error .errorContent p {
+    margin-left: 1rem; }
+    @media (min-width: 600px) {
+      .error .errorContent p {
+        margin-left: 3rem; } }
+    @media (min-width: 900px) {
+      .error .errorContent p {
+        margin-left: 5rem; } }
+
 .home .homeHero {
   background: url("images/hero-home.jpg") no-repeat;
   background-size: cover;
+  background-position: 50% 50%;
   padding-top: 5.5rem; }
   @media (min-width: 600px) {
     .home .homeHero {
@@ -305,7 +334,7 @@ section {
 
 .project .projectContent h2 {
   color: #FBC8F1;
-  margin-top: 2rem;
+  margin-top: 4rem;
   margin-bottom: 2rem;
   margin-left: 1rem;
   line-height: 1.3; }
@@ -340,6 +369,7 @@ section {
 .about .aboutHero {
   background: url("images/hero-about.jpg") no-repeat;
   background-size: cover;
+  background-position: 50% 50%;
   padding-top: 7rem; }
   @media (min-width: 600px) {
     .about .aboutHero {

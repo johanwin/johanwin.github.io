@@ -7,7 +7,7 @@ import ReactGA from 'react-ga';
 import HomePage from './components/HomePage';
 import About from './components/About';
 import Contact from './components/Contact';
-// import Projects from "./components/Projects";
+import Error from './components/Error';
 import ProjectsCapitalOne from "./components/ProjectsCapitalOne";
 import ProjectsIcrossing from "./components/ProjectsIcrossing";
 import ProjectsHawkeye from "./components/ProjectsHawkeye";
@@ -46,23 +46,6 @@ const bounceTransition = {
 };
 
 export default class App extends Component {
-  constructor(props) {
-		super(props);
-		this.state = {
-			projects: []
-    };
-	}
-	componentDidMount() {
-		fetch("https://jsonplaceholder.typicode.com/posts")
-			.then(response => {
-				return response.json();
-			})
-			.then(json => {
-				this.setState({
-					projects: json.slice(0, 7)
-        });
-			});
-	}
   render() {
     return (
       <HashRouter>
@@ -81,11 +64,7 @@ export default class App extends Component {
             <Route path="/projects/1" component={ProjectsCapitalOne}/>
             <Route path="/projects/2" component={ProjectsIcrossing}/>
             <Route path="/projects/3" component={ProjectsHawkeye}/>
-            {/* <Route path="/projects/:id"
-              render={props => (
-                <Projects {...props} projects={this.state.projects} />
-              )}
-            /> */}
+            <Route component={Error} />
             </AnimatedSwitch>
           <Footer />
         </div>

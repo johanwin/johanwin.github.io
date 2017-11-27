@@ -23,11 +23,11 @@ export default class ProjectsCapitalOne extends Component {
                     <div className="flexboxContainer">
                         <div className="projectContent">
                             <h1>2015 &ndash; 2017 Capital One Home Loans</h1>
-                            <p>Responsible for developing and maintaining web page user interfaces for Capital One's Home Loan portal website and prequalification application with HTML, CSS/Sass, JavaScript/AngularJS 1.x.</p>
+                            <p>Responsibled for developing and maintaining web page user interfaces for Capital One's Home Loan portal website and prequalification application with HTML, CSS/Sass, JavaScript/AngularJS 1.x.</p>
 
-                            <p>Consulting with backend/Java developers, UX/UI designers, business owners, and QA in terms of improving of Capital One's Home Loan web properties.</p>
+                            <p>Consulted with backend/Java developers, UX/UI designers, business owners, and QA in terms of improving of Capital One's Home Loan web properties.</p>
 
-                            <p>Maintaining the internal Git version control's pull request for any web/UX design improvements and/or fixes on Home Loan prequalification code base.</p>
+                            <p>Maintained the internal Git version control's pull request for any web/UX design improvements and/or fixes on Home Loan pre-qualification code base.</p>
 
                             <div className="projectMedia">
                                 <h2>Home Loans website</h2>

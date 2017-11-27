@@ -85,10 +85,44 @@ section {
   text-decoration: none;
 }
 
+.error {
+  .errorHero {
+    background: url('images/404-image.png') no-repeat;
+    background-size: cover;
+    height:200px;
+    @include medium {
+      height:430px;
+    }
+    @include large {
+      background-position:50% -162px;
+      height:550px;
+    }
+  }
+  .errorContent {
+    color:$white;
+    padding-top:2rem;
+    padding-bottom:2rem;
+    a {
+      color: $cyan;
+      text-decoration: none;
+    }
+    p {
+      margin-left: 1rem;
+      @include medium {
+        margin-left: 3rem;
+      }
+      @include large {
+        margin-left:5rem;
+      }
+    }
+  }
+}
+
 .home {
   .homeHero {
     background: url('images/hero-home.jpg') no-repeat;
     background-size: cover;
+    background-position: 50% 50%;
     padding-top: 5.5rem;
     @include medium {
       padding-top: 8rem;
@@ -378,7 +412,7 @@ section {
 
     h2 {
       color: $classicRose;
-      margin-top:2rem;
+      margin-top:4rem;
       margin-bottom:2rem;
       margin-left: 1rem;
       line-height: 1.3;
@@ -418,6 +452,7 @@ section {
   .aboutHero {
     background: url('images/hero-about.jpg') no-repeat;
     background-size: cover;
+    background-position: 50% 50%;
     padding-top: 7rem;
     @include medium {
       padding-top: 36rem;
