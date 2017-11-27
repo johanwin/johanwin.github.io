@@ -346,7 +346,6 @@ section {
       padding-top: 36rem; } }
   .about .aboutHero blockquote {
     border: 0;
-    margin: 0;
     padding: 0;
     color: #cccccc;
     font-size: 2rem;
@@ -357,18 +356,21 @@ section {
     z-index: 600; }
     .about .aboutHero blockquote * {
       box-sizing: border-box; }
-    .about .aboutHero blockquote p:first-child:before {
-      content: '\201C';
-      font-family: Georgia, serif;
-      color: #81bedb;
-      font-size: 10rem;
-      font-weight: 700;
-      opacity: .3;
-      position: absolute;
-      top: -.3em;
-      left: 0;
-      text-shadow: none;
-      z-index: -300; }
+    .about .aboutHero blockquote p {
+      margin-top: 2.7rem;
+      margin-bottom: 2.7rem; }
+      .about .aboutHero blockquote p:first-child:before {
+        content: '\201C';
+        font-family: Georgia, serif;
+        color: #81bedb;
+        font-size: 10rem;
+        font-weight: 700;
+        opacity: .3;
+        position: absolute;
+        top: -.3em;
+        left: 0;
+        text-shadow: none;
+        z-index: -300; }
   .about .aboutHero .headlineFake {
     text-align: center;
     color: #FFFFFF;
@@ -439,7 +441,9 @@ section {
         text-decoration: none;
         font-weight: bold; }
       .about .aboutHero .aboutHeroContent .main .flexTableContainer {
-        padding: 1em; }
+        padding: 1em;
+        margin-top: 2.7rem;
+        margin-bottom: 2.7rem; }
         @media (min-width: 900px) {
           .about .aboutHero .aboutHeroContent .main .flexTableContainer {
             display: flex; } }

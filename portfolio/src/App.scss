@@ -424,7 +424,6 @@ section {
     }
     blockquote {
       border: 0;
-      margin: 0;
       padding: 0;
       color: #cccccc;
       font-size: 2rem;
@@ -436,18 +435,22 @@ section {
       * {
         box-sizing: border-box; 
       }
-      p:first-child:before {
-        content: '\201C';
-        font-family: $georgia;
-        color: #81bedb;
-        font-size: 10rem;
-        font-weight: 700;
-        opacity: .3;
-        position: absolute;
-        top: -.3em;
-        left: 0;    
-        text-shadow: none;
-        z-index: -300;
+      p {
+        margin-top:2.7rem;
+        margin-bottom:2.7rem;
+        &:first-child:before {
+          content: '\201C';
+          font-family: $georgia;
+          color: #81bedb;
+          font-size: 10rem;
+          font-weight: 700;
+          opacity: .3;
+          position: absolute;
+          top: -.3em;
+          left: 0;    
+          text-shadow: none;
+          z-index: -300;
+        }
       }
     }
     .headlineFake {
@@ -533,6 +536,8 @@ section {
         }
         .flexTableContainer {
           padding: 1em;
+          margin-top:2.7rem;
+          margin-bottom:2.7rem;
           @include large {
             display: flex;
           }
