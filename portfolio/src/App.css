@@ -55,7 +55,8 @@ section {
   padding-top: 2rem;
   padding-bottom: 2rem; }
   .error .errorContent a {
-    color: #00D8FF;
+    color: #A3C8EF;
+    font-weight: bold;
     text-decoration: none; }
   .error .errorContent p {
     margin-left: 1rem; }
@@ -75,7 +76,8 @@ section {
     .home .homeHero {
       padding-top: 8rem;
       min-height: 570px;
-      padding-top: 12rem; } }
+      padding-top: 12rem;
+      background-position: 50% 0%; } }
   @media (max-width: 599px) {
     .home .homeHero {
       padding-bottom: 4rem; } }

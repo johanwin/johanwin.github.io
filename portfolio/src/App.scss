@@ -103,7 +103,8 @@ section {
     padding-top:2rem;
     padding-bottom:2rem;
     a {
-      color: $cyan;
+      color: $perano;
+      font-weight: bold;
       text-decoration: none;
     }
     p {
@@ -128,6 +129,7 @@ section {
       padding-top: 8rem;
       min-height: 570px;
       padding-top: 12rem;
+      background-position: 50% 0%;
     }
     @include small {
       padding-bottom: 4rem;

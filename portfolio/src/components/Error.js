@@ -12,7 +12,7 @@ export default class Error extends Component {
                 <div className="errorHero">
                 </div>
                 <div className="errorContent">
-                    <p>It seems you have a broken link or the page is missing. Wrap back to this web site's <Link to="/">homepage</Link>.</p>
+                    <p>It seems you have a broken link or the page is missing. Warp back to this web site's <Link to="/">homepage</Link>.</p>
                 </div>
             </section>
 		);
