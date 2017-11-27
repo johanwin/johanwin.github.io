@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {Helmet} from "react-helmet";
 import capitaloneDP1 from '../images/projects/capitalone-directportal1.png';
 import capitaloneDP2 from '../images/projects/capitalone-directportal2.png';
@@ -7,8 +7,9 @@ import capitalonePQ1 from '../images/projects/capitalone-prequal1.png';
 import capitalonePQ2 from '../images/projects/capitalone-prequal2.png';
 import capitalonePQ3 from '../images/projects/capitalone-prequal3.png';
 import capitalonePQ4 from '../images/projects/capitalone-prequal4.png';
+import LazyLoad from 'react-lazyload';
 
-class ProjectsCapitalOne extends React.Component {
+export default class ProjectsCapitalOne extends Component {
     componentDidMount () {
         window.scrollTo(0, 0)
     }
@@ -30,17 +31,20 @@ class ProjectsCapitalOne extends React.Component {
 
                             <div className="projectMedia">
                                 <h2>Home Loans website</h2>
-
-                                <img src={capitaloneDP1} alt="Capital One Home Loans Website" />
-                                <img src={capitaloneDP2} alt="Capital One Home Loans Website" />
-                                <img src={capitaloneDP3} alt="Capital One Home Loans Website" />
+                                <LazyLoad>
+                                    <img src={capitaloneDP1} alt="Capital One Home Loans Website" />
+                                    <img src={capitaloneDP2} alt="Capital One Home Loans Website" />
+                                    <img src={capitaloneDP3} alt="Capital One Home Loans Website" />
+                                </LazyLoad>
 
                                 <h2>Home Mortgage Pre-Qualification Application</h2>
 
-                                <img src={capitalonePQ1} alt="Capital One Home Mortgage Prequalification" />
-                                <img src={capitalonePQ2} alt="Capital One Home Mortgage Prequalification" />
-                                <img src={capitalonePQ3} alt="Capital One Home Mortgage Prequalification" />
-                                <img src={capitalonePQ4} alt="Capital One Home Mortgage Prequalification" />
+                                <LazyLoad>
+                                    <img src={capitalonePQ1} alt="Capital One Home Mortgage Prequalification" />
+                                    <img src={capitalonePQ2} alt="Capital One Home Mortgage Prequalification" />
+                                    <img src={capitalonePQ3} alt="Capital One Home Mortgage Prequalification" />
+                                    <img src={capitalonePQ4} alt="Capital One Home Mortgage Prequalification" />
+                                </LazyLoad>
                             </div>
                         </div>
                     </div>
@@ -49,5 +53,3 @@ class ProjectsCapitalOne extends React.Component {
         );
     }
 }
-
-export default ProjectsCapitalOne;

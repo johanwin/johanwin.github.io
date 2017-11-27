@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Component } from "react";
 import logo from '../images/logo.svg';
 import { NavLink } from 'react-router-dom'
 
-class Header extends React.Component {
+export default class Header extends Component {
     render() {
         return (
             <header>
@@ -32,5 +32,3 @@ class Header extends React.Component {
         );
     }
 }
-
-export default Header;

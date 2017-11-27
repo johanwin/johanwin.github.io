@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {Helmet} from "react-helmet";
 
-class Projects extends React.Component {
+export default class Projects extends Component {
     constructor(props) {
 		super(props);
 		this.state = {
@@ -46,5 +46,3 @@ class Projects extends React.Component {
         );
     }
 }
-
-export default Projects;

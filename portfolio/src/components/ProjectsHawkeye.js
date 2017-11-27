@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {Helmet} from "react-helmet";
 import hawkeyeTK1 from '../images/projects/hawkeye-tk1.png';
 import hawkeyeAgency1 from '../images/projects/hawkeye-agency1.png';
 import hawkeyeAgency2 from '../images/projects/hawkeye-agency2.png';
+import LazyLoad from 'react-lazyload';
 
-class ProjectsHawkeye extends React.Component {
+export default class ProjectsHawkeye extends Component {
     componentDidMount () {
         window.scrollTo(0, 0)
     }
@@ -23,12 +24,16 @@ class ProjectsHawkeye extends React.Component {
                                 <h2>ThyssenKrupp Elevator website</h2>
                                 <p>I was one of the lead front-end developers for the major elevator company's redesign website. I helped lead the development of the static web pages.</p>
 
-                                <img src={hawkeyeTK1} alt="ThyssenKrupp Elevator" />
+                                <LazyLoad>
+                                    <img src={hawkeyeTK1} alt="ThyssenKrupp Elevator" />
+                                </LazyLoad>
 
                                 <h2>hawkeye Agency website</h2>
 
-                                <img src={hawkeyeAgency1} alt="hawkeye Agency website" />
-                                <img src={hawkeyeAgency2} alt="hawkeye Agency website" />
+                                <LazyLoad>
+                                    <img src={hawkeyeAgency1} alt="hawkeye Agency website" />
+                                    <img src={hawkeyeAgency2} alt="hawkeye Agency website" />
+                                </LazyLoad>
                             </div>
                         </div>
                     </div>
@@ -37,5 +42,3 @@ class ProjectsHawkeye extends React.Component {
         );
     }
 }
-
-export default ProjectsHawkeye;

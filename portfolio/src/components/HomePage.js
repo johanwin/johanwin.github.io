@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {Helmet} from "react-helmet";
 import { Link } from 'react-router-dom'
 
-class HomePage extends React.Component {
+export default class HomePage extends Component {
     constructor(props) {
 		super(props);
 		this.state = {
@@ -100,5 +100,3 @@ class Test extends React.Component {
       );
     }
   }
-
-export default HomePage;

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { Component } from "react";
 import {Helmet} from "react-helmet";
 import { Link } from 'react-router-dom'
 import resume from '..//docs/john-nguyen-resume-cv.pdf';
 
-class About extends React.Component {
+export default class About extends Component {
     render() {
         return (
             <section className="about">
@@ -70,5 +70,3 @@ class About extends React.Component {
         );
     }
 }
-
-export default About;
