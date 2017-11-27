@@ -228,6 +228,7 @@ section {
       display: block;
       width: 95%;
       text-decoration: none;
+      cursor: pointer;
     }
     .cards {
       display: flex;
@@ -287,6 +288,7 @@ section {
       mix-blend-mode: lighten;
       -webkit-filter: grayscale(100%) contrast(1.2);
       filter: grayscale(100%) contrast(1);
+      cursor: pointer;
     }
     .cardImage::before {
       content: "";
@@ -920,4 +922,7 @@ footer {
   font-size: 14px;
   color: $cerise;
   text-align: center;
+  a {
+    color: $cerise;
+  }
 }

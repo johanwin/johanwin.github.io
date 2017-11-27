@@ -174,7 +174,8 @@ section {
     background: url("images/icon-arrow.svg") 96% 50% no-repeat;
     display: block;
     width: 95%;
-    text-decoration: none; }
+    text-decoration: none;
+    cursor: pointer; }
   .home .homeArticles .cards {
     display: flex;
     flex-wrap: wrap;
@@ -227,7 +228,8 @@ section {
     background-color: #23278a;
     mix-blend-mode: lighten;
     -webkit-filter: grayscale(100%) contrast(1.2);
-    filter: grayscale(100%) contrast(1); }
+    filter: grayscale(100%) contrast(1);
+    cursor: pointer; }
   .home .homeArticles .cardImage::before {
     content: "";
     display: block;
@@ -776,3 +778,5 @@ footer {
   font-size: 14px;
   color: #E9328B;
   text-align: center; }
+  footer a {
+    color: #E9328B; }
