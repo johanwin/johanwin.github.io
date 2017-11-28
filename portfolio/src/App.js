@@ -11,6 +11,7 @@ import Error from './components/Error';
 import ProjectsCapitalOne from "./components/ProjectsCapitalOne";
 import ProjectsIcrossing from "./components/ProjectsIcrossing";
 import ProjectsHawkeye from "./components/ProjectsHawkeye";
+import ProjectItem from "./components/ProjectItem";
 import './App.css';
 
 ReactGA.initialize('UA-61319727-1');
@@ -46,6 +47,23 @@ const bounceTransition = {
 };
 
 export default class App extends Component {
+  constructor(props) {
+		super(props);
+		this.state = {
+			projects: []
+		};
+  }
+  componentDidMount() {
+		fetch("http://johnnguyen.org/data/projects.json")
+			.then(response => {
+				return response.json();
+			})
+			.then(json => {
+				this.setState({
+					projects: json.slice(0, 7)
+				});
+			});
+	}
   render() {
     return (
       <HashRouter>
@@ -58,13 +76,15 @@ export default class App extends Component {
             mapStyles={mapStyles}
             className="switchWrapper"
           >
-            <Route exact path="/" component={HomePage} />
-            <Route path="/about/" component={About}/>
-            <Route path="/contact/" component={Contact}/>
-            <Route path="/projects/1" component={ProjectsCapitalOne}/>
-            <Route path="/projects/2" component={ProjectsIcrossing}/>
-            <Route path="/projects/3" component={ProjectsHawkeye}/>
-            <Route component={Error} />
+              <Route exact path="/" render={props => (
+										<HomePage {...props} projects={this.state.projects} />
+									)} />
+              <Route path="/about/" component={About}/>
+              <Route path="/contact/" component={Contact}/>
+              <Route path="/projects/1" component={ProjectsCapitalOne}/>
+              <Route path="/projects/2" component={ProjectsIcrossing}/>
+              <Route path="/projects/3" component={ProjectsHawkeye}/>
+              <Route component={Error} />
             </AnimatedSwitch>
           <Footer />
         </div>
