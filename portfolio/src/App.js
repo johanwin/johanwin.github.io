@@ -11,7 +11,6 @@ import Error from './components/Error';
 import ProjectsCapitalOne from "./components/ProjectsCapitalOne";
 import ProjectsIcrossing from "./components/ProjectsIcrossing";
 import ProjectsHawkeye from "./components/ProjectsHawkeye";
-import ProjectItem from "./components/ProjectItem";
 import './App.css';
 
 ReactGA.initialize('UA-61319727-1');
