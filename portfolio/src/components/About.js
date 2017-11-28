@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import {Helmet} from "react-helmet";
 import { Link } from 'react-router-dom'
-import resume from '..//docs/john-nguyen-resume-cv.pdf';
+import resume from '../docs/john-nguyen-resume-cv.pdf';
 import profilePic from '../images/john_nguyen.jpg';
 
 export default class About extends Component {
