@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from "react-dom";
 import App from './App';
-// import registerServiceWorker from './registerServiceWorker';
+import 'babel-polyfill';
 
 const renderApp = Component =>
 render(
