@@ -14,11 +14,6 @@
   src: url("fonts/Bungee-Regular.woff2");
 }
 
-@font-face {
-  font-family: "Great Lakes";
-  src: url("fonts/GreatLakesNF.woff2");
-}
-
 @mixin small {
   @media (max-width: 599px) {
     @content;
@@ -56,7 +51,6 @@ $sapphire: #34389C;
 
 $proxima: 'Proxima Nova', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 $bungee: 'Bungee', sans-serif;
-$greatLakes: 'Great Lakes', sans-serif;
 $georgia: Georgia, serif;
 
 .switchWrapper {
@@ -231,13 +225,14 @@ section {
   }
   .homeArticles {
     h1 {
-      font-family: $greatLakes;
-      font-size: 50px;
+      font-family: $proxima;
+      text-transform: uppercase;
+      font-size: 45px;
       color: $classicRose;
       text-shadow: 0 3px 4px rgba(95, 25, 150, 0.50);
       letter-spacing: 2px;
       margin-top: 1rem;
-      margin-bottom: 0px;
+      margin-bottom: 1rem;
       margin-left: 1rem;
       @include medium {
         margin-left: 3rem;
@@ -352,6 +347,7 @@ section {
       a {
         color: $classicRose;
         text-decoration: none;
+        line-height:1.3;
       }
     }
     .cardText {
@@ -396,15 +392,16 @@ section {
     }
 
     h1 {
-      font-family: $greatLakes;
-      font-size: 50px;
+      font-family: $proxima;
+      text-transform: uppercase;
+      font-size: 45px;
       color: $classicRose;
       text-shadow: 0 3px 4px rgba(95, 25, 150, 0.50);
       letter-spacing: 2px;
       margin-top: 2rem;
       margin-bottom: 0px;
       margin-left: 1rem;
-      line-height: 1.3;
+      line-height: 1.1;
       @include medium {
         margin-left: 3rem;
       }
@@ -631,8 +628,9 @@ section {
         }
       }
       h1 {
-        font-family: $greatLakes;
-        font-size: 50px;
+        font-family: $proxima;
+        text-transform: uppercase;
+        font-size: 45px;
         color: $classicRose;
         text-shadow: 0 3px 4px rgba(95, 25, 150, 0.50);
         letter-spacing: 2px;
@@ -778,12 +776,14 @@ section {
       background: rgba($color: $jacksonsPurple, $alpha: 0.8);
       color: $white;
       h1 {
-        font-family: $greatLakes;
-        font-size: 50px;
+        font-family: $proxima;
+        text-transform: uppercase;
+        letter-spacing: 1;
+        font-size: 45px;
         color: $classicRose;
         text-shadow: 0 3px 4px rgba(95, 25, 150, 0.50);
         letter-spacing: 2px;
-        margin-top: 0;
+        margin-top: 1rem;
         margin-bottom: 0px;
         margin-left: 1rem;
         text-align: left;
