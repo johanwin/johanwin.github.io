@@ -321,7 +321,7 @@ section {
       transition: all ease-in-out .5s;
       display: block;
       text-indent:-9999px;
-      background-color: #23278a;  
+      background-color: $jacksonsPurple;  
       mix-blend-mode: lighten;
       -webkit-filter: grayscale(100%) contrast(1.2);
       filter: grayscale(100%) contrast(1);
@@ -899,7 +899,10 @@ section {
 }
 
 header {
-  background: rgba($color: #9E0581, $alpha: 0.8);
+  background:
+  linear-gradient(217deg, rgba(128,12,106,0.8), rgba(128,12,106,0) 90.71%),
+  linear-gradient(127deg, rgba(128,12,106,.6), rgba(128,12,106,0) 30.71%),
+  linear-gradient(336deg, rgba(200,0,255,.8), rgba(200,0,255,0) 70.71%);
   display: flex;
   align-items: center;
   width: 100%;
@@ -914,10 +917,10 @@ header {
     margin-left: 1rem;
     font-size: initial;
     img {
-      width: 60px;
+      width: 80px;
       height: 100%;
       @include medium {
-        width: 120px;
+        width: 160px;
       }
     }
   }
@@ -933,7 +936,7 @@ header {
       a {
         font-family: $proxima;
         font-weight: bold;
-        font-size: 15px;
+        font-size: 12px;
         color: $white;
         text-decoration: none;
         text-transform: uppercase;
@@ -954,7 +957,7 @@ header {
           margin-right:0;
         }
         &.is-active {
-          color: $perano;
+          color: $cyan;
           background: url('images/bg-nav.svg') no-repeat;
           background-size: contain;
           background-position: 50% 50%;

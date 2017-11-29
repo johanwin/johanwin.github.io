@@ -256,7 +256,7 @@ section {
     transition: all ease-in-out .5s;
     display: block;
     text-indent: -9999px;
-    background-color: #23278a;
+    background-color: #23278A;
     mix-blend-mode: lighten;
     -webkit-filter: grayscale(100%) contrast(1.2);
     filter: grayscale(100%) contrast(1);
@@ -757,7 +757,7 @@ section {
     font-size: 16px; }
 
 header {
-  background: rgba(158, 5, 129, 0.8);
+  background: linear-gradient(217deg, rgba(128, 12, 106, 0.8), rgba(128, 12, 106, 0) 90.71%), linear-gradient(127deg, rgba(128, 12, 106, 0.6), rgba(128, 12, 106, 0) 30.71%), linear-gradient(336deg, rgba(200, 0, 255, 0.8), rgba(200, 0, 255, 0) 70.71%);
   display: flex;
   align-items: center;
   width: 100%;
@@ -772,11 +772,11 @@ header {
     margin-left: 1rem;
     font-size: initial; }
     header h1 img {
-      width: 60px;
+      width: 80px;
       height: 100%; }
       @media (min-width: 600px) {
         header h1 img {
-          width: 120px; } }
+          width: 160px; } }
   header nav ul {
     list-style: none;
     display: flex;
@@ -787,7 +787,7 @@ header {
     header nav li a {
       font-family: "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
       font-weight: bold;
-      font-size: 15px;
+      font-size: 12px;
       color: #FFFFFF;
       text-decoration: none;
       text-transform: uppercase;
@@ -808,7 +808,7 @@ header {
         header nav li a {
           margin-right: 0; } }
       header nav li a.is-active {
-        color: #A3C8EF;
+        color: #00D8FF;
         background: url("images/bg-nav.svg") no-repeat;
         background-size: contain;
         background-position: 50% 50%; }
