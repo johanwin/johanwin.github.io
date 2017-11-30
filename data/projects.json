@@ -73,7 +73,7 @@
         ]
       },
       "project2": {
-        "title": "Home Mortgage Pre-Qualification application",
+        "title": "hawkeye Agency website",
         "intro": "Back in early 2010s, the agency replaced their Adobe Flash-powered website with one that pulls postings from their employees' professional social media accounts. I was assigned to be the main developer to code its layout and customized the content management system's functionality.",
         "images": [
             { "src": "{hawkeyeAgency1}" },
