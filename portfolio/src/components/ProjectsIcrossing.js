@@ -40,6 +40,8 @@ export default class ProjectsIcrossing extends Component {
 
                                 <h2>Mitsubishi Motors website</h2>
 
+                                <p>I was on the team that was responsible for maintaining and fixing CSS and JavaScript bugs for the Mitsubishi's responsive web design site. </p>
+
                                 <LazyLoad>
                                     <img src={icrossingMitsubishi11} alt="Mitsubishi Motors website" />
                                 </LazyLoad>

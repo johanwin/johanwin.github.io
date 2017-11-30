@@ -366,7 +366,9 @@ section {
   .projectContainer {
     margin-top:8rem;
     background: #711961 url('images/bg-diagonal.svg');
-    margin-bottom:2rem;
+    margin-bottom:0;
+    border-top: 10px solid $disco;
+    border-bottom: 10px solid $disco;
   }
   .flexboxContainer {
     display: flex;

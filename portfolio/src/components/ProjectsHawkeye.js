@@ -30,6 +30,8 @@ export default class ProjectsHawkeye extends Component {
 
                                 <h2>hawkeye Agency website</h2>
 
+                                <p>Back in early 2010s, the agency replaced their Adobe Flash-powered website with one that pulls postings from their employees' professional social media accounts. I was assigned to be the main developer to code its layout and customized the content management system's functionality.</p>
+
                                 <LazyLoad>
                                     <img src={hawkeyeAgency1} alt="hawkeye Agency website" />
                                     <img src={hawkeyeAgency2} alt="hawkeye Agency website" />
