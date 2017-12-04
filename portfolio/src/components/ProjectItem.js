@@ -27,7 +27,7 @@ export default class ProjectItem extends Component {
 		}
 	}
 	render() {
-		const { project: { title, body } } = this.state;
+		const { project: { title, teaser } } = this.state;
 		return (
 			<section className="project">
                 <Helmet>
@@ -36,9 +36,7 @@ export default class ProjectItem extends Component {
                 <div className="projectContainer">
                     <div className="projectContent">
                         <h1>{title && title}</h1>
-                        <p>{body && body}</p>
-                        <div className="projectMedia">
-                        </div>
+                        <p>{teaser && teaser}</p>
                     </div>
                 </div>
 			</section>

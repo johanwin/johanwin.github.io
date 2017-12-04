@@ -145,6 +145,7 @@ section {
   }
   .headlineFake {
     color: $white;
+    text-shadow:0.4rem 0 $jacksonsPurple;
     font-size: 4.125rem;
     text-transform: uppercase;
     margin-top: 0;
@@ -229,7 +230,7 @@ section {
       text-transform: uppercase;
       font-size: 45px;
       color: $classicRose;
-      text-shadow: 0 3px 4px rgba(95, 25, 150, 0.50);
+      text-shadow: 5px 6px 5px rgba(17, 20, 75, 0.7);
       letter-spacing: 2px;
       margin-top: 1rem;
       margin-bottom: 1rem;
@@ -246,9 +247,9 @@ section {
       max-width: 100%;
       vertical-align: middle;
     }
-    background: #711961 url('images/bg-diagonal.svg');
-    border-top:10px solid $disco;
-    border-bottom:10px solid $disco;
+    background: $jacksonsPurple;
+    border-top:10px solid $jacksonsPurple;
+    border-bottom:10px solid $jacksonsPurple;
     .cardButton {
       border: 1px solid $classicRose;
       border-radius: 8px;
@@ -287,7 +288,7 @@ section {
       }
     }
     .card {
-      background-color: $disco;
+      background-color: #463185;
       border-radius: 10px;
       box-shadow: 0 20px 50px -14px rgba(63, 12, 54, 0.5);
       display: flex;
@@ -365,10 +366,10 @@ section {
 .project {
   .projectContainer {
     margin-top:8rem;
-    background: #711961 url('images/bg-diagonal.svg');
+    background: $jacksonsPurple;
     margin-bottom:0;
-    border-top: 10px solid $disco;
-    border-bottom: 10px solid $disco;
+    border-top: 10px solid $jacksonsPurple;
+    border-bottom: 10px solid $jacksonsPurple;
   }
   .flexboxContainer {
     display: flex;
@@ -398,7 +399,7 @@ section {
       text-transform: uppercase;
       font-size: 45px;
       color: $classicRose;
-      text-shadow: 0 3px 4px rgba(95, 25, 150, 0.50);
+      text-shadow: 5px 6px 5px rgba(17, 20, 75, 0.7);
       letter-spacing: 2px;
       margin-top: 2rem;
       margin-bottom: 0px;
@@ -493,6 +494,7 @@ section {
     .headlineFake {
       text-align: center;
       color: $white;
+      text-shadow:0.4rem 0 $jacksonsPurple;
       font-size: 60px;
       text-transform: uppercase;
       margin-top: 0;
@@ -634,7 +636,7 @@ section {
         text-transform: uppercase;
         font-size: 45px;
         color: $classicRose;
-        text-shadow: 0 3px 4px rgba(95, 25, 150, 0.50);
+        text-shadow: 5px 6px 5px rgba(17, 20, 75, 0.7);
         letter-spacing: 2px;
         margin-top: 0;
         margin-bottom: 0px;
@@ -738,6 +740,7 @@ section {
       .headlineFake {
         text-align: center;
         color: $white;
+        text-shadow:0.4rem 0 $jacksonsPurple;
         font-size: 15px;
         text-transform: uppercase;
         margin-top: 0;
@@ -783,7 +786,7 @@ section {
         letter-spacing: 1;
         font-size: 45px;
         color: $classicRose;
-        text-shadow: 0 3px 4px rgba(95, 25, 150, 0.50);
+        text-shadow: 5px 6px 5px rgba(17, 20, 75, 0.7);
         letter-spacing: 2px;
         margin-top: 1rem;
         margin-bottom: 0px;

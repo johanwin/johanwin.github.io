@@ -93,6 +93,7 @@ section {
 
 .home .headlineFake {
   color: #FFFFFF;
+  text-shadow: 0.4rem 0 #23278A;
   font-size: 4.125rem;
   text-transform: uppercase;
   margin-top: 0;
@@ -169,15 +170,15 @@ section {
     margin-left: 5rem; } }
 
 .home .homeArticles {
-  background: #711961 url("images/bg-diagonal.svg");
-  border-top: 10px solid #7D1C6B;
-  border-bottom: 10px solid #7D1C6B; }
+  background: #23278A;
+  border-top: 10px solid #23278A;
+  border-bottom: 10px solid #23278A; }
   .home .homeArticles h1 {
     font-family: "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
     text-transform: uppercase;
     font-size: 45px;
     color: #FBC8F1;
-    text-shadow: 0 3px 4px rgba(95, 25, 150, 0.5);
+    text-shadow: 5px 6px 5px rgba(17, 20, 75, 0.7);
     letter-spacing: 2px;
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -227,7 +228,7 @@ section {
       .home .homeArticles .cardsItem {
         width: 30.5%; } }
   .home .homeArticles .card {
-    background-color: #7D1C6B;
+    background-color: #463185;
     border-radius: 10px;
     box-shadow: 0 20px 50px -14px rgba(63, 12, 54, 0.5);
     display: flex;
@@ -291,10 +292,10 @@ section {
 
 .project .projectContainer {
   margin-top: 8rem;
-  background: #711961 url("images/bg-diagonal.svg");
+  background: #23278A;
   margin-bottom: 0;
-  border-top: 10px solid #7D1C6B;
-  border-bottom: 10px solid #7D1C6B; }
+  border-top: 10px solid #23278A;
+  border-bottom: 10px solid #23278A; }
 
 .project .flexboxContainer {
   display: flex;
@@ -322,7 +323,7 @@ section {
   text-transform: uppercase;
   font-size: 45px;
   color: #FBC8F1;
-  text-shadow: 0 3px 4px rgba(95, 25, 150, 0.5);
+  text-shadow: 5px 6px 5px rgba(17, 20, 75, 0.7);
   letter-spacing: 2px;
   margin-top: 2rem;
   margin-bottom: 0px;
@@ -407,6 +408,7 @@ section {
   .about .aboutHero .headlineFake {
     text-align: center;
     color: #FFFFFF;
+    text-shadow: 0.4rem 0 #23278A;
     font-size: 60px;
     text-transform: uppercase;
     margin-top: 0;
@@ -526,7 +528,7 @@ section {
       text-transform: uppercase;
       font-size: 45px;
       color: #FBC8F1;
-      text-shadow: 0 3px 4px rgba(95, 25, 150, 0.5);
+      text-shadow: 5px 6px 5px rgba(17, 20, 75, 0.7);
       letter-spacing: 2px;
       margin-top: 0;
       margin-bottom: 0px;
@@ -617,6 +619,7 @@ section {
     .contact .contactHero .sidebar .headlineFake {
       text-align: center;
       color: #FFFFFF;
+      text-shadow: 0.4rem 0 #23278A;
       font-size: 15px;
       text-transform: uppercase;
       margin-top: 0;
@@ -659,7 +662,7 @@ section {
       letter-spacing: 1;
       font-size: 45px;
       color: #FBC8F1;
-      text-shadow: 0 3px 4px rgba(95, 25, 150, 0.5);
+      text-shadow: 5px 6px 5px rgba(17, 20, 75, 0.7);
       letter-spacing: 2px;
       margin-top: 1rem;
       margin-bottom: 0px;
