@@ -962,7 +962,7 @@ header {
           margin-right:0;
         }
         &.is-active {
-          color: $cyan;
+          color: $classicRose;
           background: url('images/bg-nav.svg') no-repeat;
           background-size: contain;
           background-position: 50% 50%;
@@ -978,8 +978,8 @@ header {
 
 footer {
   background: url('images/bg-footer.png') repeat-x;
-  padding-top: 130px;
-  padding-bottom: 40px;
+  padding-top: 110px;
+  padding-bottom: 15px;
   font-family: $proxima;
   font-size: 14px;
   color: $cerise;

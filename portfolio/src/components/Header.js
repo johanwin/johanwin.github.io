@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 export default class Header extends Component {
     render() {
         return (
-            <header>
+            <header role="banner">
                 <h1><NavLink to="/" exact><img src={logo} alt="John Nguyen" /></NavLink></h1>
                 <div className="navContainer">
                     <nav>

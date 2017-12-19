@@ -815,7 +815,7 @@ header {
         header nav li a {
           margin-right: 0; } }
       header nav li a.is-active {
-        color: #00D8FF;
+        color: #FBC8F1;
         background: url("images/bg-nav.svg") no-repeat;
         background-size: contain;
         background-position: 50% 50%; }
@@ -825,8 +825,8 @@ header {
 
 footer {
   background: url("images/bg-footer.png") repeat-x;
-  padding-top: 130px;
-  padding-bottom: 40px;
+  padding-top: 110px;
+  padding-bottom: 15px;
   font-family: "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   color: #E9328B;

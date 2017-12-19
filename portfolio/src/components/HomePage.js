@@ -47,8 +47,7 @@ export default class HomePage extends Component {
                             return (
                                 <li className="cardsItem" key={i}>
                                     <article className="card">
-                                        <Link to={`/projects/${p.id}`} className={"cardImage " + (p.className)}>
-                                            
+                                        <Link to={`/projects/${p.id}`} className={"cardImage " + (p.className)} role="presentation">
                                         </Link>
                                         <div className="cardContent">
                                             <div className="cardTitle"><Link to={`/projects/${p.id}`}>{p.title}</Link></div>
