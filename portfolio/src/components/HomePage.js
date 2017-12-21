@@ -32,6 +32,9 @@ export default class HomePage extends Component {
                     <meta name="description" content="John builds projects using up-to-date workflows, technologies, and standards to make faster, better, and well-designed sites; finding solutions that last." />
                 </Helmet>
                 <div className="homeHero">
+                    <div className="homeDots homeDotsTopRight"></div>
+                    <div className="homeDots homeDotsBottomRight"></div>
+                    <div className="homeDots homeDotsBottomLeft"></div>
                     <div className="homeHeroContent">
                         <div className="headlineFake"><span className="headlineFakeManipulate">Cow</span>abunga</div>
                         

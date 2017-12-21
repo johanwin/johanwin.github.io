@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+// import configureStore from './store/configureStore';
+// import {loadProjects} from './actions/projectActions';
+// import {Provider} from 'react-redux';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { HashRouter, Route } from 'react-router-dom';
@@ -15,6 +18,9 @@ import './App.css';
 
 ReactGA.initialize('UA-61319727-1');
 ReactGA.pageview(window.location.pathname + window.location.search);
+
+// const store = configureStore();
+// store.dispatch(loadProjects());
 
 function mapStyles(styles) {
   return {
@@ -76,8 +82,8 @@ export default class App extends Component {
             className="switchWrapper"
           >
               <Route exact path="/" render={props => (
-										<HomePage {...props} projects={this.state.projects} />
-									)} />
+                    <HomePage {...props} projects={this.state.projects} />
+                  )} />
               <Route path="/about/" component={About}/>
               <Route path="/contact/" component={Contact}/>
               <Route path="/projects/1" component={ProjectsCapitalOne}/>

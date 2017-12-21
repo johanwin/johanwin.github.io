@@ -120,6 +120,7 @@ section {
     background-size: cover;
     background-position: 50% 50%;
     padding-top: 5.5rem;
+    position: relative;
     @include medium {
       padding-top: 8rem;
       min-height: 570px;
@@ -128,6 +129,39 @@ section {
     }
     @include small {
       padding-bottom: 4rem;
+    }
+  }
+  .homeDots {
+    @include medium {
+      background: url('images/squiggly-polkadots.svg') no-repeat;
+      background-size:contain;
+      width:411px;
+      height:414px;
+      position:absolute;
+    }
+    &.homeDotsBottomRight {
+      @include medium {
+        transform: rotate(180deg);
+        right:0;
+        bottom:0;
+        filter: opacity(20%) grayscale(40%) contrast(175%);
+      }
+    }
+    &.homeDotsTopRight {
+      @include medium {
+        transform: rotate(450deg);
+        right:0;
+        top:-200px;
+        filter: opacity(20%) grayscale(40%) contrast(175%);
+      }
+    }
+    &.homeDotsBottomLeft {
+      @include medium {
+        transform: rotate(270deg);
+        left: -235px;
+        bottom:0;
+        filter: opacity(20%) grayscale(40%) contrast(175%);
+      }
     }
   }
   .buttonHome {

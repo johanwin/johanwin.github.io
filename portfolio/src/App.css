@@ -67,7 +67,8 @@ section {
   background: url("images/hero-home.jpg") no-repeat;
   background-size: cover;
   background-position: 50% 50%;
-  padding-top: 5.5rem; }
+  padding-top: 5.5rem;
+  position: relative; }
   @media (min-width: 600px) {
     .home .homeHero {
       padding-top: 8rem;
@@ -77,6 +78,35 @@ section {
   @media (max-width: 599px) {
     .home .homeHero {
       padding-bottom: 4rem; } }
+
+@media (min-width: 600px) {
+  .home .homeDots {
+    background: url("images/squiggly-polkadots.svg") no-repeat;
+    background-size: contain;
+    width: 411px;
+    height: 414px;
+    position: absolute; } }
+
+@media (min-width: 600px) {
+  .home .homeDots.homeDotsBottomRight {
+    transform: rotate(180deg);
+    right: 0;
+    bottom: 0;
+    filter: opacity(20%) grayscale(40%) contrast(175%); } }
+
+@media (min-width: 600px) {
+  .home .homeDots.homeDotsTopRight {
+    transform: rotate(450deg);
+    right: 0;
+    top: -200px;
+    filter: opacity(20%) grayscale(40%) contrast(175%); } }
+
+@media (min-width: 600px) {
+  .home .homeDots.homeDotsBottomLeft {
+    transform: rotate(270deg);
+    left: -235px;
+    bottom: 0;
+    filter: opacity(20%) grayscale(40%) contrast(175%); } }
 
 .home .buttonHome {
   margin-bottom: 20px;
