@@ -404,10 +404,85 @@ section {
   background: url("images/hero-about.jpg") no-repeat;
   background-size: cover;
   background-position: 50% 50%;
-  padding-top: 7rem; }
+  padding-top: 7rem;
+  position: relative; }
   @media (min-width: 600px) {
     .about .aboutHero {
       padding-top: 36rem; } }
+  .about .aboutHero .aboutCircle {
+    background: url("images/squiggly-circledots.svg") no-repeat;
+    background-size: contain;
+    position: absolute;
+    transform: rotate(90deg);
+    filter: opacity(0.5); }
+    @media (max-width: 599px) {
+      .about .aboutHero .aboutCircle {
+        display: none; } }
+    @media (min-width: 600px) {
+      .about .aboutHero .aboutCircle {
+        top: 30px;
+        left: 30px;
+        width: 289px;
+        height: 286px; } }
+    @media (min-width: 1200px) {
+      .about .aboutHero .aboutCircle {
+        width: 389px;
+        height: 386px; } }
+  .about .aboutHero .aboutHalfCircle {
+    background: url("images/squiggly-halfcircle.svg") no-repeat;
+    background-size: contain;
+    position: absolute;
+    transform: rotate(135deg);
+    filter: opacity(0.5); }
+    @media (max-width: 599px) {
+      .about .aboutHero .aboutHalfCircle {
+        display: none; } }
+    @media (min-width: 600px) {
+      .about .aboutHero .aboutHalfCircle {
+        top: 640px;
+        right: -30px;
+        width: 309px;
+        height: 306px; } }
+    @media (min-width: 1200px) {
+      .about .aboutHero .aboutHalfCircle {
+        width: 409px;
+        height: 406px; } }
+  .about .aboutHero .aboutCurvy {
+    background: url("images/squiggly-curvylinesvertical.svg") no-repeat;
+    background-size: contain;
+    position: absolute;
+    filter: opacity(0.5); }
+    @media (max-width: 599px) {
+      .about .aboutHero .aboutCurvy {
+        display: none; } }
+    @media (min-width: 600px) {
+      .about .aboutHero .aboutCurvy {
+        top: 0;
+        right: 10px;
+        width: 263px;
+        height: 490px; } }
+    @media (min-width: 1200px) {
+      .about .aboutHero .aboutCurvy {
+        width: 363px;
+        height: 590px; } }
+  .about .aboutHero .aboutCurvyUneven {
+    background: url("images/squiggly-curvylines.svg") no-repeat;
+    background-size: contain;
+    position: absolute;
+    filter: opacity(0.5); }
+    @media (max-width: 599px) {
+      .about .aboutHero .aboutCurvyUneven {
+        display: none; } }
+    @media (min-width: 600px) {
+      .about .aboutHero .aboutCurvyUneven {
+        top: 800px;
+        left: 0;
+        width: 616px;
+        height: 202px; } }
+    @media (min-width: 1200px) {
+      .about .aboutHero .aboutCurvyUneven {
+        width: 716px;
+        height: 302px; } }
   .about .aboutHero blockquote {
     border: 0;
     padding: 0;
@@ -626,21 +701,27 @@ section {
 
 .contact .contactHero {
   background: url("images/hero-contact.jpg") no-repeat;
-  background-size: cover;
-  padding-top: 6rem; }
-  @media (min-width: 600px) {
-    .contact .contactHero {
-      padding-top: 8rem;
-      padding-top: 10rem; } }
+  background-size: cover; }
+  .contact .contactHero::before {
+    background: url("images/squiggly-seamlesspattern.svg");
+    background-size: contain;
+    filter: opacity(25%) grayscale(50%) contrast(175%) drop-shadow(5px 5px 5px #333);
+    position: absolute;
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%; }
   .contact .contactHero .flexboxContainer {
     display: flex;
     width: 100%;
     padding-bottom: 0; }
     @media (max-width: 599px) {
       .contact .contactHero .flexboxContainer {
+        padding-top: 6rem;
         flex-direction: column; } }
     @media (min-width: 600px) {
       .contact .contactHero .flexboxContainer {
+        padding-top: 9rem;
         padding-bottom: 4rem; } }
   .contact .contactHero .sidebar {
     order: 1;
@@ -685,7 +766,8 @@ section {
     order: 2;
     flex: 1;
     background: rgba(35, 39, 138, 0.8);
-    color: #FFFFFF; }
+    color: #FFFFFF;
+    z-index: 1; }
     .contact .contactHero .main h1 {
       font-family: "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
       text-transform: uppercase;

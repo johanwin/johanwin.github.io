@@ -1,8 +1,8 @@
 {
-  "main.css": "static/css/main.bfe3c7f8.css",
-  "main.css.map": "static/css/main.bfe3c7f8.css.map",
-  "main.js": "static/js/main.1c66d51a.js",
-  "main.js.map": "static/js/main.1c66d51a.js.map",
+  "main.css": "static/css/main.cb453bd0.css",
+  "main.css.map": "static/css/main.cb453bd0.css.map",
+  "main.js": "static/js/main.6e19ef5e.js",
+  "main.js.map": "static/js/main.6e19ef5e.js.map",
   "static/media/Bungee-Regular.woff2": "static/media/Bungee-Regular.43d8642d.woff2",
   "static/media/ProximaNova-Regular.woff2": "static/media/ProximaNova-Regular.9a60ae60.woff2",
   "static/media/ProximaNova-SemiBold.woff2": "static/media/ProximaNova-SemiBold.d95e053c.woff2",
@@ -36,6 +36,11 @@
   "static/media/portfolio-thumb-capitalone.jpg": "static/media/portfolio-thumb-capitalone.a8b79d4e.jpg",
   "static/media/portfolio-thumb-hawkeye.jpg": "static/media/portfolio-thumb-hawkeye.122a5156.jpg",
   "static/media/portfolio-thumb-icrossing.jpg": "static/media/portfolio-thumb-icrossing.b34a6377.jpg",
+  "static/media/squiggly-circledots.svg": "static/media/squiggly-circledots.c8aac6bf.svg",
+  "static/media/squiggly-curvylines.svg": "static/media/squiggly-curvylines.0aad0571.svg",
+  "static/media/squiggly-curvylinesvertical.svg": "static/media/squiggly-curvylinesvertical.510cdc4b.svg",
+  "static/media/squiggly-halfcircle.svg": "static/media/squiggly-halfcircle.12a8ba1e.svg",
   "static/media/squiggly-polkadots.svg": "static/media/squiggly-polkadots.a1062a23.svg",
+  "static/media/squiggly-seamlesspattern.svg": "static/media/squiggly-seamlesspattern.766c1eaa.svg",
   "static/media/squiggly-sharp.svg": "static/media/squiggly-sharp.293ebdec.svg"
 }
