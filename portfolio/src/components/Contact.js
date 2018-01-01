@@ -82,7 +82,7 @@ export default class Contact extends Component {
                         <article className="main">
                             <h1>Contact</h1>
                             <form action="http://formspree.io/whatsup@johnnguyen.org" method="POST" noValidate>
-                                <legend>Please feel free to contact me via email <a href="mailto:whatsup@johnnguyen.org">whatsup@johnnguyen.org</a>. You could also try to use the following form, but I wouldn't recommend it. There's no form processing.</legend>
+                                <legend>Please feel free to contact me via email <a href="mailto:whatsup@johnnguyen.org">whatsup@johnnguyen.org</a>. You could also try to use the following form, but I wouldn't recommend it. The form contains a third-party form processing service due to the limitations of GitHub Pages hosting. </legend>
                                 <div className="form-group">
                                     <input className="form-control"
                                     type="email"

@@ -12,6 +12,7 @@ export default class About extends Component {
                     <title>About John Nguyen</title>
                     <meta name="description" content="This John Nguyen is a front-end web developer. He uses HTML, CSS, JavaScript, Angular, and R" />
                 </Helmet>
+
                 <div className="aboutHero">
                     <div className="aboutCircle"></div>
                     <div className="aboutHalfCircle"></div>
@@ -23,7 +24,7 @@ export default class About extends Component {
                         <span className="headlineFakeManipulate2">Where?</span> 
                         Nguyen!
                     </div>
-                    <div className="aboutHeroContent">
+                    <div className="wrapper aboutHeroContent">
                         <div className="flexboxContainer">
                             <article className="main">
                                 <h1>About</h1>

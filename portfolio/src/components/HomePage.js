@@ -53,7 +53,7 @@ export default class HomePage extends Component {
                                         <Link to={`/projects/${p.id}`} className={"cardImage " + (p.className)} role="presentation">
                                         </Link>
                                         <div className="cardContent">
-                                            <div className="cardTitle"><Link to={`/projects/${p.id}`}>{p.title}</Link></div>
+                                            <h2 className="cardTitle"><Link to={`/projects/${p.id}`}>{p.title}</Link></h2>
                                             <p className="cardText">{p.body}</p>
                                             <Link to={`/projects/${p.id}`} className="cardButton">View more.</Link>
                                         </div>
