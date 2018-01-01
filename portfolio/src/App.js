@@ -5,7 +5,6 @@ import React, { Component } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { HashRouter, Route } from 'react-router-dom';
-import { spring } from 'react-router-transition';
 import ReactGA from 'react-ga';
 import HomePage from './components/HomePage';
 import About from './components/About';
