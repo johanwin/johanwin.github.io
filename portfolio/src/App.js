@@ -49,7 +49,6 @@ export default class App extends Component {
               <Route path="/projects/1" component={ProjectsCapitalOne}/>
               <Route path="/projects/2" component={ProjectsIcrossing}/>
               <Route path="/projects/3" component={ProjectsHawkeye}/>
-              <Route component={Error} />
           <Footer />
         </div>
       </HashRouter>
