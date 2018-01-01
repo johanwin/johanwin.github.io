@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { HashRouter, Route } from 'react-router-dom';
-import { spring, AnimatedSwitch } from 'react-router-transition';
+import { spring } from 'react-router-transition';
 import ReactGA from 'react-ga';
 import HomePage from './components/HomePage';
 import About from './components/About';
@@ -18,38 +18,6 @@ import './App.css';
 
 ReactGA.initialize('UA-61319727-1');
 ReactGA.pageview(window.location.pathname + window.location.search);
-
-// const store = configureStore();
-// store.dispatch(loadProjects());
-
-function mapStyles(styles) {
-  return {
-    opacity: styles.opacity,
-    transform: `scale(${styles.scale})`,
-  };
-}
-
-function bounce(val) {
-  return spring(val, {
-    stiffness: 330,
-    damping: 22,
-  });
-}
-
-const bounceTransition = {
-  atEnter: {
-    opacity: 0,
-    scale: 0.2,
-  },
-  atLeave: {
-    opacity: bounce(1),
-    scale: bounce(1),
-  },
-  atActive: {
-    opacity: bounce(1),
-    scale: bounce(1),
-  },
-};
 
 export default class App extends Component {
   constructor(props) {
@@ -74,13 +42,6 @@ export default class App extends Component {
       <HashRouter>
         <div className="App">
           <Header />
-            <AnimatedSwitch
-            atEnter={bounceTransition.atEnter}
-            atLeave={bounceTransition.atLeave}
-            atActive={bounceTransition.atActive}
-            mapStyles={mapStyles}
-            className="switchWrapper"
-          >
               <Route exact path="/" render={props => (
                     <HomePage {...props} projects={this.state.projects} />
                   )} />
@@ -90,7 +51,6 @@ export default class App extends Component {
               <Route path="/projects/2" component={ProjectsIcrossing}/>
               <Route path="/projects/3" component={ProjectsHawkeye}/>
               <Route component={Error} />
-            </AnimatedSwitch>
           <Footer />
         </div>
       </HashRouter>
