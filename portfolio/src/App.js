@@ -26,7 +26,7 @@ export default class App extends Component {
 		};
   }
   componentDidMount() {
-		fetch("http://johnnguyen.org/data/projects.json")
+		fetch("https://johnnguyen.org/data/projects.json")
 			.then(response => {
 				return response.json();
 			})
