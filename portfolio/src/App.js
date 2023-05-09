@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-// import configureStore from './store/configureStore';
-// import {loadProjects} from './actions/projectActions';
-// import {Provider} from 'react-redux';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { HashRouter, Route } from 'react-router-dom';
