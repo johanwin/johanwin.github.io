@@ -28,7 +28,7 @@ export default class HomePage extends Component {
         return (
             <section className="home">
                 <Helmet>
-                    <title>Web Projects by John Nguyen</title>
+                    <title>John Nguyen, User Interface (UI) Engineer</title>
                     <meta name="description" content="John builds projects using up-to-date workflows, technologies, and standards to make faster, better, and well-designed sites; finding solutions that last." />
                 </Helmet>
                 <div className="homeHero">
@@ -38,7 +38,7 @@ export default class HomePage extends Component {
                     <div className="homeHeroContent">
                         <div className="headlineFake"><span className="headlineFakeManipulate">Cow</span>abunga</div>
                         
-                        <p>A skillful Web User Experience (UX) Developer, who is a fast learner and radical dude.</p>
+                        <p>A skillful web-based User Interface (UI) Developer, who is a fast learner and radical dude.</p>
 
                         <Link to="/about" className="button buttonHome">Learn More About John</Link>
                     </div>

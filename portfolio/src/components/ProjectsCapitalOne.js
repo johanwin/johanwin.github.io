@@ -7,7 +7,6 @@ import capitalonePQ1 from '../images/projects/capitalone-prequal1.png';
 import capitalonePQ2 from '../images/projects/capitalone-prequal2.png';
 import capitalonePQ3 from '../images/projects/capitalone-prequal3.png';
 import capitalonePQ4 from '../images/projects/capitalone-prequal4.png';
-import LazyLoad from 'react-lazyload';
 
 export default class ProjectsCapitalOne extends Component {
     componentDidMount () {
@@ -31,20 +30,20 @@ export default class ProjectsCapitalOne extends Component {
 
                             <div className="projectMedia">
                                 <h2>Home Loans website</h2>
-                                <LazyLoad>
+
                                     <img src={capitaloneDP1} alt="Capital One Home Loans Website" />
                                     <img src={capitaloneDP2} alt="Capital One Home Loans Website" />
                                     <img src={capitaloneDP3} alt="Capital One Home Loans Website" />
-                                </LazyLoad>
+
 
                                 <h2>Home Mortgage Pre-Qualification Application</h2>
 
-                                <LazyLoad>
+
                                     <img src={capitalonePQ1} alt="Capital One Home Mortgage Prequalification" />
                                     <img src={capitalonePQ2} alt="Capital One Home Mortgage Prequalification" />
                                     <img src={capitalonePQ3} alt="Capital One Home Mortgage Prequalification" />
                                     <img src={capitalonePQ4} alt="Capital One Home Mortgage Prequalification" />
-                                </LazyLoad>
+
                             </div>
                         </div>
                     </div>

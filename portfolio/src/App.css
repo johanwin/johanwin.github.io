@@ -775,6 +775,11 @@ section {
     background: rgba(35, 39, 138, 0.8);
     color: #FFFFFF;
     z-index: 1; }
+    .contact .contactHero .main p {
+      line-height: 1.5;
+      margin-left: 1.75rem;
+      margin-right: 3.75rem;
+    }
     .contact .contactHero .main h1 {
       font-family: "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
       text-transform: uppercase;
