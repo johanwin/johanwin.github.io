@@ -1,11 +1,11 @@
-import React, { Component } from "react";
+import React from "react";
 
-export default class Error extends Component {
-	render() {
+function Footer() {
 		return (
             <footer className="footer" role="contentinfo">
                 <small>Made with something.</small>
             </footer>
 		);
-	}
 }
+
+export default Footer;

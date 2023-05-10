@@ -1,27 +1,26 @@
-import React, { Component } from "react";
+import React from "react";
 import logo from '../images/logo.svg';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from "react-router-dom";
 
-export default class Header extends Component {
-    render() {
+function Header() {
         return (
             <header className="header" role="banner">
-                <h1><NavLink to="/" exact><img src={logo} alt="John Nguyen" /></NavLink></h1>
+                <h1><NavLink to="/"><img src={logo} alt="John Nguyen" /></NavLink></h1>
                 <div className="navContainer">
                     <nav>
                         <ul>
                             <li>
-                                <NavLink to="/" exact activeClassName="is-active" className="nav-link">
+                                <NavLink to="/" className={({ isActive }) => isActive ? "is-active" : "nav-link" }>
                                     Projects
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink to="/about/" activeClassName="is-active" className="nav-link">
+                                <NavLink to="/about/" className={({ isActive }) => isActive ? "is-active" : "nav-link" }>
                                     About
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink to="/contact/" activeClassName="is-active" className="nav-link">
+                                <NavLink to="/contact/" className={({ isActive }) => isActive ? "is-active" : "nav-link" }>
                                     Contact
                                 </NavLink>
                             </li>
@@ -30,5 +29,6 @@ export default class Header extends Component {
                 </div>
             </header>
         );
-    }
 }
+
+export default Header;

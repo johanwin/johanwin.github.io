@@ -1,11 +1,9 @@
-import React, { Component } from "react";
+import React from 'react';
 import {Helmet} from "react-helmet";
-import { Link } from 'react-router-dom'
 import resume from '../docs/john-nguyen-resume-cv.pdf';
 import profilePic from '../images/john_nguyen.jpg';
 
-export default class About extends Component {
-    render() {
+function About() {
         return (
             <section className="about">
                 <Helmet>
@@ -19,9 +17,9 @@ export default class About extends Component {
                     <div className="aboutCurvy"></div>
                     <div className="aboutCurvyUneven"></div>
                     <div className="headlineFake">
-                        <span className="headlineFakeManipulate0">Who?</span> 
-                        <span className="headlineFakeManipulate1">What?</span> 
-                        <span className="headlineFakeManipulate2">Where?</span> 
+                        <span className="headlineFakeManipulate0">Who?</span>
+                        <span className="headlineFakeManipulate1">What?</span>
+                        <span className="headlineFakeManipulate2">Where?</span>
                         Nguyen!
                     </div>
                     <div className="wrapper aboutHeroContent">
@@ -29,7 +27,7 @@ export default class About extends Component {
                             <article className="main">
                                 <h1>About</h1>
                                 <p>One of the many John Nguyens on the planet of Earth. Currently based in the Dallas - Ft. Worth, Texas area. I was raised in the 1980s and ’90s. Over a decade of experience working in the tech, advertising, and news media industries. I have worked on web-based projects with clients from small businesses to large, well-known international organizations.</p>
-                               
+
 
 <p>I have a passion for creating visually stunning and intuitive user experiences, and have a strong foundation in HTML, CSS, and JavaScript. My expertise in React allows me to build efficient and scalable web applications that are easy to maintain and expand upon.</p>
 
@@ -39,8 +37,8 @@ export default class About extends Component {
 <p>In my spare time, I enjoy staying up to date with the latest trends and technologies in the web development industry and participating in online coding challenges to hone my skills.</p>
 
 <p>Thank you for visiting my portfolio. I hope you find my work and skills to be a good fit for your project needs. Feel free to contact me for more information or to discuss potential opportunities.</p>
-                                
-                                
+
+
                                 <div className="flexTableContainer">
                                     <div className="flexItem">
                                     <ul className="package">
@@ -53,7 +51,7 @@ export default class About extends Component {
                                     </div>
                                     <div className="flexItem">
                                     <ul className="package">
-                                        <li className="header">Develop</li>  
+                                        <li className="header">Develop</li>
                                         <li>JavaScript</li>
                                         <li>AngularJS/Angular</li>
                                         <li>React</li>
@@ -73,16 +71,16 @@ export default class About extends Component {
                             <aside className="sidebar">
                                 <img src={profilePic} alt="John Nguyen" className="profilePic" />
                                 <ul>
-                                    <li><a href={resume} className="aboutLink aboutLinkResume">Résumé/CV</a></li>
-                                    <li><a href="https://www.linkedin.com/in/johannguyen/" className="aboutLink aboutLinkLinkedin">Linkedin Profile</a></li>
-                                    <li><a href="https://www.instagram.com/john_nguyen/" className="aboutLink  aboutLinkInstagram">Instagram Photos</a></li>
+                                    <li><a href={resume} className="aboutLink aboutLinkResume" target="_blank">Résumé/CV</a></li>
+                                    <li><a href="https://www.linkedin.com/in/johannguyen/" className="aboutLink aboutLinkLinkedin" target="_blank">Linkedin Profile</a></li>
+                                    <li><a href="https://www.instagram.com/john_nguyen/" className="aboutLink  aboutLinkInstagram" target="_blank">Instagram Photos</a></li>
                                 </ul>
-                            </aside>  
+                            </aside>
                         </div>
-                        
+
                     </div>
                 </div>
             </section>
         );
-    }
-}
+    };
+export default About;

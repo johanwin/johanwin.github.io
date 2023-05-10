@@ -1,14 +1,10 @@
-import React, { Component } from 'react';
+import React from "react";
 import {Helmet} from "react-helmet";
 import icrossingBCBST1 from '../images/projects/icrossing-bcbst1.jpg';
 import icrossingBCBST2 from '../images/projects/icrossing-bcbst2.jpg';
 import icrossingHilton1 from '../images/projects/icrossing-hilton1.jpg';
 import icrossingMitsubishi11 from '../images/projects/icrossing-mitsubishi1.png';
-export default class ProjectsIcrossing extends Component {
-    componentDidMount () {
-        window.scrollTo(0, 0)
-    }
-    render() {
+function ProjectsIcrossing() {
         return (
             <section className="project">
                 <Helmet>
@@ -44,5 +40,6 @@ export default class ProjectsIcrossing extends Component {
                 </div>
             </section>
         );
-    }
 }
+
+export default ProjectsIcrossing;

@@ -297,11 +297,11 @@ section {
     @media (min-width: 600px) {
       .home .homeArticles .cardImage::before {
         padding-top: 66.6%; } }
-  .home .homeArticles .cardImageCapitalOne {
+  .home .homeArticles .capitalone {
     background-image: url("images/portfolio-thumb-capitalone.jpg"); }
-  .home .homeArticles .cardImageIcrossing {
+  .home .homeArticles .icrossing {
     background-image: url("images/portfolio-thumb-icrossing.jpg"); }
-  .home .homeArticles .cardImageHawkeye {
+  .home .homeArticles .hawkeye {
     background-image: url("images/portfolio-thumb-hawkeye.jpg"); }
   .home .homeArticles .cardTitle {
     color: #FBC8F1;

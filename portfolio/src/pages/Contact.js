@@ -1,8 +1,7 @@
-import React, { Component } from "react";
+import React from 'react';
 import {Helmet} from "react-helmet";
 
-export default class Contact extends Component {
-    render() {
+function Contact() {
         return (
             <section className="contact">
                 <Helmet>
@@ -19,10 +18,10 @@ export default class Contact extends Component {
                         <article className="main">
                             <h1>Contact</h1>
                             <p>Are you excited about user interfaces as much as  me? Do you have a project idea, a question, or just want to say hello? I would be delighted to connect with you! Feel free to reach out me via email <a href="mailto:whatsup@johnnguyen.org">whatsup@johnnguyen.org</a>.</p>
-                        </article>  
+                        </article>
                     </div>
                 </div>
             </section>
         );
-    }
 }
+export default Contact;
