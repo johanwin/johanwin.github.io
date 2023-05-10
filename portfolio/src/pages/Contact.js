@@ -6,7 +6,7 @@ function Contact() {
             <section className="contact">
                 <Helmet>
                     <title>Contact John Nguyen</title>
-                    <meta name="description" content="Let's discuss a web project." />
+                    <meta name="description" content="Discuss a web project with John Nguyen." />
                 </Helmet>
                 <div className="contactHero">
                     <div className="flexboxContainer">
@@ -17,7 +17,8 @@ function Contact() {
                         </aside>
                         <article className="main">
                             <h1>Contact</h1>
-                            <p>Are you excited about user interfaces as much as  me? Do you have a project idea, a question, or just want to say hello? I would be delighted to connect with you! Feel free to reach out me via email <a href="mailto:whatsup@johnnguyen.org">whatsup@johnnguyen.org</a>.</p>
+                            <p>If you have an exciting project in mind and you're seeking an experienced user interface engineer to bring it to life, you've come to the right place. I've have a proven track record of delivering intuitive and visually appealing interfaces that delight users.</p>
+                            <p>Are you excited about user interfaces as much as me? Do you have a project idea, a question, or just want to say hello? I would be delighted to connect with you! Feel free to reach out me via email <a href="mailto:whatsup@johnnguyen.org">whatsup@johnnguyen.org</a>.</p>
                         </article>
                     </div>
                 </div>
