@@ -1,20 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {Helmet} from "react-helmet";
 import icrossingBCBST1 from '../images/projects/icrossing-bcbst1.jpg';
 import icrossingBCBST2 from '../images/projects/icrossing-bcbst2.jpg';
 import icrossingHilton1 from '../images/projects/icrossing-hilton1.jpg';
 import icrossingMitsubishi11 from '../images/projects/icrossing-mitsubishi1.png';
 function ProjectsIcrossing() {
+        useEffect(() => {
+            window.scrollTo(0, 0);
+        }, []);
         return (
             <section className="project">
                 <Helmet>
-                    <title>2012 &ndash; 2015 Client projects for iCrossing</title>
+                    <title>2012 &ndash; 2015 Client projects for iCrossing | John Nguyen</title>
+                    <meta name="description" content="Building websites for the agency's clients such as Hilton and BlueCross BlueShield of Tennessee." />
                 </Helmet>
                 <div className="projectContainer">
                     <div className="flexboxContainer">
                         <div className="projectContent">
                             <h1>2012 &ndash; 2015 Client projects for iCrossing</h1>
                             <p>Building websites for the agency's clients such as BlueCross BlueShield of Tennessee, MitsubishiCars.com, PNC Bank, Hilton Hotels, and Toyota.com.</p>
+
+                            <ul>
+                                <li>Assigned to several projects and quickly adapt to them. Dependable to complete multiple tasks for several large clients.</li>
+                                <li>Setup many projects’ workflow environment from the beginning.</li>
+                                <li>Fixed bugs from existing websites and implemented enhancements that improved functionality and speed.</li>
+                            </ul>
                             <div className="projectMedia">
                                 <h2>BlueCross BlueShield of Tennessee website</h2>
 

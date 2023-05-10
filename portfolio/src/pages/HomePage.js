@@ -1,14 +1,14 @@
 import React from "react";
 import {Helmet} from "react-helmet";
 import { Link } from 'react-router-dom';
-import ProjectItem from "../components/projectItem";
+import ProjectItem from "../components/ProjectItem";
 
 function HomePage() {
         return (
             <section className="home">
                 <Helmet>
                     <title>John Nguyen, User Interface (UI) Engineer</title>
-                    <meta name="description" content="John builds projects using up-to-date workflows, technologies, and standards to make faster, better, and well-designed sites; finding solutions that last." />
+                    <meta name="description" content="John builds web site projects using up-to-date workflows, technologies, and standards to make faster, better, and well-designed sites; finding solutions that last." />
                 </Helmet>
                 <div className="homeHero">
                     <div className="homeDots homeDotsTopRight"></div>
@@ -17,7 +17,7 @@ function HomePage() {
                     <div className="homeHeroContent">
                         <div className="headlineFake"><span className="headlineFakeManipulate">Cow</span>abunga</div>
 
-                        <p>A skillful web-based User Interface (UI) Developer, who is a fast learner and radical dude.</p>
+                        <p>Highly skilled frontend web engineer. Specialized in React and JavaScript with a strong foundation in HTML and CSS. Experienced in graphic and web design. Proven ability to deliver visually stunning and intuitive user experiences.</p>
 
                         <Link to="/about" className="button buttonHome">Learn More About John</Link>
                     </div>

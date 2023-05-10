@@ -8,7 +8,7 @@ function About() {
             <section className="about">
                 <Helmet>
                     <title>About John Nguyen</title>
-                    <meta name="description" content="This John Nguyen is a front-end web developer. He uses HTML, CSS, JavaScript, Angular, and R" />
+                    <meta name="description" content="This John Nguyen is a front-end web developer. He uses HTML, CSS, JavaScript, and React" />
                 </Helmet>
 
                 <div className="aboutHero">
@@ -69,7 +69,7 @@ function About() {
                                 </div>
                             </article>
                             <aside className="sidebar">
-                                <img src={profilePic} alt="John Nguyen" className="profilePic" />
+                                <img src={profilePic} alt="John Nguyen profile picture (p4p)" className="profilePic" />
                                 <ul>
                                     <li><a href={resume} className="aboutLink aboutLinkResume" target="_blank">Résumé/CV</a></li>
                                     <li><a href="https://www.linkedin.com/in/johannguyen/" className="aboutLink aboutLinkLinkedin" target="_blank">Linkedin Profile</a></li>

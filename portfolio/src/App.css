@@ -109,6 +109,8 @@ section {
     filter: opacity(20%) grayscale(40%) contrast(175%); } }
 
 .home .buttonHome {
+  position: absolute;
+  z-index:10;
   margin-bottom: 20px;
   text-align: left;
   max-width: 300px;
@@ -280,6 +282,7 @@ section {
     background-size: cover;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
+    height: 250px;
     overflow: hidden;
     position: relative;
     transition: all ease-in-out .5s;
@@ -354,6 +357,12 @@ section {
   @media (min-width: 900px) {
     .project .projectContent p {
       margin-left: 5rem; } }
+
+.project .projectContent li {
+  color: #FFFFFF;
+  margin-left: 6rem;
+  line-height: 2;
+}
 
 .project .projectContent h1 {
   font-family: "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
