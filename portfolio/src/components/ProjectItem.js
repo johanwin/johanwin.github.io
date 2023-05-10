@@ -11,7 +11,7 @@ const ProjectItem = (props) => {
 				<div className="cardContent">
 					<h2 className="cardTitle"><Link to={`/projects/${props.name}`}>{props.title}</Link></h2>
 					<p className="cardText">{props.description}</p>
-					<Link to={`/projects/${name}`} className="cardButton">View more.</Link>
+					<Link to={`/projects/${props.name}`} className="cardButton">View more.</Link>
 				</div>
 			</div>
 		</li>
