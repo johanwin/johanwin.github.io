@@ -1,14 +1,10 @@
-import React, { Component } from 'react';
+import React from "react";
 import {Helmet} from "react-helmet";
 import hawkeyeTK1 from '../images/projects/hawkeye-tk1.png';
 import hawkeyeAgency1 from '../images/projects/hawkeye-agency1.png';
 import hawkeyeAgency2 from '../images/projects/hawkeye-agency2.png';
 
-export default class ProjectsHawkeye extends Component {
-    componentDidMount () {
-        window.scrollTo(0, 0)
-    }
-    render() {
+function ProjectsHawkeye() {
         return (
             <section className="project">
                 <Helmet>
@@ -37,5 +33,6 @@ export default class ProjectsHawkeye extends Component {
                 </div>
             </section>
         );
-    }
 }
+
+export default ProjectsHawkeye;

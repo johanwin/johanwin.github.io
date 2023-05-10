@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from "react";
 import {Helmet} from "react-helmet";
 import capitaloneDP1 from '../images/projects/capitalone-directportal1.png';
 import capitaloneDP2 from '../images/projects/capitalone-directportal2.png';
@@ -8,11 +8,7 @@ import capitalonePQ2 from '../images/projects/capitalone-prequal2.png';
 import capitalonePQ3 from '../images/projects/capitalone-prequal3.png';
 import capitalonePQ4 from '../images/projects/capitalone-prequal4.png';
 
-export default class ProjectsCapitalOne extends Component {
-    componentDidMount () {
-        window.scrollTo(0, 0)
-    }
-    render() {
+function ProjectsCapitalOne() {
         return (
             <section className="project">
                 <Helmet>
@@ -50,5 +46,6 @@ export default class ProjectsCapitalOne extends Component {
                 </div>
             </section>
         );
-    }
 }
+
+export default ProjectsCapitalOne;

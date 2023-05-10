@@ -352,7 +352,7 @@ section {
       transition: all ease-in-out .5s;
       display: block;
       text-indent:-9999px;
-      background-color: $jacksonsPurple;  
+      background-color: $jacksonsPurple;
       mix-blend-mode: lighten;
       -webkit-filter: grayscale(100%) contrast(1.2);
       filter: grayscale(100%) contrast(1);
@@ -366,13 +366,13 @@ section {
         padding-top: 66.6%;
       }
     }
-    .cardImageCapitalOne {
+    .capitalone {
       background-image: url('images/portfolio-thumb-capitalone.jpg');
     }
-    .cardImageIcrossing {
+    .icrossing {
       background-image: url('images/portfolio-thumb-icrossing.jpg');
     }
-    .cardImageHawkeye {
+    .hawkeye {
       background-image: url('images/portfolio-thumb-hawkeye.jpg');
     }
     .cardTitle {
@@ -500,7 +500,7 @@ section {
     grid-template-columns: 11fr 1fr;
     grid-gap: 10px;
   }
-  
+
   .wrapper > * {
     padding: 20px;
   }
@@ -602,7 +602,7 @@ section {
       position: relative;
       z-index: 600;
       * {
-        box-sizing: border-box; 
+        box-sizing: border-box;
       }
       p {
         margin-top:3.7rem;
@@ -616,7 +616,7 @@ section {
           opacity: .3;
           position: absolute;
           top: -.3em;
-          left: 0;    
+          left: 0;
           text-shadow: none;
           z-index: -300;
         }

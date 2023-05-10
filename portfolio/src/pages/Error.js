@@ -1,9 +1,8 @@
-import React, { Component } from "react";
+import React from "react";
 import {Helmet} from "react-helmet";
 import { Link } from 'react-router-dom';
 
-export default class Error extends Component {
-	render() {
+function Error() {
 		return (
             <section className="error">
                 <Helmet>
@@ -16,5 +15,6 @@ export default class Error extends Component {
                 </div>
             </section>
 		);
-	}
 }
+
+export default Error;

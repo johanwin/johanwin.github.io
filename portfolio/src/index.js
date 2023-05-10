@@ -1,15 +1,11 @@
-import React from 'react';
-import { render } from "react-dom";
+import React from "react";
+import { createRoot } from "react-dom/client";
 import App from './App';
-import 'babel-polyfill';
 
-const renderApp = Component =>
-render(
-    <App />,
-    document.getElementById("root")
+const rootElement = document.getElementById("root");
+const root = createRoot(rootElement);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
 );
-
-// registerServiceWorker();
-renderApp(App);
-
-if (module.hot) module.hot.accept("./App", () => renderApp(App));
