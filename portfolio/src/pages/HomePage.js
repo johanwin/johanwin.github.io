@@ -9,6 +9,7 @@ function HomePage() {
                 <Helmet>
                     <title>John Nguyen, User Interface (UI) Engineer</title>
                     <meta name="description" content="John builds web site projects using up-to-date workflows, technologies, and standards to make faster, better, and well-designed sites; finding solutions that last." />
+                    <link rel="canonical" href="https://johnnguyen.org/" />
                 </Helmet>
                 <div className="homeHero">
                     <div className="homeDots homeDotsTopRight"></div>

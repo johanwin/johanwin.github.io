@@ -13,6 +13,7 @@ function ProjectsIcrossing() {
                 <Helmet>
                     <title>2012 &ndash; 2015 Client projects for iCrossing | John Nguyen</title>
                     <meta name="description" content="Building websites for the agency's clients such as Hilton and BlueCross BlueShield of Tennessee." />
+                    <link rel="canonical" href="https://johnnguyen.org/projects/icrossing" />
                 </Helmet>
                 <div className="projectContainer">
                     <div className="flexboxContainer">

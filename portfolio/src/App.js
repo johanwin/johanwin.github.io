@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import {
@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import ReactGA from 'react-ga';
 import HomePage from './pages/HomePage';
+import Error from './pages/Error';
 import About from "./pages/About";
 import Contact from './pages/Contact';
 import ProjectsCapitalOne from "./pages/ProjectsCapitalOne";
@@ -24,6 +25,7 @@ function App() {
           <BrowserRouter>
             <Header />
             <Routes>
+              <Route path='*' element={<Error />} />
               <Route path="/" element={<HomePage />} />
               <Route path="about/" element={<About />} />
               <Route path="contact/" element={<Contact />} />
