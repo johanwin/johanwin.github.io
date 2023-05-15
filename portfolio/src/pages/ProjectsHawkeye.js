@@ -13,6 +13,7 @@ function ProjectsHawkeye() {
                 <Helmet>
                     <title>2008 &ndash; 2012 Client projects for Hawkeye | John Nguyen</title>
                     <meta name="description" content="Creating websites & emails for clients such as ThyssenKrupp Elevator and Raising Cane’s." />
+                    <link rel="canonical" href="https://johnnguyen.org/projects/hawkeye" />
                 </Helmet>
                 <div className="projectContainer">
                     <div className="flexboxContainer">

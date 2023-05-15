@@ -9,6 +9,7 @@ function About() {
                 <Helmet>
                     <title>About John Nguyen</title>
                     <meta name="description" content="This John Nguyen is a front-end web developer. He uses HTML, CSS, JavaScript, and React" />
+                    <link rel="canonical" href="https://johnnguyen.org/about/" />
                 </Helmet>
 
                 <div className="aboutHero">

@@ -7,6 +7,7 @@ function Contact() {
                 <Helmet>
                     <title>Contact John Nguyen</title>
                     <meta name="description" content="Discuss a web project with John Nguyen." />
+                    <link rel="canonical" href="https://johnnguyen.org/contact/" />
                 </Helmet>
                 <div className="contactHero">
                     <div className="flexboxContainer">
