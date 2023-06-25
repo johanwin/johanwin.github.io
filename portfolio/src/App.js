@@ -16,7 +16,7 @@ import ProjectsIcrossing from "./pages/ProjectsIcrossing";
 import ProjectsHawkeye from "./pages/ProjectsHawkeye";
 import './App.css';
 
-ReactGA.initialize('UA-61319727-1');
+ReactGA.initialize('G-4H2DVN8V8K');
 ReactGA.pageview(window.location.pathname + window.location.search);
 
 function App() {
