@@ -16,16 +16,32 @@ npm run build     # astro check + static build → dist/
 npm run preview
 ```
 
-## Deploy (GitHub Pages + custom domain)
+## Deploy to the gh-pages branch
 
-1. Push to a GitHub repo (e.g. `johanwin.github.io`).
-2. Repo **Settings → Pages → Source: GitHub Actions**, then set **Custom domain** to `johnnguyen.org`
-   and tick **Enforce HTTPS** once the certificate is issued.
-3. At your DNS provider, point the apex domain at GitHub Pages: `A` records to
-   `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
-   (and optionally `CNAME www → johanwin.github.io`).
-4. Merge into `master`; `.github/workflows/deploy-2026.yml` (repo root) builds `2026_site/` and publishes it.
-   `public/CNAME` ships with every build so the domain setting survives deploys.
+The live site is served by GitHub Pages from the **`gh-pages`** branch
+(Settings → Pages → Source: "Deploy from a branch" → `gh-pages` / root). Two ways to publish:
+
+**From your Mac — one command**
+
+```bash
+cd 2026_site
+npm run deploy
+```
+
+This type-checks, builds to `dist/`, and pushes `dist/` as a new commit on `gh-pages`
+(using your normal git login). `dist/` already contains `CNAME` and `.nojekyll`.
+Each deploy **replaces** what's on `gh-pages`; earlier versions stay in that branch's
+history, so a bad deploy can be rolled back by reverting the commit on `gh-pages`.
+
+Check before publishing: `npm run build && npm run preview` → http://localhost:4321
+
+**Automatically — GitHub Actions**
+
+`.github/workflows/deploy-2026.yml` (repo root) does the same build-and-push whenever
+`2026_site/` changes on `master`, and can be run by hand from the repo's **Actions** tab.
+
+**Custom domain:** the domain comes from `public/CNAME` and `site` in `astro.config.mjs` —
+change both together.
 
 ## Edit your content
 

@@ -1,8 +1,9 @@
-name: Deploy 2026 site to GitHub Pages
+name: Publish 2026 site to gh-pages
 
-# Runs only on master (after this branch is merged) or manually.
-# Before the first run: repo Settings → Pages → Source: "GitHub Actions"
-# (the live site currently deploys from the gh-pages branch).
+# Builds 2026_site/ and pushes the result to the gh-pages branch — the same
+# thing `npm run deploy` does locally. Runs when 2026_site changes on master,
+# or on demand from the Actions tab ("Run workflow").
+# Pages setting stays as-is: Source = "Deploy from a branch" → gh-pages / root.
 on:
   push:
     branches: [master]
@@ -10,21 +11,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
+  group: gh-pages
   cancel-in-progress: false
 
-defaults:
-  run:
-    working-directory: 2026_site
-
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 2026_site
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -34,16 +32,9 @@ jobs:
           cache-dependency-path: 2026_site/package-lock.json
       - run: npm ci
       - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - uses: peaceiris/actions-gh-pages@v4
         with:
-          path: 2026_site/dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./2026_site/dist
+          publish_branch: gh-pages
+          commit_message: Deploy 2026 site
