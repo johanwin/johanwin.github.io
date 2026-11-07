@@ -1,0 +1,39 @@
+---
+/**
+ * CTA styled as a diagnostic trigger: code tag, label, and a hazard-stripe
+ * fill that wipes in on hover/focus. A plain <a> — no JS required.
+ */
+interface Props {
+  href: string;
+  code: string;
+  label: string;
+  variant?: 'primary' | 'secondary';
+}
+const { href, code, label, variant = 'primary' } = Astro.props;
+---
+
+<a
+  href={href}
+  class:list={[
+    'group relative inline-flex min-h-14 items-stretch overflow-hidden border-2 font-mono text-sm font-bold uppercase tracking-[0.16em]',
+    variant === 'primary' ? 'border-accent bg-accent text-accent-fg' : 'border-line-strong text-fg',
+  ]}
+>
+  <span
+    class:list={[
+      'relative z-10 flex items-center border-r-2 px-3 text-[0.65rem] group-hover:text-hazard-fg group-focus-visible:text-hazard-fg',
+      variant === 'primary' ? 'border-accent-fg/30' : 'border-line-strong text-muted',
+    ]}
+  >
+    {code}
+  </span>
+  <span class="relative z-10 flex items-center gap-3 px-5 group-hover:text-hazard-fg group-focus-visible:text-hazard-fg">
+    <span aria-hidden="true">▶</span>
+    {label}
+    <span aria-hidden="true" class="inline-block w-[1ch] animate-blink">_</span>
+  </span>
+  <span
+    aria-hidden="true"
+    class="absolute inset-0 origin-left scale-x-0 bg-hazard transition-transform duration-300 ease-[cubic-bezier(.7,0,.2,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
+  ></span>
+</a>

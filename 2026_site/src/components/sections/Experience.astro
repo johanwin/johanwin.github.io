@@ -1,0 +1,30 @@
+---
+import Band from '@/components/hud/Band.astro';
+import SectionHeader from '@/components/hud/SectionHeader.astro';
+import ChangelogTimeline from '@/components/islands/ChangelogTimeline';
+import { experience } from '@/data/experience';
+---
+
+<Band tone="log" id="experience" labelledby="experience-title" class="pt-12 pb-8 sm:pt-16">
+  <SectionHeader index="03" code="CHANGELOG.MD" title="Activity Log" id="experience-title" />
+
+  <div class="grid gap-10 lg:grid-cols-12">
+    <aside class="lg:col-span-3" aria-label="Log legend">
+      <pre class="border border-line-strong bg-surface p-4 text-xs leading-relaxed text-muted"><code><span class="text-accent">$</span> git log --career \
+  --oneline --graph
+
+<span class="text-signal">feat</span>     new capability
+<span class="text-accent">perf</span>     measurable speed-up
+<span class="text-fg">fix</span>      quality / a11y
+<span class="text-fg">test</span>     verification
+refactor structural change
+<span class="text-hazard">style</span>    design craft
+chore    setup &amp; ops
+docs     specs &amp; process</code></pre>
+    </aside>
+
+    <div class="lg:col-span-9">
+      <ChangelogTimeline client:visible entries={experience} />
+    </div>
+  </div>
+</Band>

@@ -1,0 +1,85 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import HUDNavigation from '@/components/islands/HUDNavigation';
+import Footer from '@/components/sections/Footer.astro';
+import { nav, site } from '@/data/site';
+import { withBase } from '@/lib/utils';
+import '@/styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Absolute or base-relative path to a 1200×630 social image. */
+  ogImage?: string;
+}
+
+const { title, description = site.description, ogImage = '/og.png' } = Astro.props;
+
+const pageTitle = title ? `${title} — ${site.name}` : `${site.name} · ${site.title}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogUrl = new URL(withBase(ogImage), Astro.site);
+
+// Build stamp shown in the HUD (GitHub Actions provides GITHUB_SHA).
+const build = (process.env.GITHUB_SHA ?? 'local').slice(0, 7).toUpperCase();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <meta name="generator" content={Astro.generator} />
+
+    <meta name="theme-color" content="#0a0a0b" />
+    <meta name="color-scheme" content="dark" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Native View Transitions + client-side routing for same-origin links. -->
+    <ClientRouter fallback="swap" />
+  </head>
+
+  <body id="top" class="overflow-x-hidden antialiased">
+    <a
+      href="#main"
+      class="sr-only-focusable fixed left-3 top-3 z-[100] bg-hazard px-4 py-3 hud-label text-hazard-fg"
+    >
+      Skip to content
+    </a>
+
+    <!--
+      transition:persist keeps the same island instance (clock, scroll-spy) alive
+      across page navigations instead of re-hydrating it.
+    -->
+    <header class="sticky top-0 z-50 border-b border-line-strong" transition:persist="hud-header">
+      <HUDNavigation
+        client:load
+        links={nav}
+        callsign={site.callsign}
+        name={site.name}
+        timezone={site.timezone}
+        build={build}
+      />
+    </header>
+
+    <main
+      id="main"
+      tabindex="-1"
+      class="focus:outline-none"
+      transition:name="main"
+    >
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>

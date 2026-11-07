@@ -1,0 +1,29 @@
+---
+/**
+ * Full-bleed section band. Each band carries its own dark tone (see
+ * SECTION TONES in global.css); consecutive bands cross-fade into each other
+ * and their content fades in/out on scroll via CSS scroll-driven animations.
+ *
+ * slot="backdrop" renders behind the content as a direct child of the band.
+ * (It must live outside .shell: the shell's scroll animation applies a
+ * transform, which would otherwise become the backdrop's containing block.)
+ */
+export type Tone = 'hero' | 'about' | 'projects' | 'log' | 'contact';
+
+interface Props {
+  tone: Tone;
+  id?: string;
+  labelledby?: string;
+  class?: string;
+  /** Extra classes for the <section> itself. */
+  bandClass?: string;
+}
+const { tone, id, labelledby, class: className, bandClass } = Astro.props;
+---
+
+<section id={id} aria-labelledby={labelledby} data-tone={tone} class:list={['tone-band', bandClass]}>
+  <slot name="backdrop" />
+  <div class:list={['shell', className]}>
+    <slot />
+  </div>
+</section>

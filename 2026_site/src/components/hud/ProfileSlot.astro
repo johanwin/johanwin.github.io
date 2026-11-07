@@ -1,0 +1,78 @@
+---
+/**
+ * Profile image slot for the About dossier, framed as a live CRT feed.
+ * Set `site.portrait.src` (path in /public, e.g. '/images/portrait.jpg') to
+ * replace the placeholder silhouette with a real photo — 3:4 works best.
+ */
+import { site } from '@/data/site';
+import { withBase } from '@/lib/utils';
+
+const { src, alt } = site.portrait;
+const hasPhoto = Boolean(src);
+---
+
+<figure class="mb-6 grid grid-cols-[minmax(0,3fr)_minmax(0,2fr)] border border-line-strong">
+  <div class="crt aspect-[3/4] border-r border-line-strong bg-bg">
+    {hasPhoto ? (
+      <img
+        src={withBase(src)}
+        alt={alt}
+        width="600"
+        height="800"
+        loading="lazy"
+        decoding="async"
+        class="size-full object-cover grayscale contrast-125 sepia-[.25]"
+      />
+    ) : (
+      <svg viewBox="0 0 300 400" class="size-full" role="img" aria-label="Profile photo placeholder">
+        <defs>
+          <pattern id="pf-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M20 0H0V20" fill="none" stroke="var(--line)" stroke-width="1"></path>
+          </pattern>
+        </defs>
+        <rect width="300" height="400" fill="url(#pf-grid)"></rect>
+        <!-- wireframe bust -->
+        <g fill="none" stroke="var(--fg)" stroke-width="2" opacity=".85">
+          <ellipse cx="150" cy="150" rx="62" ry="76"></ellipse>
+          <path d="M150 74v152M88 150h124" stroke-dasharray="4 6" opacity=".45"></path>
+          <path d="M120 222q30 22 60 0v34q60 8 92 46l14 98H14l14-98q32-38 92-46z"></path>
+        </g>
+        <!-- reticle -->
+        <g stroke="var(--accent)" stroke-width="2" fill="none">
+          <path d="M70 60h24M70 60v24M230 60h-24M230 60v24M70 240h24M70 240v-24M230 240h-24M230 240v-24"></path>
+          <circle cx="150" cy="150" r="6"></circle>
+        </g>
+        <text x="150" y="372" text-anchor="middle" fill="var(--accent)" font-family="var(--font-mono)" font-size="13" font-weight="700" letter-spacing="3">NO SIGNAL</text>
+      </svg>
+    )}
+    <span aria-hidden="true" class="crt-roll"></span>
+    <span aria-hidden="true" class="absolute left-2 top-2 z-[4] flex items-center gap-1.5 bg-bg/80 px-1.5 py-1 hud-label text-[0.6rem] text-accent">
+      <span class="size-1.5 bg-accent animate-blink"></span> LIVE
+    </span>
+  </div>
+
+  <figcaption class="flex flex-col justify-between gap-4 p-3 sm:p-4">
+    <div class="space-y-3">
+      <div>
+        <p class="hud-label text-[0.6rem] text-muted">FEED</p>
+        <p class="mt-1 hud-label">CAM-01</p>
+      </div>
+      <div>
+        <p class="hud-label text-[0.6rem] text-muted">REFRESH</p>
+        <p class="mt-1 hud-label tabular-nums">60 HZ</p>
+      </div>
+      <div>
+        <p class="hud-label text-[0.6rem] text-muted">SIGNAL</p>
+        <p aria-hidden="true" class="mt-1.5 flex h-4 items-end gap-0.5">
+          <span class="h-1/4 w-1.5 bg-accent"></span>
+          <span class="h-2/4 w-1.5 bg-accent"></span>
+          <span class="h-3/4 w-1.5 bg-accent"></span>
+          <span class:list={['h-full w-1.5', hasPhoto ? 'bg-accent' : 'bg-surface-2']}></span>
+        </p>
+      </div>
+    </div>
+    <p class="hud-label text-[0.6rem] leading-relaxed text-muted">
+      {hasPhoto ? 'SUBJECT IDENTIFIED' : 'AWAITING UPLINK'}
+    </p>
+  </figcaption>
+</figure>

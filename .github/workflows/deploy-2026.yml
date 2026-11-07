@@ -1,0 +1,49 @@
+name: Deploy 2026 site to GitHub Pages
+
+# Runs only on master (after this branch is merged) or manually.
+# Before the first run: repo Settings → Pages → Source: "GitHub Actions"
+# (the live site currently deploys from the gh-pages branch).
+on:
+  push:
+    branches: [master]
+    paths: ['2026_site/**', '.github/workflows/deploy-2026.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: 2026_site
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: 2026_site/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: 2026_site/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

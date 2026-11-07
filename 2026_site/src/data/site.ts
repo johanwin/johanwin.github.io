@@ -1,0 +1,40 @@
+/**
+ * ─── SINGLE SOURCE OF TRUTH FOR PERSONAL CONTENT ───────────────────────────
+ * Everything the site says about you lives in src/data/*. Edit these files;
+ * components never hard-code copy.
+ */
+
+export const site = {
+  name: 'John Nguyen',
+  handle: 'johanwin',
+  callsign: 'JW-01',
+  title: 'Senior Software Engineer',
+  subtitle: 'Frontend Systems / Interface Architecture',
+  location: 'Dallas–Fort Worth, TX',
+  timezone: 'America/Chicago',
+  email: 'whatsup@johnnguyen.org',
+  domain: 'johnnguyen.org',
+  /** Profile photo for the About dossier. Leave src empty to show the placeholder slot. */
+  portrait: { src: '', alt: 'Portrait of John Nguyen' },
+  bio: 'Two decades turning design into fast, accessible interfaces — from agency sites and HTML email to enterprise component libraries at Capital One and Allstate.',
+  availability: 'Open to select opportunities',
+  description:
+    'Portfolio of John Nguyen — senior software engineer in Dallas–Fort Worth building reusable, accessible UI for Allstate, Capital One and more.',
+} as const;
+
+export const nav = [
+  // `tone` ties each link to its section band colour (see SECTION TONES in global.css).
+  { code: '01', label: 'About', href: '/#about', tone: 'about' },
+  { code: '02', label: 'Projects', href: '/#projects', tone: 'projects' },
+  { code: '03', label: 'Log', href: '/#experience', tone: 'log' },
+  { code: '04', label: 'Contact', href: '/#contact', tone: 'contact' },
+] as const;
+
+export type SocialLink = { label: string; href: string; channel: string };
+
+export const socials: SocialLink[] = [
+  { label: 'GitHub', channel: 'CH-01', href: 'https://github.com/johanwin' },
+  // TODO: fill in or delete
+  { label: 'LinkedIn', channel: 'CH-02', href: 'https://www.linkedin.com/' },
+  { label: 'Résumé (PDF)', channel: 'CH-03', href: '/resume.pdf' },
+];

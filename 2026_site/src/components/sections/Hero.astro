@@ -1,0 +1,87 @@
+---
+import Band from '@/components/hud/Band.astro';
+import HudFrame from '@/components/hud/HudFrame.astro';
+import Symbiote from '@/components/hud/Symbiote.astro';
+import DiagnosticTrigger from '@/components/hud/DiagnosticTrigger.astro';
+import { site } from '@/data/site';
+import { careerStart } from '@/data/experience';
+import { withBase } from '@/lib/utils';
+
+const [first, ...rest] = site.name.toUpperCase().split(' ');
+const yearsActive = new Date().getFullYear() - careerStart;
+---
+
+<Band tone="hero" labelledby="hero-title" class="pt-10 pb-16 sm:pt-16 sm:pb-24">
+  <!-- WebGL creature lives behind the panels; hover / drag anywhere in the hero to move it. -->
+  <Symbiote slot="backdrop" />
+
+  <!-- Asymmetric 12-col Bauhaus grid: 8-col identity block, 4-col data column -->
+  <div class="grid gap-y-12 lg:grid-cols-12 lg:gap-x-8">
+    <HudFrame as="div" label="ID.CARD" meta={`UNIT ${site.callsign}`} data-hud-panel class="bg-bg/60 lg:bg-bg/75 backdrop-blur-sm lg:backdrop-blur-md p-5 pt-10 sm:p-10 sm:pt-12 lg:col-span-8 [animation-delay:.05s] animate-hud-in">
+      <p class="hud-label text-muted">
+        <span class="text-accent">&gt;</span> {site.handle}@github:~$ whoami
+      </p>
+
+      <!-- Container query: the name scales to the frame's width, not the viewport,
+           so it never overflows the asymmetric column at any breakpoint. -->
+      <div class="@container mt-6" data-symbiote-anchor>
+        <h1 id="hero-title" class="display-wide text-[min(15.5cqi,9rem)] [overflow-wrap:anywhere]">
+          <span class="block">{first}</span>
+          <span class="block text-accent">{rest.join(' ')}<span aria-hidden="true" class="text-fg">.</span></span>
+        </h1>
+      </div>
+
+      <div class="mt-8 grid gap-6 border-t border-line-strong pt-6 sm:grid-cols-[auto_1fr] sm:gap-10">
+        <div>
+          <p class="hud-label text-muted">DESIGNATION</p>
+          <p class="mt-2 text-lg font-bold uppercase leading-tight [font-family:var(--font-display)] [font-stretch:110%]">
+            {site.title}
+          </p>
+          <p class="mt-1 text-xs uppercase tracking-wider text-muted">{site.subtitle}</p>
+        </div>
+        <p class="max-w-prose text-base leading-relaxed sm:text-[1.05rem]">{site.bio}</p>
+      </div>
+
+      <div class="mt-10 flex flex-wrap gap-4">
+        <DiagnosticTrigger href={withBase('/#projects')} code="TRIG-01" label="Projects" />
+        <DiagnosticTrigger href={withBase('/#contact')} code="TRIG-02" label="Contact" variant="secondary" />
+      </div>
+    </HudFrame>
+
+    <!-- Data column: translucent so the creature shows through -->
+    <aside data-hud-panel aria-label="Profile readouts" class="relative grid content-start self-start divide-y divide-line-strong border border-line-strong bg-bg/75 backdrop-blur-md lg:col-span-4 [animation-delay:.25s] animate-hud-in">
+      <div class="p-4">
+        <p class="hud-label text-muted">STATUS</p>
+        <p class="mt-2 flex items-center gap-2 text-sm font-semibold text-signal">
+          <span aria-hidden="true" class="size-2 bg-signal animate-blink"></span>{site.availability}
+        </p>
+      </div>
+      <div class="grid grid-cols-2 divide-x divide-line-strong">
+        <div class="p-4">
+          <p class="hud-label text-muted">LOC</p>
+          <p class="mt-2 text-sm">{site.location}</p>
+        </div>
+        <div class="p-4">
+          <p class="hud-label text-muted">YRS ACTIVE</p>
+          <p class="mt-2 font-mono text-3xl font-bold tabular-nums text-accent">{yearsActive}<span class="text-base text-muted">+</span></p>
+        </div>
+      </div>
+      <div class="p-4">
+        <p class="hud-label text-muted">PRIMARY STACK</p>
+        <p class="mt-2 text-sm">React / Angular / Web Components</p>
+      </div>
+      <!-- Bauhaus geometry block: circle / square / triangle in primary-ish signal colours -->
+      <div aria-hidden="true" class="relative grid h-40 grid-cols-3 divide-x divide-line-strong">
+        <div class="grid place-items-center"><span class="size-14 rounded-full! bg-accent"></span></div>
+        <div class="grid place-items-center bg-hazard"><span class="size-14 border-4 border-hazard-fg"></span></div>
+        <div class="grid place-items-center">
+          <svg viewBox="0 0 60 52" class="w-14 text-fg"><polygon points="30,0 60,52 0,52" fill="currentColor"></polygon></svg>
+        </div>
+      </div>
+      <div class="flex items-center justify-between p-4">
+        <span class="hud-label text-muted">LAT 32.78°N · LON 96.80°W</span>
+        <span class="hud-label text-accent">◢◤</span>
+      </div>
+    </aside>
+  </div>
+</Band>

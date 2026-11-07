@@ -1,0 +1,18 @@
+---
+import { site } from '@/data/site';
+const year = new Date().getFullYear();
+---
+
+<!-- .site-footer overlaps the last band and cross-fades out of it (global.css). -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div aria-hidden="true" class="mx-auto h-2 max-w-7xl hazard-stripes"></div>
+    <div class="mx-auto grid max-w-7xl gap-6 border-t border-line-strong px-4 py-10 sm:grid-cols-3 sm:px-8">
+      <p class="hud-label text-muted">© {year} {site.name}</p>
+      <p class="hud-label text-muted sm:text-center">Built with Astro · Static · Zero trackers</p>
+      <p class="hud-label text-muted sm:text-right">
+        <a href="#top" class="hover:text-accent">Return to top ▲</a>
+      </p>
+    </div>
+  </div>
+</footer>

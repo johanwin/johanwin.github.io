@@ -1,0 +1,26 @@
+---
+import Band from '@/components/hud/Band.astro';
+import SectionHeader from '@/components/hud/SectionHeader.astro';
+import ProjectCard from '@/components/islands/ProjectCard';
+import { projects } from '@/data/projects';
+---
+
+<Band tone="projects" id="projects" labelledby="projects-title" class="pt-12 pb-8 sm:pt-16">
+  <SectionHeader index="02" code="OPERATIONS.INDEX" title="Projects" id="projects-title" />
+
+  <p class="mb-8 max-w-2xl text-muted">
+    Selected work. Open any card for its full dossier, or toggle it to preview the scope. Client work — source and production links aren't public.
+  </p>
+
+  <ul class="grid gap-6 md:grid-cols-2 xl:grid-cols-3" role="list">
+    {projects.map((project, index) => (
+      <li>
+        {/*
+          client:visible — the card is fully rendered as HTML at build time.
+          Its JS (Framer + Radix dialog) only downloads when it scrolls into view.
+        */}
+        <ProjectCard client:visible project={project} index={index} />
+      </li>
+    ))}
+  </ul>
+</Band>

@@ -1,0 +1,431 @@
+---
+/**
+ * <symbiote-canvas> — an abstract alien symbiote rendered with a single
+ * raymarched WebGL fragment shader. No three.js, no React: a ~4 kB custom
+ * element that Astro bundles as a module script.
+ *
+ * Interaction (window-level listeners hit-tested against its own box, so it
+ * responds even though
+ * it sits behind the HUD panels and under the next band's seam):
+ *   - mouse hover   → the mass turns toward the cursor and tendrils reach for it
+ *   - mouse drag    → spin it (starts on empty space, not on the panels' text)
+ *   - touch drag    → spin it; vertical swipes still scroll the page
+ *
+ * Performance guards: renders only while on screen (IntersectionObserver),
+ * adaptive resolution that drops when frames run slow, DPR capped, bounding
+ * sphere early-out in the shader, and a CSS fallback if WebGL is unavailable.
+ * prefers-reduced-motion: no idle animation; it only moves when you move it.
+ */
+interface Props {
+  /** Rim/specular colour. Defaults to the hero accent. */
+  accent?: string;
+  class?: string;
+}
+const { accent = '#ff6b1a', class: className } = Astro.props;
+---
+
+<symbiote-canvas data-accent={accent} aria-hidden="true" class:list={['symbiote', className]}>
+  <canvas></canvas>
+</symbiote-canvas>
+
+<style>
+  .symbiote {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    display: block;
+    overflow: hidden;
+    pointer-events: none;
+    /* Fallback blob (no WebGL / before first frame). */
+    background: radial-gradient(
+      closest-side at 62% 48%,
+      color-mix(in oklab, var(--accent) 22%, transparent),
+      transparent 70%
+    );
+    transition: background-color 0.6s;
+  }
+  .symbiote[data-ready] { background: none; }
+  .symbiote canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+  }
+  .symbiote[data-ready] canvas { opacity: 1; }
+  :global(html[data-symbiote-drag]) { user-select: none; cursor: grabbing; }
+</style>
+
+<script>
+  const VERT = `
+attribute vec2 aPos;
+void main() { gl_Position = vec4(aPos, 0.0, 1.0); }`;
+
+  const FRAG = `
+precision highp float;
+uniform vec2  uRes;
+uniform vec2  uCenter;   // object centre in canvas UV (0..1)
+uniform float uTime;
+uniform mat3  uRot;      // camera orbit
+uniform vec3  uPtr;      // pointer direction in world space
+uniform float uPtrAmt;   // 0..1 how strongly tendrils reach for it
+uniform vec3  uAccent;
+
+#define MAX_STEPS 80
+#define BOUND 2.6
+
+float hash(vec3 p) {
+  p = fract(p * 0.3183099 + 0.1);
+  p *= 17.0;
+  return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+}
+float noise(vec3 x) {
+  vec3 i = floor(x), f = fract(x);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(hash(i),                  hash(i + vec3(1,0,0)), f.x),
+                 mix(hash(i + vec3(0,1,0)),    hash(i + vec3(1,1,0)), f.x), f.y),
+             mix(mix(hash(i + vec3(0,0,1)),    hash(i + vec3(1,0,1)), f.x),
+                 mix(hash(i + vec3(0,1,1)),    hash(i + vec3(1,1,1)), f.x), f.y), f.z);
+}
+float fbm(vec3 p) {
+  float a = 0.5, s = 0.0;
+  for (int i = 0; i < 3; i++) { s += a * noise(p); p = p * 2.03 + vec3(1.7, 9.2, 3.1); a *= 0.5; }
+  return s;
+}
+float smin(float a, float b, float k) {
+  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+  return mix(b, a, h) - k * h * (1.0 - h);
+}
+// Capsule that tapers toward its tip — reads as a tendril.
+float sdTendril(vec3 p, vec3 a, vec3 b, float r) {
+  vec3 pa = p - a, ba = b - a;
+  float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+  return length(pa - ba * h) - r * (1.0 - 0.8 * h);
+}
+
+float map(vec3 p) {
+  float t = uTime;
+  // Core mass: a sphere boiled by animated noise.
+  float d = length(p) - 0.9;
+  d += (fbm(p * 1.8 + vec3(0.0, t * 0.18, t * 0.25)) - 0.5) * 0.42;
+
+  // Tendrils: wander on their own; the first three reach for the pointer.
+  for (int i = 0; i < 6; i++) {
+    float fi = float(i);
+    vec3 dir = normalize(vec3(sin(fi * 2.4 + t * 0.31), cos(fi * 1.7 - t * 0.23), sin(fi * 3.1 + t * 0.17)));
+    float reach = uPtrAmt * step(fi, 2.0) * (0.55 - 0.12 * fi);
+    dir = normalize(mix(dir, uPtr, reach));
+    float len = 1.25 + 0.3 * sin(t * 0.7 + fi * 1.3) + reach * 0.6;
+    vec3 wob = 0.16 * vec3(sin(t * 1.1 + fi), cos(t * 1.3 + fi), sin(t * 0.8 + fi * 2.0));
+    d = smin(d, sdTendril(p, dir * 0.35, dir * len + wob, 0.2), 0.38);
+  }
+  return d * 0.55; // noise breaks the distance bound; step conservatively
+}
+
+vec3 calcNormal(vec3 p) {
+  const vec2 k = vec2(1.0, -1.0);
+  const float e = 0.0025;
+  return normalize(k.xyy * map(p + k.xyy * e) + k.yyx * map(p + k.yyx * e) +
+                   k.yxy * map(p + k.yxy * e) + k.xxx * map(p + k.xxx * e));
+}
+
+void main() {
+  float s = min(uRes.x, uRes.y);
+  vec2 uv = (gl_FragCoord.xy - uCenter * uRes) / s;
+
+  vec3 ro = uRot * vec3(0.0, 0.0, 6.6);
+  vec3 rd = uRot * normalize(vec3(uv, -1.75));
+
+  // Bounding sphere: skip every pixel whose ray can't reach the creature.
+  float b = dot(ro, rd);
+  float c = dot(ro, ro) - BOUND * BOUND;
+  float disc = b * b - c;
+  if (disc < 0.0) { gl_FragColor = vec4(0.0); return; }
+  float tNear = max(-b - sqrt(disc), 0.0);
+  float tFar  = -b + sqrt(disc);
+
+  float t = tNear, minD = 1e3;
+  float hit = 0.0;
+  int steps = 0;
+  for (int i = 0; i < MAX_STEPS; i++) {
+    vec3 p = ro + rd * t;
+    float d = map(p);
+    minD = min(minD, d);
+    if (d < 0.0015 * t) { hit = 1.0; break; }
+    t += d;
+    steps = i;
+    if (t > tFar) break;
+  }
+
+  // Aura: faint accent glow hugging the silhouette.
+  float aura = exp(-max(minD, 0.0) * 9.0) * 0.28 * (1.0 - hit);
+  if (hit < 0.5) { gl_FragColor = vec4(uAccent * aura, aura); return; }
+
+  vec3 p = ro + rd * t;
+  vec3 n = calcNormal(p);
+  vec3 v = -rd;
+  vec3 l1 = normalize(vec3(0.6, 0.8, 0.5));
+  vec3 l2 = normalize(vec3(-0.7, -0.3, 0.4));
+
+  float ndv  = max(dot(n, v), 0.0);
+  float fres = pow(1.0 - ndv, 3.0);
+  float spec1 = pow(max(dot(reflect(-l1, n), v), 0.0), 64.0);
+  float spec2 = pow(max(dot(reflect(-l2, n), v), 0.0), 20.0);
+
+  // Thin-film iridescence on the glancing edges — oil-slick alien skin.
+  vec3 irid = 0.5 + 0.5 * cos(6.2831 * (fres * 1.3 + n.y * 0.25 + uTime * 0.04 + vec3(0.0, 0.33, 0.67)));
+
+  vec3 col = vec3(0.010, 0.010, 0.014);             // wet black body
+  col += uAccent * fres * 0.85;                       // hazard-orange rim
+  col += irid * fres * 0.30;
+  col += vec3(1.0) * spec1 * 0.85;                    // key glint
+  col += uAccent * spec2 * 0.35;                      // warm fill glint
+  col *= 1.0 - float(steps) / float(MAX_STEPS) * 0.55; // cheap cavity occlusion
+
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+  type Uniforms = Record<
+    'uRes' | 'uCenter' | 'uTime' | 'uRot' | 'uPtr' | 'uPtrAmt' | 'uAccent',
+    WebGLUniformLocation | null
+  >;
+
+  const hexToRgb = (hex: string) => {
+    const m = hex.replace('#', '').match(/.{2}/g) ?? ['ff', '6b', '1a'];
+    return m.map((h) => parseInt(h, 16) / 255) as [number, number, number];
+  };
+
+  const rotation = (yaw: number, pitch: number) => {
+    const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+    // Ry(yaw) * Rx(pitch), column-major for WebGL
+    return new Float32Array([cy, 0, -sy, sy * sp, cp, cy * sp, sy * cp, -sp, cy * cp]);
+  };
+
+  class SymbioteCanvas extends HTMLElement {
+    #cleanup: Array<() => void> = [];
+
+    connectedCallback() {
+      const canvas = this.querySelector('canvas')!;
+      const gl = canvas.getContext('webgl', { premultipliedAlpha: true, antialias: false, alpha: true, powerPreference: 'low-power' });
+      if (!gl) return; // CSS fallback stays visible
+
+      const program = this.#compile(gl);
+      if (!program) return;
+
+      const u = Object.fromEntries(
+        ['uRes', 'uCenter', 'uTime', 'uRot', 'uPtr', 'uPtrAmt', 'uAccent'].map((k) => [k, gl.getUniformLocation(program, k)]),
+      ) as Uniforms;
+
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const aPos = gl.getAttribLocation(program, 'aPos');
+      gl.enableVertexAttribArray(aPos);
+      gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+      gl.uniform3fv(u.uAccent, hexToRgb(this.dataset.accent ?? '#ff6b1a'));
+
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+      const band = (this.closest('.tone-band') as HTMLElement) ?? this.parentElement!;
+      band.style.touchAction = 'pan-y pinch-zoom';
+
+      /* ── state ─────────────────────────────────────────────────────── */
+      let scale = 0.7;                     // adaptive render scale
+      let yaw = 0.4, pitch = -0.15;        // current camera
+      let spin = 0;                        // accumulated drag yaw
+      let vel = 0;                         // drag inertia (rad/s)
+      let hoverYaw = 0, hoverPitch = 0;    // target from cursor
+      let ptr = [0, 0, 1], ptrAmt = 0, ptrTarget = 0;
+      let dragging = false, lastX = 0, lastY = 0, lastT = 0, lastMove = 0;
+      let visible = true, raf = 0, prev = performance.now(), time = 0, slowFrames = 0, fastFrames = 0;
+
+      // Desktop: fixed spot to the right of the ID card.
+      // Below lg: centre on the element marked [data-symbiote-anchor] (the hero
+      // name), so it sits behind the ID card whatever the content height.
+      // Values are canvas UV, y measured from the bottom (gl_FragCoord space).
+      const anchor = band.querySelector<HTMLElement>('[data-symbiote-anchor]');
+      let center: [number, number] = [0.6, 0.47];
+      const updateCenter = () => {
+        if (innerWidth >= 1024 || !anchor) { center = [0.6, 0.47]; return; }
+        const r = this.getBoundingClientRect(), a = anchor.getBoundingClientRect();
+        if (!r.height) return;
+        const cx = (a.left + a.width / 2 - r.left) / r.width;
+        const cy = 1 - (a.top + a.height / 2 - r.top) / r.height;
+        center = [Math.min(0.9, Math.max(0.1, cx)), Math.min(0.95, Math.max(0.05, cy))];
+      };
+      const centerFor = () => center;
+
+      const resize = () => {
+        const dpr = Math.min(devicePixelRatio || 1, 1.5);
+        const w = Math.max(1, Math.round(this.clientWidth * dpr * scale));
+        const h = Math.max(1, Math.round(this.clientHeight * dpr * scale));
+        if (canvas.width !== w || canvas.height !== h) {
+          canvas.width = w;
+          canvas.height = h;
+          gl.viewport(0, 0, w, h);
+        }
+        gl.uniform2f(u.uRes, w, h);
+        updateCenter();
+        gl.uniform2fv(u.uCenter, centerFor());
+      };
+
+      const frame = (now: number) => {
+        raf = 0;
+        const dt = Math.min((now - prev) / 1000, 0.05);
+        prev = now;
+
+        const idle = reduce.matches ? 0 : 1;
+        time += dt * (idle ? 1 : 0.15);
+
+        // inertia + slow auto-orbit
+        if (!dragging) { spin += vel * dt; vel *= Math.pow(0.04, dt); spin += 0.06 * dt * idle; }
+        const ease = 1 - Math.pow(0.002, dt);
+        yaw += (spin + hoverYaw - yaw) * ease;
+        pitch += (hoverPitch - 0.12 - pitch) * ease;
+        ptrAmt += (ptrTarget - ptrAmt) * (1 - Math.pow(0.05, dt));
+
+        gl.uniform1f(u.uTime, time);
+        gl.uniformMatrix3fv(u.uRot, false, rotation(yaw, pitch));
+        // pointer direction is camera-relative → rotate into world space
+        const R = rotation(yaw, pitch);
+        const [px, py, pz] = ptr;
+        gl.uniform3f(u.uPtr, R[0] * px + R[3] * py + R[6] * pz, R[1] * px + R[4] * py + R[7] * pz, R[2] * px + R[5] * py + R[8] * pz);
+        gl.uniform1f(u.uPtrAmt, ptrAmt);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+        // adaptive resolution: >28ms frames drop scale, sustained <14ms raise it
+        const ms = dt * 1000;
+        if (ms > 28) slowFrames++; else slowFrames = 0;
+        if (ms < 14) fastFrames++; else fastFrames = 0;
+        if (slowFrames > 20 && scale > 0.35) { scale -= 0.1; slowFrames = 0; resize(); }
+        if (fastFrames > 120 && scale < 0.9) { scale += 0.05; fastFrames = 0; resize(); }
+
+        this.dataset.ready = '';
+        const moving = !reduce.matches || dragging || Math.abs(vel) > 0.01 || now - lastMove < 1500;
+        if (visible && moving) raf = requestAnimationFrame(frame);
+      };
+      const kick = () => { if (!raf && visible) { prev = performance.now(); raf = requestAnimationFrame(frame); } };
+
+      /* ── pointer ───────────────────────────────────────────────────── */
+      const toLocal = (e: PointerEvent) => {
+        const r = this.getBoundingClientRect();
+        const [cx, cy] = centerFor();
+        const s = Math.min(r.width, r.height);
+        return [(e.clientX - r.left - cx * r.width) / s, -((e.clientY - r.top) - (1 - cy) * r.height) / s];
+      };
+      // Listeners are window-level and hit-tested against the creature's own
+      // box: the next band overlaps the hero's bottom seam, and the panels sit
+      // on top, so element-level events would miss large parts of the canvas.
+      const inside = (e: PointerEvent) => {
+        if ((e.target as Element).closest?.('header, [role="dialog"]')) return false;
+        const r = this.getBoundingClientRect();
+        return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      };
+      let wasInside = false;
+      const onMove = (e: PointerEvent) => {
+        const isIn = inside(e);
+        if (!isIn && !dragging) {
+          if (wasInside && e.pointerType === 'mouse') { ptrTarget = 0; hoverYaw = 0; hoverPitch = 0; kick(); }
+          wasInside = false;
+          return;
+        }
+        wasInside = true;
+        const [x, y] = toLocal(e);
+        const v = [x * 1.6, y * 1.6, 0.9];
+        const n = Math.hypot(v[0], v[1], v[2]);
+        ptr = v.map((c) => c / n);
+        ptrTarget = 1;
+        lastMove = performance.now();
+        if (e.pointerType === 'mouse' && !dragging) {
+          hoverYaw = Math.max(-0.6, Math.min(0.6, x * 0.5));
+          hoverPitch = Math.max(-0.4, Math.min(0.4, y * 0.35));
+        }
+        if (dragging) {
+          const dx = e.clientX - lastX, dy = e.clientY - lastY;
+          const dtm = Math.max(e.timeStamp - lastT, 8);
+          spin += dx * 0.008;
+          hoverPitch = Math.max(-0.7, Math.min(0.7, hoverPitch + dy * 0.004));
+          vel = Math.max(-12, Math.min(12, (dx * 0.008) / (dtm / 1000)));
+          lastT = e.timeStamp;
+          lastX = e.clientX; lastY = e.clientY;
+        }
+        kick();
+      };
+      const onDown = (e: PointerEvent) => {
+        if (!inside(e)) return;
+        const t = e.target as Element;
+        if (t.closest('a, button, input, textarea, select, [role="tab"]')) return;
+        // Mouse drags only start on empty space so panel text stays selectable.
+        if (e.pointerType === 'mouse' && t.closest('[data-hud-panel]')) return;
+        dragging = true; vel = 0;
+        lastX = e.clientX; lastY = e.clientY; lastT = e.timeStamp;
+        document.documentElement.dataset.symbioteDrag = '';
+        onMove(e);
+      };
+      const onUp = () => {
+        if (!dragging) return;
+        dragging = false;
+        delete document.documentElement.dataset.symbioteDrag;
+        kick();
+      };
+
+      addEventListener('pointermove', onMove, { passive: true });
+      addEventListener('pointerdown', onDown, { passive: true });
+      addEventListener('pointerup', onUp, { passive: true });
+      addEventListener('pointercancel', onUp, { passive: true });
+
+      /* ── lifecycle ─────────────────────────────────────────────────── */
+      const ro = new ResizeObserver(() => { resize(); kick(); });
+      ro.observe(this);
+      if (anchor) ro.observe(anchor);
+      const io = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible) kick(); });
+      io.observe(this);
+      const onLost = (e: Event) => { e.preventDefault(); cancelAnimationFrame(raf); raf = 0; delete this.dataset.ready; };
+      canvas.addEventListener('webglcontextlost', onLost);
+      reduce.addEventListener('change', kick);
+
+      resize();
+      kick();
+
+      this.#cleanup.push(() => {
+        cancelAnimationFrame(raf);
+        ro.disconnect(); io.disconnect();
+        removeEventListener('pointermove', onMove);
+        removeEventListener('pointerdown', onDown);
+        removeEventListener('pointerup', onUp);
+        removeEventListener('pointercancel', onUp);
+        canvas.removeEventListener('webglcontextlost', onLost);
+        reduce.removeEventListener('change', kick);
+        gl.getExtension('WEBGL_lose_context')?.loseContext();
+      });
+    }
+
+    disconnectedCallback() {
+      this.#cleanup.forEach((fn) => fn());
+      this.#cleanup = [];
+    }
+
+    #compile(gl: WebGLRenderingContext) {
+      const sh = (type: number, src: string) => {
+        const s = gl.createShader(type)!;
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+          console.warn('[symbiote] shader:', gl.getShaderInfoLog(s));
+          return null;
+        }
+        return s;
+      };
+      const vs = sh(gl.VERTEX_SHADER, VERT), fs = sh(gl.FRAGMENT_SHADER, FRAG);
+      if (!vs || !fs) return null;
+      const p = gl.createProgram()!;
+      gl.attachShader(p, vs); gl.attachShader(p, fs);
+      gl.linkProgram(p);
+      if (!gl.getProgramParameter(p, gl.LINK_STATUS)) { console.warn('[symbiote] link:', gl.getProgramInfoLog(p)); return null; }
+      gl.useProgram(p);
+      return p;
+    }
+  }
+
+  // ClientRouter swaps can re-run this module; guard the define.
+  if (!customElements.get('symbiote-canvas')) customElements.define('symbiote-canvas', SymbioteCanvas);
+</script>

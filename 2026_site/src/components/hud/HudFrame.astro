@@ -1,0 +1,40 @@
+---
+/**
+ * Technical frame: hairline box, corner brackets, crosshair registration marks
+ * at the midpoints, and an optional tab label. Pure CSS — ships zero JS.
+ */
+interface Props {
+  label?: string;
+  meta?: string;
+  class?: string;
+  as?: 'div' | 'section' | 'article' | 'aside';
+  /** Pass-through data attributes, e.g. data-hud-panel (mouse drags on it don't spin the hero creature). */
+  [key: `data-${string}`]: unknown;
+}
+const { label, meta, class: className = '', as: Tag = 'div', ...rest } = Astro.props;
+---
+
+<Tag {...rest} class:list={['relative border border-line-strong brackets [--bk-size:18px]', className]}>
+  {(label || meta) && (
+    <div class="absolute -top-px left-6 flex -translate-y-full items-stretch">
+      {label && <span class="bg-accent px-2 py-1 hud-label text-accent-fg">{label}</span>}
+      {meta && <span class="border border-b-0 border-line-strong bg-bg px-2 py-1 hud-label text-muted">{meta}</span>}
+    </div>
+  )}
+
+  <!-- registration crosshairs (decorative) -->
+  <span aria-hidden="true" class="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 text-accent">
+    <svg width="17" height="17" viewBox="0 0 17 17"><path d="M8.5 0v17M0 8.5h17" stroke="currentColor" stroke-width="1"></path><circle cx="8.5" cy="8.5" r="4" fill="none" stroke="currentColor"></circle></svg>
+  </span>
+  <span aria-hidden="true" class="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 text-accent">
+    <svg width="17" height="17" viewBox="0 0 17 17"><path d="M8.5 0v17M0 8.5h17" stroke="currentColor" stroke-width="1"></path><circle cx="8.5" cy="8.5" r="4" fill="none" stroke="currentColor"></circle></svg>
+  </span>
+  <span aria-hidden="true" class="pointer-events-none absolute left-0 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 text-accent sm:block">
+    <svg width="17" height="17" viewBox="0 0 17 17"><path d="M8.5 0v17M0 8.5h17" stroke="currentColor" stroke-width="1"></path></svg>
+  </span>
+  <span aria-hidden="true" class="pointer-events-none absolute right-0 top-1/2 hidden translate-x-1/2 -translate-y-1/2 text-accent sm:block">
+    <svg width="17" height="17" viewBox="0 0 17 17"><path d="M8.5 0v17M0 8.5h17" stroke="currentColor" stroke-width="1"></path></svg>
+  </span>
+
+  <slot />
+</Tag>
