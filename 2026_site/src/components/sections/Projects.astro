@@ -3,6 +3,13 @@ import Band from '@/components/hud/Band.astro';
 import SectionHeader from '@/components/hud/SectionHeader.astro';
 import ProjectCard from '@/components/islands/ProjectCard';
 import { projects } from '@/data/projects';
+import { pad } from '@/lib/utils';
+
+/* Homepage shows PAGE cards at a time. Every card is still rendered into the
+   HTML (crawlers, no-JS readers and Ctrl+F see all of them); the rest are
+   `hidden` and revealed PAGE at a time by the button below. */
+const PAGE = 3;
+const total = projects.length;
 ---
 
 <Band tone="projects" id="projects" labelledby="projects-title" class="pt-12 pb-8 sm:pt-16">
@@ -12,9 +19,9 @@ import { projects } from '@/data/projects';
     Selected work. Open any card for its full dossier, or toggle it to preview the scope. Client work — source and production links aren't public.
   </p>
 
-  <ul class="grid gap-6 md:grid-cols-2 xl:grid-cols-3" role="list">
+  <ul id="project-list" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3" role="list" data-page={PAGE}>
     {projects.map((project, index) => (
-      <li>
+      <li hidden={index >= PAGE} data-more={index >= PAGE ? '' : undefined}>
         {/*
           client:visible — the card is fully rendered as HTML at build time.
           Its JS (Framer + Radix dialog) only downloads when it scrolls into view.
@@ -23,4 +30,67 @@ import { projects } from '@/data/projects';
       </li>
     ))}
   </ul>
+
+  {total > PAGE && (
+    <div data-more-ctrl class="mt-8">
+      <button
+        type="button"
+        data-more-btn
+        aria-controls="project-list"
+        class="wipe group flex min-h-16 w-full items-stretch border-2 border-accent bg-accent font-mono text-sm font-bold uppercase tracking-[0.16em] text-accent-fg"
+      >
+        <span aria-hidden="true" class="flex items-center border-r-2 border-accent-fg/30 px-4 text-[0.65rem]">IDX-02</span>
+        <span class="flex flex-1 items-center justify-center gap-3 px-4">
+          <span aria-hidden="true">▼</span>
+          <span>Decrypt <span data-more-next>{Math.min(PAGE, total - PAGE)}</span> more <span data-more-noun>{Math.min(PAGE, total - PAGE) === 1 ? 'file' : 'files'}</span></span>
+          <span aria-hidden="true" class="inline-block w-[1ch] animate-blink">_</span>
+        </span>
+        <!-- Counter is visual; the status region announces progress. -->
+        <span aria-hidden="true" class="hidden items-center border-l-2 border-accent-fg/30 px-4 text-[0.65rem] tabular-nums sm:flex">
+          <span data-more-count>{pad(PAGE)}</span>/{pad(total)}
+        </span>
+      </button>
+    </div>
+  )}
+  <p data-more-status role="status" class="sr-only"></p>
+
+  <!-- No JS: show every project and drop the button. -->
+  <noscript><style>#project-list > li[hidden] { display: block !important; } [data-more-ctrl] { display: none; }</style></noscript>
+  <!-- Kept inside the Band: a script between two bands would break the `.tone-band ~ .tone-band` seam. -->
+  <script>
+    const pad = (n: number) => String(n).padStart(2, '0');
+  
+    function init() {
+      const list = document.getElementById('project-list');
+      const btn = document.querySelector<HTMLButtonElement>('[data-more-btn]');
+      if (!list || !btn || btn.dataset.bound) return;
+      btn.dataset.bound = '1';
+  
+      const page = Number(list.dataset.page) || 3;
+      const items = [...list.children] as HTMLLIElement[];
+      const status = document.querySelector('[data-more-status]');
+  
+      btn.addEventListener('click', () => {
+        const batch = items.filter((li) => li.hidden).slice(0, page);
+        batch.forEach((li) => { li.hidden = false; });
+  
+        const shown = items.filter((li) => !li.hidden).length;
+        const left = items.length - shown;
+        btn.querySelector('[data-more-count]')!.textContent = pad(shown);
+        const next = Math.min(page, left);
+        btn.querySelector('[data-more-next]')!.textContent = String(next);
+        btn.querySelector('[data-more-noun]')!.textContent = next === 1 ? 'file' : 'files';
+        if (status) status.textContent = `Showing ${shown} of ${items.length} projects.`;
+  
+        // Move focus to the first newly revealed card's title link.
+        batch[0]?.querySelector<HTMLAnchorElement>('a[href]:not([tabindex="-1"])')?.focus({ preventScroll: true });
+        batch[0]?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
+  
+        if (!left) btn.closest('[data-more-ctrl]')?.remove();
+      });
+    }
+  
+    document.addEventListener('astro:page-load', init);
+  </script>
 </Band>
+

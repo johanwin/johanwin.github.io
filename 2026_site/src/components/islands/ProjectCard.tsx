@@ -12,16 +12,6 @@ interface ProjectCardProps {
 
 type View = 'capture' | 'arch';
 
-/* Card enters as part of a staggered grid (index-based delay) once scrolled into view. */
-const card: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  show: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, delay: (i % 3) * 0.08, ease: [0.2, 0.8, 0.2, 1] },
-  }),
-};
-
 const panel: Variants = {
   enter: { opacity: 0, clipPath: 'inset(0 0 0 100%)' },
   center: { opacity: 1, clipPath: 'inset(0 0 0 0%)', transition: { duration: 0.3, ease: [0.7, 0, 0.2, 1] } },
@@ -44,20 +34,21 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
   return (
     <LazyMotion features={domAnimation} strict>
       <MotionConfig reducedMotion="user">
+        {/*
+          Entrance is a CSS scroll-driven animation (.card-in), not Framer's
+          initial/whileInView: the server HTML stays fully visible for crawlers
+          and no-JS readers instead of shipping as opacity:0.
+        */}
         <m.article
-          variants={card}
-          custom={index}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
           whileHover="hover"
-          className="group h-full"
+          className="card-in group h-full"
+          style={{ ['--card-i' as string]: index % 3 }}
           aria-labelledby={`${uid}-title`}
         >
           <Card className="h-full brackets [--bk-c:transparent] transition-[--bk-size] group-hover:[--bk-c:var(--accent)] group-hover:[--bk-size:28px] group-focus-within:[--bk-c:var(--accent)]">
             {/* ── HUD strip ───────────────────────────────── */}
             <div className="flex items-stretch border-b border-line-strong text-[0.6875rem]">
-              <span className="flex items-center bg-fg px-2 hud-label text-bg">{project.code}</span>
+              <span aria-hidden="true" className="flex items-center bg-fg px-2 hud-label text-bg">{project.code}</span>
               {project.era && <span className="flex items-center px-2 hud-label text-muted">{project.era}</span>}
               <Badge variant={STATUS_VARIANT[project.status]} className="my-auto ml-auto mr-2">
                 {project.status}
@@ -93,7 +84,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
                     view === v ? 'bg-surface-2 text-accent' : 'text-muted hover:text-fg',
                   )}
                 >
-                  {view === v ? '▸ ' : ''}
+                  {view === v && <span aria-hidden="true">▸ </span>}
                   {label}
                 </button>
               ))}
@@ -121,15 +112,17 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
                       aria-hidden="true"
                       className="group/cap absolute inset-0 block cursor-pointer"
                     >
-                      <img
-                        src={withBase(image.src)}
-                        alt=""
-                        width={image.width}
-                        height={image.height}
-                        loading="lazy"
-                        decoding="async"
-                        className="size-full object-cover transition-transform duration-500 group-hover/cap:scale-[1.03]"
-                      />
+                      <span className="lazy-media absolute! inset-0 overflow-hidden">
+                        <img
+                          src={withBase(image.src)}
+                          alt=""
+                          width={image.width}
+                          height={image.height}
+                          loading="lazy"
+                          decoding="async"
+                          className="size-full object-cover transition-[opacity,transform] duration-500 group-hover/cap:scale-[1.03]"
+                        />
+                      </span>
                       {/* CRT refresh: scanlines always, rolling band on hover */}
                       <span className="crt pointer-events-none absolute inset-0">
                         <span className="crt-roll crt-hover" />
@@ -138,7 +131,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
                       <span className="absolute left-2 top-2 z-[4] bg-bg/85 px-1.5 py-1 hud-label text-[0.6rem] text-accent">
                         ● REC {frameLabel}
                       </span>
-                      <span className="absolute bottom-2 right-2 z-[4] bg-bg/85 px-1.5 py-1 hud-label text-[0.6rem] text-fg transition-colors group-hover/cap:bg-accent group-hover/cap:text-accent-fg">
+                      <span className="absolute bottom-2 right-2 z-[4] wipe absolute! bg-bg/85 px-1.5 py-1 hud-label text-[0.6rem] text-fg">
                         Open dossier →
                       </span>
                       <Crosshairs />
@@ -153,11 +146,11 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
                     exit="exit"
                     className="absolute inset-0 overflow-auto p-4"
                   >
-                    <p className="hud-label mb-3 text-accent">// SCOPE</p>
+                    <p aria-hidden="true" className="hud-label mb-3 text-accent">// SCOPE</p>
                     <ol className="space-y-2 text-xs leading-relaxed">
                       {project.scope.map((line, i) => (
                         <li key={i} className="grid grid-cols-[2ch_1fr] gap-2">
-                          <span className="text-muted">{pad(i + 1)}</span>
+                          <span aria-hidden="true" className="text-muted">{pad(i + 1)}</span>
                           <span>{line}</span>
                         </li>
                       ))}
@@ -214,7 +207,7 @@ function BracketLink({ href, label, sr }: { href: string; label: string; sr: str
   return (
     <a
       href={href}
-      className="group/l flex min-h-11 flex-1 items-center justify-center gap-1 px-2 hud-label hover:bg-accent hover:text-accent-fg"
+      className="wipe group/l flex min-h-11 flex-1 items-center justify-center gap-1 px-2 hud-label"
     >
       <span aria-hidden="true" className="text-accent transition-transform group-hover/l:-translate-x-0.5 group-hover/l:text-accent-fg">[</span>
       <span aria-hidden="true">{label}</span>

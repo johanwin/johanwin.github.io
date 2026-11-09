@@ -15,7 +15,7 @@ export const site = {
   email: 'whatsup@johnnguyen.org',
   domain: 'johnnguyen.org',
   /** Profile photo for the About dossier. Leave src empty to show the placeholder slot. */
-  portrait: { src: '', alt: 'Portrait of John Nguyen' },
+  portrait: { src: '/images/profile/portrait.webp', alt: 'Portrait of John Nguyen' },
   bio: 'Two decades turning design into fast, accessible interfaces — from agency sites and HTML email to enterprise component libraries at Capital One and Allstate.',
   availability: 'Open to select opportunities',
   description:
@@ -34,7 +34,7 @@ export type SocialLink = { label: string; href: string; channel: string };
 
 export const socials: SocialLink[] = [
   { label: 'GitHub', channel: 'CH-01', href: 'https://github.com/johanwin' },
-  // TODO: fill in or delete
-  { label: 'LinkedIn', channel: 'CH-02', href: 'https://www.linkedin.com/' },
-  { label: 'Résumé (PDF)', channel: 'CH-03', href: '/resume.pdf' },
+  { label: 'LinkedIn', channel: 'CH-02', href: 'https://www.linkedin.com/in/johannguyen/' },
+  { label: 'Instagram', channel: 'CH-03', href: 'https://www.instagram.com/john_nguyen/' },
+  { label: 'Résumé (PDF)', channel: 'CH-04', href: '/resume.pdf' },
 ];

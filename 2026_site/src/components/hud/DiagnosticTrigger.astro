@@ -20,6 +20,7 @@ const { href, code, label, variant = 'primary' } = Astro.props;
   ]}
 >
   <span
+    aria-hidden="true"
     class:list={[
       'relative z-10 flex items-center border-r-2 px-3 text-[0.65rem] group-hover:text-hazard-fg group-focus-visible:text-hazard-fg',
       variant === 'primary' ? 'border-accent-fg/30' : 'border-line-strong text-muted',

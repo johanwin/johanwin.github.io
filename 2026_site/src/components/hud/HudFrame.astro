@@ -15,8 +15,9 @@ const { label, meta, class: className = '', as: Tag = 'div', ...rest } = Astro.p
 ---
 
 <Tag {...rest} class:list={['relative border border-line-strong brackets [--bk-size:18px]', className]}>
+  <!-- Tab label is flavor (ID.CARD / UNIT JW-01): hidden from screen readers. -->
   {(label || meta) && (
-    <div class="absolute -top-px left-6 flex -translate-y-full items-stretch">
+    <div aria-hidden="true" class="absolute -top-px left-6 flex -translate-y-full items-stretch">
       {label && <span class="bg-accent px-2 py-1 hud-label text-accent-fg">{label}</span>}
       {meta && <span class="border border-b-0 border-line-strong bg-bg px-2 py-1 hud-label text-muted">{meta}</span>}
     </div>

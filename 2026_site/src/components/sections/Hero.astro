@@ -18,7 +18,8 @@ const yearsActive = new Date().getFullYear() - careerStart;
   <!-- Asymmetric 12-col Bauhaus grid: 8-col identity block, 4-col data column -->
   <div class="grid gap-y-12 lg:grid-cols-12 lg:gap-x-8">
     <HudFrame as="div" label="ID.CARD" meta={`UNIT ${site.callsign}`} data-hud-panel class="bg-bg/60 lg:bg-bg/75 backdrop-blur-sm lg:backdrop-blur-md p-5 pt-10 sm:p-10 sm:pt-12 lg:col-span-8 [animation-delay:.05s] animate-hud-in">
-      <p class="hud-label text-muted">
+      <!-- Decorative terminal prompt: hidden from screen readers. -->
+      <p aria-hidden="true" class="hud-label text-muted">
         <span class="text-accent">&gt;</span> {site.handle}@github:~$ whoami
       </p>
 
@@ -78,7 +79,7 @@ const yearsActive = new Date().getFullYear() - careerStart;
           <svg viewBox="0 0 60 52" class="w-14 text-fg"><polygon points="30,0 60,52 0,52" fill="currentColor"></polygon></svg>
         </div>
       </div>
-      <div class="flex items-center justify-between p-4">
+      <div aria-hidden="true" class="flex items-center justify-between p-4">
         <span class="hud-label text-muted">LAT 32.78°N · LON 96.80°W</span>
         <span class="hud-label text-accent">◢◤</span>
       </div>

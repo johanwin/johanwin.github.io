@@ -48,10 +48,11 @@ export default function ChangelogTimeline({ entries }: { entries: ExperienceEntr
               />
 
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <span className="bg-fg px-1.5 py-0.5 hud-label text-bg">{e.version}</span>
-                <code className="text-xs text-accent">{e.hash}</code>
+                {/* version / hash / HEAD tag are flavor — hidden from screen readers */}
+                <span aria-hidden="true" className="bg-fg px-1.5 py-0.5 hud-label text-bg">{e.version}</span>
+                <code aria-hidden="true" className="text-xs text-accent">{e.hash}</code>
                 {e.end === 'HEAD' && (
-                  <span className="border border-signal px-1.5 py-0.5 hud-label text-[0.6rem] text-signal">HEAD → main</span>
+                  <span aria-hidden="true" className="border border-signal px-1.5 py-0.5 hud-label text-[0.6rem] text-signal">HEAD → main</span>
                 )}
                 <span className="hud-label text-muted">
                   {e.start && (
@@ -70,10 +71,10 @@ export default function ChangelogTimeline({ entries }: { entries: ExperienceEntr
                 @ {e.org} <span aria-hidden="true">·</span> {e.location}
               </p>
 
-              <ul className="mt-4 space-y-1.5 text-sm" aria-label={`Changes in ${e.version}`}>
+              <ul className="mt-4 space-y-1.5 text-sm" aria-label={`Highlights at ${e.org}`}>
                 {e.changes.map((c, j) => (
                   <m.li key={j} variants={line} className="grid grid-cols-[9ch_1fr] gap-2">
-                    <span className={cn('font-semibold', TYPE_STYLE[c.type])}>
+                    <span aria-hidden="true" className={cn('font-semibold', TYPE_STYLE[c.type])}>
                       {c.type}
                       <span className="text-muted">:</span>
                     </span>
@@ -81,7 +82,6 @@ export default function ChangelogTimeline({ entries }: { entries: ExperienceEntr
                   </m.li>
                 ))}
               </ul>
-              {i < entries.length - 1 && <span className="sr-only">Previous version follows.</span>}
             </m.li>
           ))}
         </m.ol>

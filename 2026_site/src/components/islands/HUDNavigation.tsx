@@ -155,12 +155,10 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
             className="group flex items-center gap-3 border-r border-line-strong px-3 sm:px-4"
             aria-label={`${name} — home`}
           >
-            <span aria-hidden="true" className="grid size-7 place-items-center bg-accent text-accent-fg font-black text-xs">
-              {callsign.slice(0, 2)}
-            </span>
+            <img src={withBase('/logo.svg')} alt="" aria-hidden="true" width={28} height={28} className="size-7 shrink-0" />
             <span className="hidden flex-col leading-tight sm:flex">
               <span className="hud-label text-fg group-hover:text-accent">{name}</span>
-              <span className="hud-label text-[0.6rem] text-muted">UNIT {callsign}</span>
+              <span aria-hidden="true" className="hud-label text-[0.6rem] text-muted">UNIT {callsign}</span>
             </span>
           </a>
 
@@ -169,7 +167,7 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
             variants={hudStrip}
             initial="hidden"
             animate="show"
-            aria-label="System status"
+            aria-hidden="true"
             className="hidden items-stretch lg:flex"
           >
             <m.li variants={hudCell} className="flex items-center gap-2 border-r border-line px-4">
@@ -203,7 +201,7 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
                       )}
                     >
                       <span aria-hidden="true" className={cn('size-1.5 bg-[var(--nav-tone)] transition-opacity', isActive ? 'opacity-100' : 'opacity-40')} />
-                      <span className="text-muted">{l.code}</span>
+                      <span aria-hidden="true" className="text-muted">{l.code}</span>
                       {l.label}
                       <span
                         aria-hidden="true"
@@ -253,7 +251,7 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
                       <DialogPrimitive.Title className="sr-only">Navigation</DialogPrimitive.Title>
 
                       <div className="flex h-14 items-stretch border-b border-line-strong">
-                        <span className="flex items-center px-4 hud-label text-accent">// NAV.OVERRIDE</span>
+                        <span aria-hidden="true" className="flex items-center px-4 hud-label text-accent">// NAV.OVERRIDE</span>
                         <DialogPrimitive.Close className="ml-auto flex min-w-14 items-center justify-center border-l border-line-strong px-4 hud-label hover:text-accent">
                           <span aria-hidden="true">[ X ]</span>
                           <span className="sr-only">Close menu</span>
@@ -266,7 +264,7 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
                         <ul>
                           <m.li variants={drawerItem} className="border-b border-line">
                             <a href={withBase('/')} onClick={(e) => go(e, withBase('/'))} className="flex items-baseline gap-4 px-5 py-6 hover:bg-surface-2 hover:text-accent">
-                              <span className="hud-label text-muted">00</span>
+                              <span aria-hidden="true" className="hud-label text-muted">00</span>
                               <span className="display-wide text-[clamp(2.25rem,11vw,3.5rem)]">Home</span>
                             </a>
                           </m.li>
@@ -291,7 +289,7 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
                                       isActive ? 'scale-y-100' : 'scale-y-[0.35]',
                                     )}
                                   />
-                                  <span className="hud-label text-muted">{l.code}</span>
+                                  <span aria-hidden="true" className="hud-label text-muted">{l.code}</span>
                                   <span className="display-wide text-[clamp(2.25rem,11vw,3.5rem)]">{l.label}</span>
                                 </a>
                               </m.li>

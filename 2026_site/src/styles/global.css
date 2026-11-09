@@ -184,12 +184,25 @@
   initial-value: 14px;
 }
 
+/* Barber-pole drift. The stripes are drawn on a small square tile (the classic
+   25/50/75% diagonal pattern), which repeats seamlessly in both directions —
+   so sliding it by exactly one tile loops with no cut-off stripe at any bar
+   width. 28px tile → ~10px stripes. Deliberately slow (~7px/s) so it reads as
+   ambient motion; reduced-motion users get static stripes. */
+@keyframes hazard-drift { to { background-position: 28px 0; } }
+
 @utility hazard-stripes {
-  background-image: repeating-linear-gradient(
+  background-image: linear-gradient(
     -45deg,
-    var(--hazard) 0 10px,
-    var(--hazard-fg) 10px 20px
+    var(--hazard) 0 25%,
+    var(--hazard-fg) 25% 50%,
+    var(--hazard) 50% 75%,
+    var(--hazard-fg) 75% 100%
   );
+  background-size: 28px 28px;
+  animation: hazard-drift 4s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) { animation: none; }
 }
 
 @utility hud-label {
@@ -279,7 +292,9 @@
     /* Programmatic focus target for nav jumps — no ring on the whole band. */
     &:focus { outline: none; }
 
-    & + & {
+    /* `~` not `+`: a stray element between bands (e.g. an inline <script>)
+       must not break the seam. */
+    & ~ & {
       /* The band's box starts at the top of the fade seam; offset anchor jumps
          so #about etc. land on the section's content, not the seam. */
       scroll-margin-top: calc(var(--seam) * -1);
@@ -462,4 +477,111 @@
 @media (prefers-reduced-motion: reduce) {
   .crt::after, .crt-roll { animation: none !important; }
   .crt-roll { opacity: 0 !important; }
+}
+
+/* ---------------------------------------------------------------------------
+   HAZARD WIPE — the hero CTA's hover, as a reusable class.
+   A hazard-yellow panel slides in from the left behind the content and the
+   text flips to hazard-fg. Works on any background (orange or transparent).
+   .wipe                 hover / focus-visible on the element itself
+   .group/cap:hover .wipe  triggered by a parent capture link
+   --------------------------------------------------------------------------- */
+@layer components {
+  .wipe {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    transition: color 0.3s cubic-bezier(0.7, 0, 0.2, 1);
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: var(--hazard);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s cubic-bezier(0.7, 0, 0.2, 1);
+      pointer-events: none;
+    }
+  }
+}
+/* Active state is unlayered on purpose: it must beat Tailwind's text-* utilities
+   on the element and its children, so every label flips to dark-on-yellow. */
+:is(.wipe:hover, .wipe:focus-visible, .group\/cap:hover .wipe, .group\/wipe:hover .wipe, .group\/wipe:focus-visible .wipe) {
+  color: var(--hazard-fg);
+  & * { color: inherit; }
+  &::before { transform: scaleX(1); }
+}
+
+/* ---------------------------------------------------------------------------
+   PROGRESSIVE LOADING
+   All content ships as static HTML (crawlers and no-JS readers get everything);
+   these are purely visual layers on top.
+   .boot-bar    top progress bar while the page and its assets download
+   .lazy-media  scanning placeholder behind a lazy image until it has decoded
+   --------------------------------------------------------------------------- */
+@keyframes boot-load { from { scale: 0 1; } to { scale: 0.85 1; } }
+@keyframes lazy-scan { from { translate: 0 -100%; } to { translate: 0 100%; } }
+
+@layer components {
+  .boot-bar {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 200;
+    height: 3px;
+    pointer-events: none;
+    background: linear-gradient(90deg, var(--accent), var(--hazard));
+    transform-origin: left;
+    animation: boot-load 8s cubic-bezier(0.1, 0.7, 0.2, 1) forwards;
+    transition: opacity 0.4s 0.25s, scale 0.25s;
+  }
+  html[data-loaded] .boot-bar { animation: none; scale: 1 1; opacity: 0; }
+
+  .lazy-media {
+    position: relative;
+    display: block;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in oklab, var(--fg) 5%, transparent) 3px 4px),
+      var(--surface);
+  }
+  .lazy-media img { transition: opacity 0.5s; }
+
+  /* Placeholder + fade only when JS is present to flag images as loaded;
+     without JS the images simply show as normal. */
+  html[data-js] .lazy-media:not(:has(img[data-loaded])) {
+    & img { opacity: 0; }
+    &::before {
+      content: "DECODING…";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font: 700 0.6rem/1 var(--font-mono);
+      letter-spacing: var(--tracking-hud);
+      color: var(--muted);
+      pointer-events: none;
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(to bottom, transparent 40%, color-mix(in oklab, var(--accent) 25%, transparent) 50%, transparent 60%);
+      animation: lazy-scan 1.6s linear infinite;
+    }
+  }
+}
+
+/* Project cards slide up as they scroll into view (CSS only — no hidden SSR state).
+   --card-i staggers the three cards in a row. */
+@keyframes card-in { from { opacity: 0; translate: 0 24px; } }
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .card-in {
+      animation: card-in linear both;
+      animation-timeline: view();
+      animation-range: entry calc(var(--card-i, 0) * 6%) entry calc(45% + var(--card-i, 0) * 6%);
+    }
+  }
 }

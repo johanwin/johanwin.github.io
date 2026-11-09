@@ -9,7 +9,8 @@ import { experience } from '@/data/experience';
   <SectionHeader index="03" code="CHANGELOG.MD" title="Activity Log" id="experience-title" />
 
   <div class="grid gap-10 lg:grid-cols-12">
-    <aside class="lg:col-span-3" aria-label="Log legend">
+    <!-- git-log legend is flavor: hidden from screen readers along with the commit-type prefixes. -->
+    <aside class="lg:col-span-3" aria-hidden="true">
       <pre class="border border-line-strong bg-surface p-4 text-xs leading-relaxed text-muted"><code><span class="text-accent">$</span> git log --career \
   --oneline --graph
 
