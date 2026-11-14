@@ -24,8 +24,8 @@ jobs:
       run:
         working-directory: 2026_site
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -33,7 +33,7 @@ jobs:
       - run: npm ci
       # `npm run build` = astro check (types) + astro build
       - run: npm run build
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dist
           path: 2026_site/dist
@@ -48,14 +48,14 @@ jobs:
       run:
         working-directory: 2026_site
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
           cache-dependency-path: 2026_site/package-lock.json
       - run: npm ci
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: dist
           path: 2026_site/dist
@@ -72,7 +72,7 @@ jobs:
         run: node scripts/lighthouse-ci.mjs
         env:
           LH_BASE_URL: http://localhost:4321
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: lighthouse-reports
