@@ -7,7 +7,17 @@
  *   every `astro:page-load` (initial load + each client-side navigation)
  *   instead of relying on gtag's automatic page_view.
  * - One delegated listener reports clicks on links, buttons and any element
- *   marked with `data-track="name"` as a `ui_click` event.
+ *   marked with `data-track="name"` as a `ui_click` event:
+ *     click_name  stable id from data-track (e.g. slideshow_next, contact_resume)
+ *     click_text  what a screen reader announces (decorative aria-hidden glyphs
+ *                 like ▶ ◀ ❚❚ dropped, sr-only expansions kept)
+ *     project     slug from the nearest [data-track-project]
+ *     section     nearest [data-track-section] / section[id] / header / footer
+ * - Slideshows (<channel-show>, events bubble up):
+ *     slideshow_navigate   user pressed CH−/CH+ or swiped (project, slide_index,
+ *                          slide_label, input: button|swipe)
+ *     slideshow_pause/play user pressed the pause toggle
+ *     project_preview      first hover-preview switch on a project card per page
  * - gtag.js itself is deferred: it's injected only after the page's `load`
  *   event, when the browser is idle (4s cap), so it never competes with first
  *   render or hydration. Everything tracked before then (the first page_view,
@@ -51,6 +61,39 @@ const enabled = import.meta.env.PROD;
           });
 
           const clean = (s) => (s || '').replace(/\s+/g, ' ').trim().slice(0, 100);
+          // Accessible text: drop aria-hidden decoration, keep sr-only text.
+          const label = (el) => {
+            if (el.getAttribute('aria-label')) return clean(el.getAttribute('aria-label'));
+            const copy = el.cloneNode(true);
+            copy.querySelectorAll('[aria-hidden="true"]').forEach((n) => n.remove());
+            return clean(copy.textContent);
+          };
+          const project = (el) => el.closest('[data-track-project]')?.getAttribute('data-track-project') || undefined;
+          const section = (el) =>
+            el.closest('[data-track-section]')?.getAttribute('data-track-section') ||
+            el.closest('section[id]')?.id ||
+            (el.closest('header') ? 'header' : el.closest('footer') ? 'footer' : undefined);
+
+          // Slideshow events (bubble from <channel-show>).
+          const previewed = new Set();
+          document.addEventListener('channelchange', (e) => {
+            const d = e.detail || {};
+            const proj = project(e.target);
+            if (d.announce) {
+              gtag('event', 'slideshow_navigate', {
+                project: proj, slide_index: d.index + 1, slide_total: d.total, slide_label: clean(d.alt), input: d.via, page_path: location.pathname,
+              });
+            } else if (d.mode === 'hover' && proj && !previewed.has(proj)) {
+              previewed.add(proj);
+              gtag('event', 'project_preview', { project: proj, page_path: location.pathname });
+            }
+          });
+          document.addEventListener('channelpause', (e) => {
+            if (!e.detail?.user) return;
+            gtag('event', e.detail.paused ? 'slideshow_pause' : 'slideshow_play', { project: project(e.target), page_path: location.pathname });
+          });
+          // New page via the client router → previews count again.
+          document.addEventListener('astro:page-load', () => previewed.clear());
 
           document.addEventListener(
             'click',
@@ -75,10 +118,11 @@ const enabled = import.meta.env.PROD;
 
               gtag('event', 'ui_click', {
                 click_name: el.getAttribute('data-track') || undefined,
-                click_text: clean(el.getAttribute('aria-label') || el.textContent),
+                click_text: label(el),
                 click_url: href,
                 link_type: linkType,
-                section: el.closest('section[id]')?.id || (el.closest('header') ? 'header' : el.closest('footer') ? 'footer' : undefined),
+                project: project(el),
+                section: section(el),
                 page_path: location.pathname,
               });
             },

@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "deploy": "npm run build && gh-pages --dist dist --dotfiles --message \"Deploy 2026 site\"",
-    "resume": "sh design/resume/build.sh"
+    "resume": "sh design/resume/build.sh",
+    "og": "node design/og/build.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^7.1.4",

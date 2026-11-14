@@ -7,9 +7,10 @@ import { site } from '@/data/site';
 import AbbrText from '@/components/ui/AbbrText.astro';
 import { careerStart } from '@/data/experience';
 import { withBase } from '@/lib/utils';
+import { yearIn } from '@/lib/time';
 
 const [first, ...rest] = site.name.toUpperCase().split(' ');
-const yearsActive = new Date().getFullYear() - careerStart;
+const yearsActive = yearIn() - careerStart; // Chicago-time year; refreshed by the Jan 1 rebuild
 ---
 
 <Band tone="hero" labelledby="hero-title" class="pt-10 pb-16 sm:pt-16 sm:pb-24">

@@ -2,6 +2,7 @@ name: Publish 2026 site to gh-pages
 
 # Builds 2026_site/ and pushes the result to the gh-pages branch — the same
 # thing `npm run deploy` does locally. Runs when 2026_site changes on master,
+# every Jan 1 at midnight Chicago time (year rollover),
 # or on demand from the Actions tab ("Run workflow").
 # Pages setting stays as-is: Source = "Deploy from a branch" → gh-pages / root.
 on:
@@ -9,6 +10,13 @@ on:
     branches: [master]
     paths: ['2026_site/**', '.github/workflows/deploy-2026.yml']
   workflow_dispatch:
+  # New Year rebuild so year-based text (© year, "years active") rolls over.
+  # 06:00 UTC on Jan 1 = midnight in Chicago (January is CST, UTC−6).
+  # Note: GitHub disables scheduled workflows in public repos after 60 days
+  # with no repo activity; the footer also updates its year in the browser,
+  # so the © stays correct even if this run is skipped.
+  schedule:
+    - cron: '0 6 1 1 *'
 
 permissions:
   contents: write   # push the build to gh-pages

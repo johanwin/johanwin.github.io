@@ -36,6 +36,7 @@ const total = projects.length;
       <button
         type="button"
         data-more-btn
+        data-track="projects_load_more"
         aria-controls="project-list"
         class="wipe group flex min-h-16 w-full items-stretch border-2 border-accent bg-accent font-mono text-sm font-bold uppercase tracking-[0.16em] text-accent-fg"
       >
@@ -60,36 +61,69 @@ const total = projects.length;
   <script>
     const pad = (n: number) => String(n).padStart(2, '0');
   
+    /*
+     * Cards are revealed PAGE at a time, but the visible count is always rounded
+     * UP to a whole number of grid rows, so a 2-column layout (iPad portrait and
+     * most iPad landscape) never leaves one card alone on the last row:
+     *   3 columns (desktop) → 3, 6     2 columns (iPad) → 4, 6     1 column → 3, 6
+     * Re-checked when the column count changes (rotation, resize). It only ever
+     * reveals more cards; it never re-hides ones already shown.
+     */
     function init() {
       const list = document.getElementById('project-list');
       const btn = document.querySelector<HTMLButtonElement>('[data-more-btn]');
       if (!list || !btn || btn.dataset.bound) return;
       btn.dataset.bound = '1';
-  
+
       const page = Number(list.dataset.page) || 3;
       const items = [...list.children] as HTMLLIElement[];
+      const total = items.length;
       const status = document.querySelector('[data-more-status]');
-  
-      btn.addEventListener('click', () => {
-        const batch = items.filter((li) => li.hidden).slice(0, page);
+      let target = page; // how many the visitor has asked for (PAGE per click)
+
+      const columns = () => getComputedStyle(list).gridTemplateColumns.split(' ').filter(Boolean).length || 1;
+      const shownCount = () => items.filter((li) => !li.hidden).length;
+
+      /** Reveal up to a full row; returns the newly revealed items. */
+      const apply = () => {
+        const cols = columns();
+        const want = Math.min(total, Math.ceil(Math.max(target, shownCount()) / cols) * cols);
+        const batch = items.filter((li) => li.hidden).slice(0, Math.max(0, want - shownCount()));
         batch.forEach((li) => { li.hidden = false; });
-  
-        const shown = items.filter((li) => !li.hidden).length;
-        const left = items.length - shown;
+
+        const shown = shownCount();
+        const left = total - shown;
+        if (!left) { btn.closest('[data-more-ctrl]')?.remove(); return batch; }
+        // Next click: PAGE more, rounded up to full rows.
+        const next = Math.min(left, Math.ceil((shown + page) / cols) * cols - shown);
         btn.querySelector('[data-more-count]')!.textContent = pad(shown);
-        const next = Math.min(page, left);
         btn.querySelector('[data-more-next]')!.textContent = String(next);
         btn.querySelector('[data-more-noun]')!.textContent = next === 1 ? 'file' : 'files';
-        if (status) status.textContent = `Showing ${shown} of ${items.length} projects.`;
-  
+        return batch;
+      };
+
+      apply();
+      // Column count changes with rotation / resize → re-round to full rows.
+      let lastCols = columns();
+      const ro = new ResizeObserver(() => {
+        const cols = columns();
+        if (cols !== lastCols) { lastCols = cols; apply(); }
+      });
+      ro.observe(list);
+      document.addEventListener('astro:before-swap', () => ro.disconnect(), { once: true });
+
+      btn.addEventListener('click', () => {
+        target = shownCount() + page;
+        const batch = apply();
+        const shown = shownCount();
+        if (status) status.textContent = `Showing ${shown} of ${total} projects.`;
+
         // Move focus to the first newly revealed card's title link.
         batch[0]?.querySelector<HTMLAnchorElement>('a[href]:not([tabindex="-1"])')?.focus({ preventScroll: true });
         batch[0]?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motion === 'off' ? 'auto' : 'smooth', block: 'nearest' });
-  
-        if (!left) btn.closest('[data-more-ctrl]')?.remove();
       });
     }
-  
+
     document.addEventListener('astro:page-load', init);
   </script>
 </Band>

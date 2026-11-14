@@ -30,11 +30,12 @@ export const nav = [
   { code: '04', label: 'Contact', href: '/#contact', tone: 'contact' },
 ] as const;
 
-export type SocialLink = { label: string; href: string; channel: string };
+/** track: stable analytics click_name suffix (contact_<track>). */
+export type SocialLink = { label: string; href: string; channel: string; track: string };
 
 export const socials: SocialLink[] = [
-  { label: 'GitHub', channel: 'CH-01', href: 'https://github.com/johanwin' },
-  { label: 'LinkedIn', channel: 'CH-02', href: 'https://www.linkedin.com/in/johannguyen/' },
-  { label: 'Instagram', channel: 'CH-03', href: 'https://www.instagram.com/john_nguyen/' },
-  { label: 'Résumé (PDF)', channel: 'CH-04', href: '/resume.pdf' },
+  { label: 'GitHub', channel: 'CH-01', track: 'github', href: 'https://github.com/johanwin' },
+  { label: 'LinkedIn', channel: 'CH-02', track: 'linkedin', href: 'https://www.linkedin.com/in/johannguyen/' },
+  { label: 'Instagram', channel: 'CH-03', track: 'instagram', href: 'https://www.instagram.com/john_nguyen/' },
+  { label: 'Résumé (PDF)', channel: 'CH-04', track: 'resume', href: '/resume.pdf' },
 ];

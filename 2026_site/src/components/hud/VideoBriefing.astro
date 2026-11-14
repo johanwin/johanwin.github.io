@@ -38,6 +38,7 @@ const poster = withBase('/images/profile/video-poster.webp');
   <button
     type="button"
     data-video-open
+    data-track="video_play"
     aria-haspopup="dialog"
     class="group/wipe block w-full cursor-pointer text-left"
   >
@@ -67,7 +68,7 @@ const poster = withBase('/images/profile/video-poster.webp');
 
   <p class="border-t border-line px-3 py-3 text-sm leading-relaxed text-muted">
     {blurb}
-    <a href={watchUrl} target="_blank" rel="noopener noreferrer" class="whitespace-nowrap text-fg underline decoration-accent underline-offset-4 hover:text-accent">
+    <a href={watchUrl} data-track="video_youtube" target="_blank" rel="noopener noreferrer" class="whitespace-nowrap text-fg underline decoration-accent underline-offset-4 hover:text-accent">
       Watch on YouTube ↗<span class="sr-only"> (opens in new tab)</span>
     </a>
   </p>
@@ -80,7 +81,7 @@ const poster = withBase('/images/profile/video-poster.webp');
     <div class="flex items-stretch border-b border-line-strong">
       <span aria-hidden="true" class="flex items-center bg-accent px-3 hud-label text-accent-fg">PLAYBACK</span>
       <h2 id="video-dialog-title" class="flex min-w-0 items-center truncate px-3 hud-label">{title}</h2>
-      <button type="button" data-video-close class="wipe ml-auto flex min-h-11 items-center gap-2 border-l border-line-strong px-4 hud-label">
+      <button type="button" data-video-close data-track="video_close" class="wipe ml-auto flex min-h-11 items-center gap-2 border-l border-line-strong px-4 hud-label">
         Close <span aria-hidden="true">✕</span>
       </button>
     </div>

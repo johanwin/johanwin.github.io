@@ -16,6 +16,7 @@ const [emailUser, emailDomain] = site.email.split('@');
       <p class="hud-label text-muted">EMAIL COORDINATES</p>
       <a
         href={`mailto:${site.email}`}
+        data-track="contact_email"
         class="wipe mt-4 -mx-2 inline-block px-2 py-1 display-wide text-[clamp(1rem,6.6cqi,3.75rem)]"
       >
         <!-- Only allow a break before the "@" so the domain + TLD always stay on one line. -->
@@ -36,6 +37,7 @@ const [emailUser, emailDomain] = site.email.split('@');
             <li class="border-b border-line last:border-b-0">
               <a
                 href={external ? s.href : withBase(s.href)}
+                data-track={`contact_${s.track}`}
                 {...(external ? { target: '_blank', rel: 'me noopener noreferrer' } : {})}
                 class="wipe group grid min-h-14 grid-cols-[7ch_1fr_auto] items-center gap-3 px-4 py-3"
               >

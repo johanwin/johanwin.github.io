@@ -72,7 +72,7 @@ class ChannelShow extends HTMLElement {
     this.cleanup.push(onMotionChange(() => {
       this.schedule();
       if (this.mode === 'auto') {
-        this.dispatchEvent(new CustomEvent('channelpause', { detail: { paused: this.paused || reduceMotion() } }));
+        this.dispatchEvent(new CustomEvent('channelpause', { bubbles: true, detail: { paused: this.paused || reduceMotion(), user: false } }));
       }
     }));
 
@@ -105,6 +105,7 @@ class ChannelShow extends HTMLElement {
         root.removeEventListener('focusout', release);
       });
       this.bindControls();
+      this.bindSwipe();
     }
   }
 
@@ -145,7 +146,8 @@ class ChannelShow extends HTMLElement {
     try { await Promise.race([img.decode(), wait(1500)]); } catch { /* broken image: still switch */ }
   }
 
-  async go(target: number, announce = false) {
+  /** announce = user-initiated (buttons/swipe); via says which, for analytics. */
+  async go(target: number, announce = false, via?: 'button' | 'swipe') {
     if (this.busy) return;
     const n = this.imgs.length;
     const next = ((target % n) + n) % n;
@@ -166,7 +168,9 @@ class ChannelShow extends HTMLElement {
       this.setActive(to, true);
       this.index = next;
       if (this.osd) this.osd.textContent = label;
-      this.dispatchEvent(new CustomEvent('channelchange', { detail: { index: next, total: n, alt: to.alt, announce } }));
+      // Bubbles so the analytics listener (Analytics.astro) can see it; `announce`
+      // = user pressed a button, `mode` = hover (card preview) or auto (project page).
+      this.dispatchEvent(new CustomEvent('channelchange', { bubbles: true, detail: { index: next, total: n, alt: to.alt, announce, via, mode: this.mode } }));
     };
 
     if (reduceMotion()) {
@@ -186,6 +190,36 @@ class ChannelShow extends HTMLElement {
     this.schedule();
   }
 
+  /* ── Swipe (auto mode only; hover-mode cards are links, a swipe would fight the tap).
+     Swipe left → next, right → previous. touch-action: pan-y (global.css) keeps
+     vertical page scrolling native; the browser cancels the pointer when it
+     takes over a scroll, so only clearly horizontal swipes switch channels. ── */
+  private bindSwipe() {
+    let x0 = 0, y0 = 0, t0 = 0, id: number | null = null;
+    const down = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse' || !e.isPrimary) return;
+      id = e.pointerId; x0 = e.clientX; y0 = e.clientY; t0 = performance.now();
+    };
+    const up = (e: PointerEvent) => {
+      if (e.pointerId !== id) return;
+      id = null;
+      const dx = e.clientX - x0, dy = e.clientY - y0;
+      const fast = performance.now() - t0 < 800;
+      if (fast && Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        this.go(this.index + (dx < 0 ? 1 : -1), true, 'swipe');
+      }
+    };
+    const cancel = () => { id = null; };
+    this.addEventListener('pointerdown', down);
+    this.addEventListener('pointerup', up);
+    this.addEventListener('pointercancel', cancel);
+    this.cleanup.push(() => {
+      this.removeEventListener('pointerdown', down);
+      this.removeEventListener('pointerup', up);
+      this.removeEventListener('pointercancel', cancel);
+    });
+  }
+
   /* ── Buttons for auto mode: data-channel="prev|next|toggle" + aria-controls ── */
   private bindControls() {
     if (!this.id) return;
@@ -193,12 +227,12 @@ class ChannelShow extends HTMLElement {
     buttons.forEach((btn) => {
       const action = btn.dataset.channel;
       const onClick = () => {
-        if (action === 'next') this.go(this.index + 1, true);
-        else if (action === 'prev') this.go(this.index - 1, true);
+        if (action === 'next') this.go(this.index + 1, true, 'button');
+        else if (action === 'prev') this.go(this.index - 1, true, 'button');
         else if (action === 'toggle') {
           this.paused = !this.paused;
           btn.setAttribute('aria-pressed', String(this.paused));
-          this.dispatchEvent(new CustomEvent('channelpause', { detail: { paused: this.paused } }));
+          this.dispatchEvent(new CustomEvent('channelpause', { bubbles: true, detail: { paused: this.paused, user: true } }));
           this.schedule();
         }
       };
@@ -209,7 +243,7 @@ class ChannelShow extends HTMLElement {
     if (reduceMotion()) {
       this.paused = true;
       buttons.forEach((b) => b.dataset.channel === 'toggle' && b.setAttribute('aria-pressed', 'true'));
-      this.dispatchEvent(new CustomEvent('channelpause', { detail: { paused: true } }));
+      this.dispatchEvent(new CustomEvent('channelpause', { bubbles: true, detail: { paused: true, user: false } }));
     }
   }
 }

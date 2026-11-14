@@ -10,11 +10,18 @@ import '@/styles/global.css';
 interface Props {
   title?: string;
   description?: string;
-  /** Absolute or base-relative path to a 1200×630 social image. */
+  /** Base-relative path to a 1200×630 social image (cards built by `npm run og`). */
   ogImage?: string;
+  /** Alt text for the social image. */
+  ogImageAlt?: string;
 }
 
-const { title, description = site.description, ogImage = '/og.png' } = Astro.props;
+const {
+  title,
+  description = site.description,
+  ogImage = '/og/home.png',
+  ogImageAlt = `${site.name} — ${site.title}`,
+} = Astro.props;
 
 const pageTitle = title ? `${title} — ${site.name}` : `${site.name} · ${site.title}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -33,6 +40,8 @@ const build = (process.env.GITHUB_SHA ?? 'local').slice(0, 7).toUpperCase();
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <!-- iMessage / iOS use this PNG for the small site icon (they ignore SVG favicons). -->
+    <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
     <!-- Content license (see footer: client work is excluded). -->
     <link rel="license" href="https://creativecommons.org/licenses/by/4.0/" />
     <meta name="generator" content={Astro.generator} />
@@ -40,12 +49,18 @@ const build = (process.env.GITHUB_SHA ?? 'local').slice(0, 7).toUpperCase();
     <meta name="theme-color" content="#0a0a0b" />
     <meta name="color-scheme" content="dark" />
 
+    <!-- Link previews (iMessage, Slack, LinkedIn, X…). Size hints let first previews render. -->
+    <meta property="og:site_name" content={site.name} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     <!--
       Progressive-loading flags. Runs before first paint and is never re-run on
