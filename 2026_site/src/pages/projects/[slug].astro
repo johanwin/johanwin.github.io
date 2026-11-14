@@ -56,7 +56,7 @@ const frameLabel = images[0]!.frame === 'telemetry' ? 'Intercepted Telemetry Cap
           <>
             <!-- Channel-switch slideshow: autoplays on screen, holds on hover/focus,
                  and has pause + prev/next controls below (WCAG 2.2.2). -->
-            <channel-show id={showId} trigger="auto" interval="5000" data-fit="contain" class="aspect-[16/10] w-full">
+            <channel-show id={showId} trigger="auto" interval="5000" data-fit="contain" class="aspect-square w-full sm:aspect-[16/10]">
               {images.map((im, i) => (
                 <img
                   {...(i === 0 ? { src: withBase(im.src), fetchpriority: 'high' } : { 'data-src': withBase(im.src) })}
@@ -67,20 +67,21 @@ const frameLabel = images[0]!.frame === 'telemetry' ? 'Intercepted Telemetry Cap
                 />
               ))}
             </channel-show>
-            <figcaption class="mt-2 flex flex-wrap items-stretch gap-2 border-t border-line-strong pt-2">
-              <p class="flex min-w-0 flex-1 items-center gap-3 px-1 text-sm text-muted">
+            <!-- Phones: caption on its own row, controls full-width below. sm+: one row. -->
+            <figcaption class="mt-2 flex flex-col gap-2 border-t border-line-strong pt-2 sm:flex-row sm:items-stretch">
+              <p class="flex min-w-0 flex-1 items-baseline gap-3 px-1 text-sm text-muted sm:items-center">
                 <span aria-hidden="true" class="hud-label text-[#3dff7a]" data-ch-num>CH 01/{String(images.length).padStart(2, '0')}</span>
                 <span data-ch-caption>{images[0]!.alt}</span>
               </p>
               <span class="sr-only" role="status" data-ch-status></span>
-              <div class="flex items-stretch border border-line-strong">
-                <button type="button" class="wipe flex min-h-11 items-center px-3 hud-label" data-channel="prev" aria-controls={showId}>
+              <div class="flex w-full items-stretch border border-line-strong sm:w-auto">
+                <button type="button" class="wipe flex min-h-11 flex-1 items-center justify-center px-3 hud-label sm:flex-none" data-channel="prev" aria-controls={showId}>
                   <span aria-hidden="true">◀ CH−</span><span class="sr-only">Previous screen</span>
                 </button>
-                <button type="button" class="wipe flex min-h-11 items-center border-x border-line-strong px-3 hud-label" data-channel="toggle" aria-controls={showId} aria-pressed="false">
+                <button type="button" class="wipe flex min-h-11 flex-1 items-center justify-center border-x border-line-strong px-3 hud-label sm:flex-none" data-channel="toggle" aria-controls={showId} aria-pressed="false">
                   <span aria-hidden="true" data-ch-toggle-label>❚❚ Pause</span><span class="sr-only">Pause slideshow</span>
                 </button>
-                <button type="button" class="wipe flex min-h-11 items-center px-3 hud-label" data-channel="next" aria-controls={showId}>
+                <button type="button" class="wipe flex min-h-11 flex-1 items-center justify-center px-3 hud-label sm:flex-none" data-channel="next" aria-controls={showId}>
                   <span aria-hidden="true">CH+ ▶</span><span class="sr-only">Next screen</span>
                 </button>
               </div>
