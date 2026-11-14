@@ -44,7 +44,7 @@
   /* Height of the cross-fade seam between bands. */
   --seam: clamp(6rem, 14vh, 11rem);
   /* Longer, softer seam where the last band dissolves into the footer. */
-  --seam-end: clamp(10rem, 28vh, 18rem);
+  --seam-end: clamp(6rem, 16vh, 10rem); /* last band → footer fade; kept short so Contact sits close to the footer */
 }
 
 /* Map tokens to Tailwind utilities (bg-surface, text-accent, border-line…)

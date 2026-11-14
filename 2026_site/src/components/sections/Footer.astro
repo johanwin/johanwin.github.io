@@ -9,17 +9,19 @@ const LICENSE_URL = 'https://creativecommons.org/licenses/by/4.0/';
 <footer class="site-footer">
   <div class="footer-inner">
     <div aria-hidden="true" class="mx-auto h-2 max-w-7xl hazard-stripes"></div>
-    <div class="mx-auto grid max-w-7xl gap-x-8 gap-y-4 border-t border-line-strong px-4 py-10 sm:px-8 md:grid-cols-[auto_1fr_auto]">
-      <p class="hud-label text-muted">
+    <!-- Phones: stacked lines with real line-height and breathing room; md+: one row. -->
+    <div class="mx-auto grid max-w-7xl items-center gap-x-8 gap-y-5 border-t border-line-strong px-4 pt-10 pb-6 sm:px-8 md:grid-cols-[auto_1fr_auto] md:py-10">
+      <p class="hud-label leading-relaxed! text-muted">
         © {year} {site.name} ·
         <a href={LICENSE_URL} rel="license noopener" target="_blank" class="hover:text-accent"><AbbrText text="CC BY" /> 4.0<span class="sr-only"> license (opens in new tab)</span></a>
       </p>
-      <p class="hud-label text-muted md:whitespace-nowrap md:text-center">Built with Astro + AI co-pilot</p>
+      <p class="hud-label leading-relaxed! text-muted md:whitespace-nowrap md:text-center">Built with Astro + AI co-pilot</p>
       <p class="hud-label text-muted md:text-right">
-        <a href="#top" class="hover:text-accent">Return to top ▲</a>
+        <!-- 44px-tall tap target; the negative margin keeps desktop alignment. -->
+        <a href="#top" class="-my-3 inline-flex min-h-11 items-center hover:text-accent">Return to top <span aria-hidden="true">&nbsp;▲</span></a>
       </p>
     </div>
-    <p class="mx-auto max-w-7xl px-4 pb-8 text-xs leading-relaxed text-muted sm:px-8">
+    <p class="mx-auto max-w-7xl border-t border-line px-4 pt-5 pb-10 text-xs leading-relaxed text-muted sm:px-8 md:border-t-0 md:pt-0 md:pb-8">
       Site content is licensed under
       <a href={LICENSE_URL} rel="license noopener" target="_blank" class="underline decoration-line-strong underline-offset-2 hover:text-accent">Creative Commons Attribution 4.0</a>:
       share and adapt it freely with credit to {site.name}. Client project screenshots, names and logos remain the property of their respective owners and are not covered by this license.
