@@ -22,7 +22,7 @@ export const GET: APIRoute = ({ site: siteUrl }) => {
   const lines = [
     `# ${site.name}`,
     '',
-    `> ${site.title} in ${site.location}, specializing in front-end systems, reusable web component libraries and accessible (WCAG) interfaces. ${years}+ years building for enterprise and agency clients including Allstate, Capital One and Mitsubishi Motors.`,
+    `> ${site.title} in ${site.location}, specializing in front-end systems, reusable web component libraries and accessible (WCAG) interfaces. ${years}+ years building for enterprise and agency clients including Allstate, Capital One and Mitsubishi Motors. Adaptable to change, with hands-on experience working with generative and agentic AI.`,
     '',
     `${site.name} is ${site.availability.toLowerCase()}. This site is his portfolio; each project has a case-study page with screenshots, scope and stack. Client work: source and production links aren't public.`,
     '',

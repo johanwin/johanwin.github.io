@@ -16,7 +16,7 @@ export const site = {
   domain: 'johnnguyen.net',
   /** Profile photo for the About dossier. Leave src empty to show the placeholder slot. */
   portrait: { src: '/images/profile/portrait.webp', alt: 'Portrait of John Nguyen' },
-  bio: 'Two decades turning design into fast, accessible interfaces — from agency sites and HTML email to enterprise component libraries at Capital One and Allstate.',
+  bio: 'Two decades turning design into fast, accessible interfaces, from agency sites and HTML email to enterprise component libraries at Capital One and Allstate. I adapt as the industry shifts, and today that includes building with generative and agentic AI.',
   availability: 'Open to select opportunities',
   description:
     'Portfolio of John Nguyen — senior software engineer in Dallas–Fort Worth building reusable, accessible UI for Allstate, Capital One and more.',
