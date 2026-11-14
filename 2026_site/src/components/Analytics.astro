@@ -8,6 +8,11 @@
  *   instead of relying on gtag's automatic page_view.
  * - One delegated listener reports clicks on links, buttons and any element
  *   marked with `data-track="name"` as a `ui_click` event.
+ * - gtag.js itself is deferred: it's injected only after the page's `load`
+ *   event, when the browser is idle (4s cap), so it never competes with first
+ *   render or hydration. Everything tracked before then (the first page_view,
+ *   early clicks) waits in window.dataLayer and is sent once the script runs —
+ *   the standard gtag queue, so nothing is lost.
  */
 const GA_ID = 'G-4H2DVN8V8K';
 const enabled = import.meta.env.PROD;
@@ -16,7 +21,6 @@ const enabled = import.meta.env.PROD;
 {
   enabled && (
     <>
-      <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
       <script is:inline define:vars={{ GA_ID }}>
         window.dataLayer = window.dataLayer || [];
         window.gtag = function () { window.dataLayer.push(arguments); };
@@ -25,6 +29,18 @@ const enabled = import.meta.env.PROD;
           window.__gaInit = true;
           gtag('js', new Date());
           gtag('config', GA_ID, { send_page_view: false });
+
+          // Deferred loader: after load + idle (or 4s at most).
+          const loadGtag = () => {
+            const s = document.createElement('script');
+            s.async = true;
+            s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+            document.head.appendChild(s);
+          };
+          const whenIdle = () =>
+            'requestIdleCallback' in window ? requestIdleCallback(loadGtag, { timeout: 4000 }) : setTimeout(loadGtag, 1500);
+          if (document.readyState === 'complete') whenIdle();
+          else addEventListener('load', whenIdle, { once: true });
 
           document.addEventListener('astro:page-load', () => {
             gtag('event', 'page_view', {
