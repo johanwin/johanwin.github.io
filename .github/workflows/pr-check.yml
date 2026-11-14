@@ -51,15 +51,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
+          cache-dependency-path: 2026_site/package-lock.json
+      - run: npm ci
       - uses: actions/download-artifact@v4
         with:
           name: dist
           path: 2026_site/dist
-      # Plain static server over the built site (the same files GitHub Pages serves).
+      # Serve the built site with Astro's preview server. It gzips responses like
+      # GitHub Pages does; an uncompressed server (e.g. python http.server) made
+      # the HTML ~6x bigger and cost ~12 points of simulated mobile Performance.
       - name: Serve the build
         run: |
-          python3 -m http.server 4321 --directory dist >/dev/null 2>&1 &
-          for i in $(seq 1 30); do curl -sf http://localhost:4321/ >/dev/null && exit 0; sleep 1; done
+          npx astro preview --port 4321 >/dev/null 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:4321/ >/dev/null && exit 0; sleep 1; done
           echo "server did not start"; exit 1
       # Thresholds live in scripts/lighthouse-ci.mjs. Results go to the job summary.
       - name: Run Lighthouse (mobile + desktop)
