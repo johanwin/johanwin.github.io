@@ -39,7 +39,7 @@ export default function ChangelogTimeline({ entries }: { entries: ExperienceEntr
           viewport={{ once: true, amount: 0.1 }}
           className="relative border-l border-line-strong"
         >
-          {entries.map((e, i) => (
+          {entries.map((e) => (
             <m.li key={e.hash} variants={entry} className="relative pb-10 pl-6 last:pb-0 sm:pl-10">
               {/* commit node */}
               <span
