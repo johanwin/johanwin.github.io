@@ -12,6 +12,11 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: 'deps'
+    ignore:
+      # @astrojs/check (the type check in `npm run build`) only supports
+      # TypeScript 5–6; TS 7 breaks `npm ci`. Remove once it supports 7.
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
     groups:
       # Astro and its integrations move together.
       astro:
