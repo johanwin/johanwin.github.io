@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /?q=user/register
 
-Sitemap: https://johnnguyen.org/sitemap.xml
+Sitemap: https://johnnguyen.net/sitemap-index.xml

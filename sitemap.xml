@@ -1,26 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<url>
-  <loc>https://johnnguyen.org/</loc>
-  <lastmod>2026-11-06T04:17:11+00:00</lastmod>
-</url>
-<url>
-  <loc>https://johnnguyen.net/about/</loc>
-</url>
-<url>
-  <loc>https://johnnguyen.net/contact/</loc>
-</url>
-<url>
-  <loc>https://johnnguyen.net/projects/capitalone</loc>
-</url>
-<url>
-  <loc>https://johnnguyen.net/projects/icrossing</loc>
-</url>
-<url>
-  <loc>https://johnnguyen.net/projects/hawkeye</loc>
-</url>
-</urlset>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap><loc>https://johnnguyen.net/sitemap-0.xml</loc></sitemap>
+</sitemapindex>
