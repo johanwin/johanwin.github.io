@@ -1,0 +1,79 @@
+name: PR checks
+
+# Runs on every pull request into master that touches the 2026 site (or CI
+# config), so a broken build or a Lighthouse regression shows up as a red X on
+# the PR instead of a failed deploy after merging.
+on:
+  pull_request:
+    branches: [master]
+    paths: ['2026_site/**', '.github/workflows/**', '.github/dependabot.yml']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & type-check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 2026_site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: 2026_site/package-lock.json
+      - run: npm ci
+      # `npm run build` = astro check (types) + astro build
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: 2026_site/dist
+          include-hidden-files: true
+          retention-days: 3
+
+  lighthouse:
+    name: Lighthouse
+    needs: build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 2026_site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: 2026_site/package-lock.json
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: 2026_site/dist
+      # Serve the built site with Astro's preview server. It gzips responses like
+      # GitHub Pages does; an uncompressed server (e.g. python http.server) made
+      # the HTML ~6x bigger and cost ~12 points of simulated mobile Performance.
+      - name: Serve the build
+        run: |
+          npx astro preview --port 4321 >/dev/null 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:4321/ >/dev/null && exit 0; sleep 1; done
+          echo "server did not start"; exit 1
+      # Thresholds live in scripts/lighthouse-ci.mjs. Results go to the job summary.
+      - name: Run Lighthouse (mobile + desktop)
+        run: node scripts/lighthouse-ci.mjs
+        env:
+          LH_BASE_URL: http://localhost:4321
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-reports
+          path: 2026_site/lighthouse-reports
+          retention-days: 14

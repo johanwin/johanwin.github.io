@@ -55,3 +55,9 @@ jobs:
         run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Wait for this commit's build to be live, then check key pages/files.
+      # A failure turns the run red and GitHub emails you.
+      - name: Smoke test the live site
+        run: bash scripts/smoke-test.sh
+        env:
+          SITE_URL: https://johnnguyen.net
