@@ -10,7 +10,9 @@
     "check": "astro check",
     "deploy": "npm run build && gh-pages --dist dist --dotfiles --message \"Deploy 2026 site\"",
     "resume": "sh design/resume/build.sh",
-    "og": "node design/og/build.mjs"
+    "og": "node design/og/build.mjs",
+    "lighthouse": "node scripts/lighthouse-ci.mjs",
+    "smoke": "bash scripts/smoke-test.sh"
   },
   "dependencies": {
     "@astrojs/react": "^7.1.4",
