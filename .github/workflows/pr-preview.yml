@@ -1,0 +1,60 @@
+name: PR preview
+
+# Publishes each pull request to https://johnnguyen.net/pr-preview/pr-<number>/
+# and comments the link on the PR, so changes can be checked on a phone or
+# iPad before merging. The preview is removed when the PR is closed or merged.
+#
+# The site is built with BASE_PATH set to the preview folder (every internal
+# URL goes through withBase()). Preview builds skip Google Analytics and are
+# marked noindex (see BaseLayout / Analytics).
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+permissions:
+  contents: write        # push the preview into gh-pages/pr-preview/
+  pull-requests: write   # comment the preview link on the PR
+  pages: write           # request the Pages rebuild
+
+# Shares the deploy workflow's group so the two never push to gh-pages at once.
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    # Forks can't push to this repo's gh-pages; only same-repo PRs get previews.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        if: github.event.action != 'closed'
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: 2026_site/package-lock.json
+
+      - name: Build for the preview path
+        if: github.event.action != 'closed'
+        working-directory: 2026_site
+        run: |
+          npm ci
+          npm run build
+        env:
+          BASE_PATH: /pr-preview/pr-${{ github.event.number }}/
+
+      # Deploys on open/update, removes on close; comments the URL on the PR.
+      - uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: 2026_site/dist
+          preview-branch: gh-pages
+          umbrella-dir: pr-preview
+          pages-base-url: johnnguyen.net
+
+      # Pushes made with GITHUB_TOKEN don't trigger Pages' own build.
+      - name: Request GitHub Pages rebuild
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

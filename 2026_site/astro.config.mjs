@@ -50,16 +50,20 @@ export default defineConfig({
   // Old URLs keep working. GitHub Pages can't send HTTP 301s, so Astro emits a
   // tiny page per path with an instant meta refresh + rel=canonical to the new
   // URL, which search engines treat as a permanent redirect.
-  redirects: {
-    // Previous production site (old sitemap)
-    '/about': '/#about',
-    '/contact': '/#contact',
-    '/projects/capitalone': '/projects/capital-one-home-lending',
-    '/projects/icrossing': '/projects/bcbs-tennessee',
-    '/projects/hawkeye': '/projects/hawkeye-agency',
-    // Renamed / merged projects (Nov 2026)
-    '/projects/allstate-mesh': '/projects/allstate',
-    '/projects/capital-one-home-loans': '/projects/capital-one-home-lending',
-    '/projects/capital-one-home-equity': '/projects/capital-one-home-lending',
-  },
+  // Destinations get the base path (Astro doesn't add it), so PR previews under
+  // /pr-preview/… redirect within the preview instead of jumping to the live site.
+  redirects: Object.fromEntries(
+    Object.entries({
+      // Previous production site (old sitemap)
+      '/about': '/#about',
+      '/contact': '/#contact',
+      '/projects/capitalone': '/projects/capital-one-home-lending',
+      '/projects/icrossing': '/projects/bcbs-tennessee',
+      '/projects/hawkeye': '/projects/hawkeye-agency',
+      // Renamed / merged projects (Nov 2026)
+      '/projects/allstate-mesh': '/projects/allstate',
+      '/projects/capital-one-home-loans': '/projects/capital-one-home-lending',
+      '/projects/capital-one-home-equity': '/projects/capital-one-home-lending',
+    }).map(([from, to]) => [from, base.replace(/\/$/, '') + to]),
+  ),
 });

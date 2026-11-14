@@ -25,7 +25,9 @@
  *   the standard gtag queue, so nothing is lost.
  */
 const GA_ID = 'G-4H2DVN8V8K';
-const enabled = import.meta.env.PROD;
+// Production builds at the site root only: PR previews (served from /pr-preview/…)
+// must not send hits to the real property.
+const enabled = import.meta.env.PROD && import.meta.env.BASE_URL === '/';
 ---
 
 {
