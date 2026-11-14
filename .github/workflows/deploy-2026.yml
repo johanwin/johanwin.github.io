@@ -11,7 +11,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: write   # push the build to gh-pages
+  pages: write      # request the Pages rebuild below
 
 concurrency:
   group: gh-pages
@@ -39,3 +40,10 @@ jobs:
           publish_dir: ./2026_site/dist
           publish_branch: gh-pages
           commit_message: Deploy 2026 site
+      # A push made with GITHUB_TOKEN doesn't trigger other workflows, including
+      # GitHub's own "pages build and deployment" — so without this the gh-pages
+      # branch updates but the live site stays on the previous build.
+      - name: Request GitHub Pages rebuild
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
