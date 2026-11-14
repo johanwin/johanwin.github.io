@@ -1,6 +1,4 @@
 import { useId, useState } from 'react';
-import { useMotionOff } from '@/lib/useMotionOff';
-import { AnimatePresence, LazyMotion, MotionConfig, domAnimation, m, type Variants } from 'framer-motion';
 import type { Project } from '@/data/projects';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,33 +12,24 @@ interface ProjectCardProps {
 
 type View = 'capture' | 'arch';
 
-const panel: Variants = {
-  enter: { opacity: 0, clipPath: 'inset(0 0 0 100%)' },
-  center: { opacity: 1, clipPath: 'inset(0 0 0 0%)', transition: { duration: 0.3, ease: [0.7, 0, 0.2, 1] } },
-  exit: { opacity: 0, clipPath: 'inset(0 100% 0 0)', transition: { duration: 0.2 } },
-};
-
 
 export default function ProjectCard({ project, index }: ProjectCardProps) {
-  const motionOff = useMotionOff();
   const [view, setView] = useState<View>('capture');
+  // The panel wipe (.panel-wipe, CSS) plays only after the first tab switch,
+  // never on page load.
+  const [switched, setSwitched] = useState(false);
+  const show = (v: View) => { setView(v); setSwitched(true); };
   const uid = useId();
   const { images } = project;
   const image = images[0]!;
   const frameLabel = image.frame === 'telemetry' ? 'Intercepted Telemetry Capture' : 'System Schematic';
   const detailHref = withBase(`/projects/${project.slug}`);
 
+  // Entrance is a CSS scroll-driven animation (.card-in): the server HTML stays
+  // fully visible for crawlers and no-JS readers instead of shipping as opacity:0.
   return (
-    <LazyMotion features={domAnimation} strict>
-      <MotionConfig reducedMotion={motionOff ? 'always' : 'user'}>
-        {/*
-          Entrance is a CSS scroll-driven animation (.card-in), not Framer's
-          initial/whileInView: the server HTML stays fully visible for crawlers
-          and no-JS readers instead of shipping as opacity:0.
-        */}
-        <m.article
+        <article
           data-track-project={project.slug}
-          whileHover="hover"
           className="card-in group h-full"
           style={{ ['--card-i' as string]: index % 3 }}
           aria-labelledby={`${uid}-title`}
@@ -75,11 +64,11 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
                   aria-selected={view === v}
                   aria-controls={`${uid}-panel`}
                   tabIndex={view === v ? 0 : -1}
-                  onClick={() => setView(v)}
+                  onClick={() => show(v)}
                   onKeyDown={(e) => {
                     if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
                       const next = v === 'capture' ? 'arch' : 'capture';
-                      setView(next);
+                      show(next);
                       document.getElementById(`${uid}-tab-${next}`)?.focus();
                     }
                   }}
@@ -101,9 +90,9 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
               aria-labelledby={`${uid}-tab-${view}`}
               className="relative z-10 aspect-[16/10] overflow-hidden border-b border-line bg-bg"
             >
-              <AnimatePresence mode="wait" initial={false}>
+              {/* key remounts the panel on switch so the CSS wipe replays. */}
                 {view === 'capture' ? (
-                  <m.div key="capture" variants={panel} initial="enter" animate="center" exit="exit" className="absolute inset-0">
+                  <div key="capture" className={cn('absolute inset-0', switched && 'panel-wipe')}>
                     {/*
                       The capture opens the dossier (same destination as the title).
                       It's a duplicate of the title link, so it's skipped by keyboard
@@ -156,16 +145,9 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
                       </span>
                       <Crosshairs />
                     </a>
-                  </m.div>
+                  </div>
                 ) : (
-                  <m.div
-                    key="arch"
-                    variants={panel}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    className="absolute inset-0 overflow-auto p-4"
-                  >
+                  <div key="arch" className={cn('absolute inset-0 overflow-auto p-4', switched && 'panel-wipe')}>
                     <p aria-hidden="true" className="hud-label mb-3 text-accent">// SCOPE</p>
                     <ol className="space-y-2 text-xs leading-relaxed">
                       {project.scope.map((line, i) => (
@@ -176,9 +158,8 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
                       ))}
                     </ol>
                     <p className="mt-4 text-xs leading-relaxed text-muted"><AbbrText text={project.description} /></p>
-                  </m.div>
+                  </div>
                 )}
-              </AnimatePresence>
             </div>
 
             {/* ── Telemetry tags ─────────────────────────── */}
@@ -215,9 +196,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
               <BracketLink href={detailHref} label="Open dossier" sr={`${project.title} case study`} />
             </CardFooter>
           </Card>
-        </m.article>
-      </MotionConfig>
-    </LazyMotion>
+        </article>
   );
 }
 

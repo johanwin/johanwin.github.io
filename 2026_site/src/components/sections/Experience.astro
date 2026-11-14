@@ -25,7 +25,9 @@ docs     specs &amp; process</code></pre>
     </aside>
 
     <div class="lg:col-span-9">
-      <ChangelogTimeline client:visible entries={experience} />
+      <!-- Rendered to static HTML only (no client:*): it has no interactivity, and
+           its entrance animation is pure CSS. Ships zero JavaScript. -->
+      <ChangelogTimeline entries={experience} />
     </div>
   </div>
 </Band>
