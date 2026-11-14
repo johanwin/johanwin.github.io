@@ -42,12 +42,15 @@ jobs:
           cache-dependency-path: 2026_site/package-lock.json
       - run: npm ci
       - run: npm run build
-      - uses: peaceiris/actions-gh-pages@v4
+      # Replaces the site on gh-pages but keeps pr-preview/ (per-PR previews from
+      # pr-preview.yml). Normal commits, no force-push (gh-pages is protected).
+      - uses: JamesIves/github-pages-deploy-action@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./2026_site/dist
-          publish_branch: gh-pages
-          commit_message: Deploy 2026 site
+          folder: 2026_site/dist
+          branch: gh-pages
+          clean-exclude: pr-preview/
+          force: false
+          commit-message: Deploy 2026 site
       # A push made with GITHUB_TOKEN doesn't trigger other workflows, including
       # GitHub's own "pages build and deployment" — so without this the gh-pages
       # branch updates but the live site stays on the previous build.

@@ -4,7 +4,7 @@
 # rebuild from being auto-disabled (GitHub disables schedules after 60 quiet days).
 version: 2
 updates:
-  # npm packages for the 2026 site only (older site folders are frozen).
+  # npm packages for the live 2026 site.
   - package-ecosystem: npm
     directory: /2026_site
     schedule:
@@ -19,6 +19,24 @@ updates:
       # Everything else in one PR (React, Tailwind, Framer Motion, …).
       everything-else:
         patterns: ['*']
+
+  # Archived sites (2017_site, 2024_site) are kept for reference only and are not
+  # deployed: ignore everything there so Dependabot opens no version OR security
+  # PRs for them. Security monitoring stays on for 2026_site above.
+  - package-ecosystem: npm
+    directory: /2017_site
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 0
+    ignore:
+      - dependency-name: '*'
+  - package-ecosystem: npm
+    directory: /2024_site
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 0
+    ignore:
+      - dependency-name: '*'
 
   # Versions of the Actions used in .github/workflows (checkout, setup-node, …).
   - package-ecosystem: github-actions

@@ -1,12 +1,13 @@
 name: PR checks
 
-# Runs on every pull request into master that touches the 2026 site (or CI
-# config), so a broken build or a Lighthouse regression shows up as a red X on
-# the PR instead of a failed deploy after merging.
+# Runs on every pull request into master, so a broken build or a Lighthouse
+# regression shows up as a red X on the PR instead of a failed deploy.
+# Both jobs are REQUIRED by the "Require PR checks on master" ruleset, so there
+# is deliberately no `paths:` filter: a required check that never starts would
+# leave a PR waiting forever.
 on:
   pull_request:
     branches: [master]
-    paths: ['2026_site/**', '.github/workflows/**', '.github/dependabot.yml']
 
 permissions:
   contents: read
