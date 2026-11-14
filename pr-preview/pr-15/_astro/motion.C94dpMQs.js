@@ -1,0 +1,1 @@
+var e=`motionchange`,t=()=>typeof document<`u`&&document.documentElement.dataset.motion===`off`,n=e=>{window.__setMotion?.(e)},r=t=>(document.addEventListener(e,t),()=>document.removeEventListener(e,t));export{r as n,n as r,t};
