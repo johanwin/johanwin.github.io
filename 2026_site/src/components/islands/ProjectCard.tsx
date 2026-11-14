@@ -20,11 +20,6 @@ const panel: Variants = {
   exit: { opacity: 0, clipPath: 'inset(0 100% 0 0)', transition: { duration: 0.2 } },
 };
 
-const STATUS_VARIANT = {
-  ACTIVE: 'signal',
-  SHIPPED: 'accent',
-  ARCHIVED: 'default',
-} as const;
 
 export default function ProjectCard({ project, index }: ProjectCardProps) {
   const motionOff = useMotionOff();
@@ -52,12 +47,16 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
         >
           <Card className="h-full brackets [--bk-c:transparent] transition-[--bk-size] group-hover:[--bk-c:var(--accent)] group-hover:[--bk-size:28px] group-focus-within:[--bk-c:var(--accent)]">
             {/* ── HUD strip ───────────────────────────────── */}
-            <div className="flex items-stretch border-b border-line-strong text-[0.6875rem]">
+            {/* Fixed height so every card's strip matches, with or without the Current badge. */}
+            <div className="flex h-8 items-stretch border-b border-line-strong text-[0.6875rem]">
               <span aria-hidden="true" className="flex items-center bg-fg px-2 hud-label text-bg">{project.code}</span>
               {project.era && <span className="flex items-center px-2 hud-label text-muted">{project.era}</span>}
-              <Badge variant={STATUS_VARIANT[project.status]} className="my-auto ml-auto mr-2">
-                {project.status}
-              </Badge>
+              {/* Only ongoing work gets a badge; the era already dates everything else. */}
+              {project.current && (
+                <Badge variant="signal" className="my-auto ml-auto mr-2">
+                  Current
+                </Badge>
+              )}
             </div>
 
             {/* ── View toggle (tabs) ─────────────────────── */}

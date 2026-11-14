@@ -19,6 +19,43 @@ const { images } = project;
 const multi = images.length > 1;
 const showId = `show-${project.slug}`;
 const frameLabel = images[0]!.frame === 'telemetry' ? 'Intercepted Telemetry Capture' : 'System Schematic';
+
+/* Structured data (schema.org) so search engines and AI agents can tell what
+   each project is: a CreativeWork by John, for a client, over a time span,
+   plus the page's breadcrumb trail. */
+const abs = (path: string) => new URL(withBase(path), Astro.site).href;
+const pageUrl = abs(`/projects/${project.slug}/`);
+const client = project.telemetry.find((t) => t.k === 'CLIENT')?.v;
+const agency = project.telemetry.find((t) => t.k === 'AGENCY')?.v;
+// '2015–2018' → '2015/2018', '2018–Now' → '2018/..' (ISO 8601 intervals)
+const temporal = project.era?.replace(/–Now$/i, '/..').replace('–', '/');
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: project.title,
+    headline: project.title,
+    description: project.description,
+    abstract: project.summary,
+    url: pageUrl,
+    image: abs(`/og/${project.slug}.jpg`),
+    ...(temporal && { temporalCoverage: temporal }),
+    keywords: project.stack.join(', '),
+    creator: { '@type': 'Person', name: 'John Nguyen', url: abs('/') },
+    ...(client && { sourceOrganization: { '@type': 'Organization', name: client } }),
+    ...(agency && { producer: { '@type': 'Organization', name: agency } }),
+    isPartOf: { '@type': 'WebSite', name: 'John Nguyen', url: abs('/') },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: abs('/') },
+      { '@type': 'ListItem', position: 2, name: 'Projects', item: abs('/#projects') },
+      { '@type': 'ListItem', position: 3, name: project.title, item: pageUrl },
+    ],
+  },
+];
 ---
 
 <BaseLayout
@@ -28,6 +65,7 @@ const frameLabel = images[0]!.frame === 'telemetry' ? 'Intercepted Telemetry Cap
   ogImageAlt={`${project.title} — project by John Nguyen`}
 >
   <!-- Case studies inherit the Projects band tone (deep navy). -->
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   <Band tone="projects" labelledby="project-title">
   <article class="py-10 sm:py-16" data-track-project={project.slug} data-track-section="project_page">
     <nav aria-label="Breadcrumb" class="mb-8">
@@ -42,7 +80,7 @@ const frameLabel = images[0]!.frame === 'telemetry' ? 'Intercepted Telemetry Cap
 
     <header class="grid gap-6 lg:grid-cols-12 lg:items-end">
       <div class="lg:col-span-8">
-        <p class="hud-label text-accent"><span aria-hidden="true">// {project.code} · </span>{[project.era, project.status].filter(Boolean).join(' · ')}</p>
+        <p class="hud-label text-accent"><span aria-hidden="true">// {project.code} · </span>{project.era}{project.current && <> · <span class="text-signal">Current</span></>}</p>
         <!-- Same view-transition name as the card title → the title morphs between pages. -->
         <h1
           id="project-title"
