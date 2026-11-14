@@ -11,7 +11,8 @@
  *   - mouse drag    → spin it (starts on empty space, not on the panels' text)
  *   - touch drag    → spin it; vertical swipes still scroll the page
  *
- * Performance guards: renders only while on screen (IntersectionObserver),
+ * Performance guards: starts only on first interaction (pointer/touch/scroll/key),
+ * renders only while on screen (IntersectionObserver),
  * adaptive resolution that drops when frames run slow, DPR capped, bounding
  * sphere early-out in the shader, and a CSS fallback if WebGL is unavailable.
  * prefers-reduced-motion: no idle animation; it only moves when you move it.
@@ -205,7 +206,26 @@ void main() {
   class SymbioteCanvas extends HTMLElement {
     #cleanup: Array<() => void> = [];
 
+    #started = false;
+
+    /*
+     * Deferred start: the raymarched shader is the most expensive thing on the
+     * page (it dominated Lighthouse mobile's blocking time and delayed first
+     * paint), so the static CSS glow shows first and WebGL only spins up on the
+     * visitor's first interaction. Desktop visitors move the mouse almost
+     * immediately; on phones it starts on the first touch or scroll.
+     */
     connectedCallback() {
+      const events = ['pointermove', 'pointerdown', 'touchstart', 'keydown', 'scroll', 'wheel'] as const;
+      const go = () => {
+        events.forEach((e) => removeEventListener(e, go));
+        if (!this.#started && this.isConnected) { this.#started = true; this.#start(); }
+      };
+      events.forEach((e) => addEventListener(e, go, { passive: true }));
+      this.#cleanup.push(() => events.forEach((e) => removeEventListener(e, go)));
+    }
+
+    #start() {
       const canvas = this.querySelector('canvas')!;
       const gl = canvas.getContext('webgl', { premultipliedAlpha: true, antialias: false, alpha: true, powerPreference: 'low-power' });
       if (!gl) return; // CSS fallback stays visible
@@ -407,6 +427,7 @@ void main() {
     disconnectedCallback() {
       this.#cleanup.forEach((fn) => fn());
       this.#cleanup = [];
+      this.#started = false;
     }
 
     #compile(gl: WebGLRenderingContext) {

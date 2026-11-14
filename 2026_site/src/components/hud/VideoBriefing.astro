@@ -39,7 +39,6 @@ const poster = withBase('/images/profile/video-poster.webp');
     type="button"
     data-video-open
     aria-haspopup="dialog"
-    aria-label={`Play video: ${title}`}
     class="group/wipe block w-full cursor-pointer text-left"
   >
     <span class="crt block aspect-video border-b border-line-strong">
@@ -62,7 +61,7 @@ const poster = withBase('/images/profile/video-poster.webp');
     </span>
     <span class="flex items-center gap-3 px-3 py-3">
       <span class="font-semibold uppercase tracking-wider">{title}</span>
-      <span class="ml-auto hud-label text-accent">▶ Play</span>
+      <span class="ml-auto hud-label text-accent"><span aria-hidden="true">▶ </span>Play video</span>
     </span>
   </button>
 

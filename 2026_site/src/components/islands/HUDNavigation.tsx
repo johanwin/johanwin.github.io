@@ -162,7 +162,6 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
           <a
             href={withBase('/')}
             className="group flex items-center gap-3 border-r border-line-strong px-3 sm:px-4"
-            aria-label={`${name} — home`}
             onPointerEnter={twirlLogo}
             onFocus={twirlLogo}
           >
@@ -177,8 +176,14 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
               className="size-7 shrink-0"
               onAnimationEnd={(e) => e.currentTarget.classList.remove('logo-twirl')}
             />
-            <span className="hidden flex-col leading-tight sm:flex">
-              <span className="hud-label text-fg group-hover:text-accent">{name}</span>
+            {/* Accessible name = the visible name + ", home" (no aria-label override,
+                so it matches what voice-control users see). On phones the text is
+                visually hidden but still read. */}
+            <span className="sr-only flex-col leading-tight sm:not-sr-only sm:flex">
+              <span className="hud-label text-fg group-hover:text-accent">
+                {name}
+                <span className="sr-only">, home</span>
+              </span>
               <span aria-hidden="true" className="hud-label text-[0.6rem] text-muted">UNIT {callsign}</span>
             </span>
           </a>
