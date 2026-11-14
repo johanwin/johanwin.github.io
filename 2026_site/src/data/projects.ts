@@ -17,7 +17,8 @@ export type Project = {
   title: string;
   /** Display era, e.g. '2015–2018'. Omit if unknown. */
   era?: string;
-  status: 'ACTIVE' | 'SHIPPED' | 'ARCHIVED';
+  /** Ongoing work — shows a single CURRENT badge (the era already dates the rest). */
+  current?: boolean;
   summary: string;
   description: string;
   stack: string[];
@@ -50,7 +51,7 @@ export const projects: Project[] = [
     code: 'PRJ-0x01',
     title: 'Allstate',
     era: '2018–Now',
-    status: 'ACTIVE',
+    current: true,
     summary: "Enterprise front-end work for Allstate, including the Mesh library of reusable web components.",
     description:
       "A shared library of reusable web components built for Allstate's eProposal, Milewise, Roadside Services and Cross-Enterprise projects, implemented with UX designers against the company's human interface guidelines.",
@@ -79,7 +80,6 @@ export const projects: Project[] = [
     code: 'PRJ-0x02',
     title: 'Capital One Home Lending',
     era: '2015–2018',
-    status: 'SHIPPED',
     summary: "Angular front ends for Capital One's Home Loans website and home equity application.",
     description:
       "Developed and maintained Capital One's Home Loans website in Angular, integrated with the company's enterprise content management system, and built the home equity application on the same shared components — with a focus on download performance and WCAG accessibility throughout.",
@@ -109,7 +109,6 @@ export const projects: Project[] = [
     code: 'PRJ-0x03',
     title: 'BlueCross BlueShield of Tennessee',
     era: '2012–2015',
-    status: 'SHIPPED',
     summary: 'Client website build delivered at iCrossing.',
     description:
       'Website work for BlueCross BlueShield of Tennessee as an iCrossing UI engineer: project setup, front-end build, and enhancements that improved functionality and speed.',
@@ -134,7 +133,6 @@ export const projects: Project[] = [
     code: 'PRJ-0x04',
     title: 'Mitsubishi Motors Build and Price',
     era: '2012–2015',
-    status: 'SHIPPED',
     summary: 'Vehicle configurator for building a Mitsubishi and seeing its price.',
     description:
       'An interactive build-and-price tool that walks shoppers through choosing a Mitsubishi model, trim and options with pricing updated along the way.',
@@ -158,7 +156,6 @@ export const projects: Project[] = [
     code: 'PRJ-0x05',
     title: 'ThyssenKrupp Elevator',
     era: '2008–2012',
-    status: 'ARCHIVED',
     summary: 'Website and HTML email work delivered at Hawkeye.',
     description:
       "Built web pages and HTML emails for ThyssenKrupp Elevator at Hawkeye, working with art directors and UI designers to carry their vision through to the final build.",
@@ -182,7 +179,6 @@ export const projects: Project[] = [
     code: 'PRJ-0x06',
     title: 'Hawkeye Agency Site',
     era: '2008–2012',
-    status: 'ARCHIVED',
     summary: "Development of the agency's new website.",
     description: "Led development of Hawkeye's new agency website, translating the creative team's designs into the shipped site.",
     stack: ['HTML', 'CSS', 'JavaScript'],

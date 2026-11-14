@@ -83,7 +83,7 @@ for (const p of projects) {
   const client = p.telemetry.find((t) => t.k === 'CLIENT')?.v ?? '';
   const role = p.telemetry.find((t) => t.k === 'ROLE')?.v;
   await shoot(base('#0b1a33', `
-    <div style="position:absolute;left:64px;top:60px"><span class="chip"><b>${esc(p.code)}</b><span>${esc(p.era ?? p.status)}</span></span></div>
+    <div style="position:absolute;left:64px;top:60px"><span class="chip"><b>${esc(p.code)}</b><span>${esc(p.era ?? '')}</span></span></div>
     <h1 class="wide" style="position:absolute;left:62px;top:150px;width:520px;font-size:${size}px;line-height:.95">${esc(title)}</h1>
     <p class="meta" style="position:absolute;left:64px;bottom:118px;width:520px;font-size:19px;line-height:1.5">${esc(client)}${role ? ` <em>·</em> ${esc(role)}` : ''}</p>
     <p class="meta" style="position:absolute;left:64px;bottom:62px;font-size:19px;color:#ff6b1a">johnnguyen.net</p>
