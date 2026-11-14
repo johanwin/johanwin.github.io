@@ -1,4 +1,5 @@
 import { LazyMotion, MotionConfig, domAnimation, m, type Variants } from 'framer-motion';
+import { useMotionOff } from '@/lib/useMotionOff';
 import type { ChangeType, ExperienceEntry } from '@/data/experience';
 import { cn } from '@/lib/utils';
 
@@ -26,9 +27,10 @@ const line: Variants = {
 const fmt = (ym: string) => (ym === 'HEAD' ? 'PRESENT' : ym.replace('-', '.'));
 
 export default function ChangelogTimeline({ entries }: { entries: ExperienceEntry[] }) {
+  const motionOff = useMotionOff();
   return (
     <LazyMotion features={domAnimation} strict>
-      <MotionConfig reducedMotion="user">
+      <MotionConfig reducedMotion={motionOff ? 'always' : 'user'}>
         <m.ol
           variants={list}
           initial="hidden"

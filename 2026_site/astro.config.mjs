@@ -39,4 +39,11 @@ export default defineConfig({
   },
 
   compressHTML: true,
+
+  // Old project URLs (renamed / merged Nov 2026) keep working.
+  redirects: {
+    '/projects/allstate-mesh': '/projects/allstate',
+    '/projects/capital-one-home-loans': '/projects/capital-one-home-lending',
+    '/projects/capital-one-home-equity': '/projects/capital-one-home-lending',
+  },
 });

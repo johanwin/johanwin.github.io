@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { useMotionOff } from '@/lib/useMotionOff';
+import { setMotion } from '@/lib/motion';
 import { navigate } from 'astro:transitions/client';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation, m, type Variants } from 'framer-motion';
@@ -92,7 +94,14 @@ function useScrollSpy(ids: string[]) {
 }
 
 /* ---------- component ----------------------------------------------------- */
+/** Start the logo twirl unless one is already running. */
+const twirlLogo = (e: { currentTarget: HTMLElement }) => {
+  const img = e.currentTarget.querySelector('img');
+  if (img && !img.classList.contains('logo-twirl')) img.classList.add('logo-twirl');
+};
+
 export default function HUDNavigation({ links, callsign, name, timezone, build }: HUDNavigationProps) {
+  const motionOff = useMotionOff();
   const [open, setOpen] = useState(false);
   const clock = useClock(timezone);
   const active = useScrollSpy(links.map((l) => l.href.split('#')[1] ?? ''));
@@ -133,7 +142,7 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
     const url = new URL(href, location.href);
     if (url.pathname !== location.pathname) return void navigate(url.pathname + url.hash);
     const target = url.hash ? document.getElementById(url.hash.slice(1)) : null;
-    const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches && !motionOff;
     history.pushState(null, '', url.hash || url.pathname);
     if (target) {
       target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
@@ -147,15 +156,27 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
 
   return (
     <LazyMotion features={domAnimation} strict>
-      <MotionConfig reducedMotion="user">
+      <MotionConfig reducedMotion={motionOff ? 'always' : 'user'}>
         <div className="mx-auto flex h-14 max-w-7xl items-stretch border-x border-line-strong bg-bg/85 backdrop-blur-md md:h-16">
           {/* ── Unit ID ─────────────────────────────── */}
           <a
             href={withBase('/')}
             className="group flex items-center gap-3 border-r border-line-strong px-3 sm:px-4"
             aria-label={`${name} — home`}
+            onPointerEnter={twirlLogo}
+            onFocus={twirlLogo}
           >
-            <img src={withBase('/logo.svg')} alt="" aria-hidden="true" width={28} height={28} className="size-7 shrink-0" />
+            {/* Twirls on hover/focus: the class is added once and removed when the
+                animation ends, so a spin always finishes upright (no snap-back). */}
+            <img
+              src={withBase('/logo.svg')}
+              alt=""
+              aria-hidden="true"
+              width={28}
+              height={28}
+              className="size-7 shrink-0"
+              onAnimationEnd={(e) => e.currentTarget.classList.remove('logo-twirl')}
+            />
             <span className="hidden flex-col leading-tight sm:flex">
               <span className="hud-label text-fg group-hover:text-accent">{name}</span>
               <span aria-hidden="true" className="hud-label text-[0.6rem] text-muted">UNIT {callsign}</span>
@@ -217,10 +238,32 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
             </ul>
           </nav>
 
+          {/* ── Motion toggle (a11y) ──────────────────
+               Stops every animation site-wide (src/lib/motion.ts). Accessible
+               name "Motion"; aria-pressed = animations on. The ON/OFF tag is
+               shown by CSS from <html data-motion>, so it's right pre-hydration. */}
+          <button
+            type="button"
+            aria-pressed={!motionOff}
+            title={motionOff ? 'Turn animations back on' : 'Stop animations on this site'}
+            onClick={() => setMotion(!motionOff)}
+            className="wipe ml-auto flex min-w-14 items-center justify-center gap-2 border-l border-line-strong px-3 hud-label md:ml-0"
+          >
+            <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4">
+              <path className="motion-state-on" d="M2 8c2-4 4-4 6 0s4 4 6 0" fill="none" stroke="currentColor" strokeWidth="1.6" />
+              <path className="motion-state-off" d="M2 8h12" fill="none" stroke="currentColor" strokeWidth="1.6" />
+            </svg>
+            <span className="sr-only lg:not-sr-only">Motion</span>
+            <span aria-hidden="true" className="hidden sm:inline">
+              <span className="motion-state-on text-signal">On</span>
+              <span className="motion-state-off text-muted">Off</span>
+            </span>
+          </button>
+
           {/* ── Mobile drawer ───────────────────────── */}
           <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
             <DialogPrimitive.Trigger
-              className="ml-auto flex min-w-14 items-center justify-center border-l border-line-strong px-3 md:hidden"
+              className="flex min-w-14 items-center justify-center border-l border-line-strong px-3 md:hidden"
               aria-label="Open navigation menu"
             >
               <span aria-hidden="true" className="flex w-6 flex-col gap-1.5">

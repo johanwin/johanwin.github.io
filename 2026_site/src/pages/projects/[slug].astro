@@ -14,7 +14,10 @@ const { project } = Astro.props;
 
 const i = projects.findIndex((p) => p.slug === project.slug);
 const next = projects[(i + 1) % projects.length]!;
-const frameLabel = project.image.frame === 'telemetry' ? 'Intercepted Telemetry Capture' : 'System Schematic';
+const { images } = project;
+const multi = images.length > 1;
+const showId = `show-${project.slug}`;
+const frameLabel = images[0]!.frame === 'telemetry' ? 'Intercepted Telemetry Capture' : 'System Schematic';
 ---
 
 <BaseLayout title={project.title} description={project.summary}>
@@ -47,16 +50,54 @@ const frameLabel = project.image.frame === 'telemetry' ? 'Intercepted Telemetry 
     </header>
 
     <HudFrame label="CAPTURE" meta={frameLabel.toUpperCase()} class="mt-14 bg-bg p-2 sm:p-3">
-      <figure>
-        <img
-          src={withBase(project.image.src)}
-          alt={project.image.alt}
-          width={project.image.width}
-          height={project.image.height}
-          class="h-auto w-full"
-          fetchpriority="high"
-        />
-        <figcaption class="sr-only">{project.image.alt}</figcaption>
+      <figure data-channel-host>
+        {multi ? (
+          <>
+            <!-- Channel-switch slideshow: autoplays on screen, holds on hover/focus,
+                 and has pause + prev/next controls below (WCAG 2.2.2). -->
+            <channel-show id={showId} trigger="auto" interval="5000" data-fit="contain" class="aspect-[16/10] w-full">
+              {images.map((im, i) => (
+                <img
+                  {...(i === 0 ? { src: withBase(im.src), fetchpriority: 'high' } : { 'data-src': withBase(im.src) })}
+                  alt={im.alt}
+                  width={im.width}
+                  height={im.height}
+                  decoding="async"
+                />
+              ))}
+            </channel-show>
+            <figcaption class="mt-2 flex flex-wrap items-stretch gap-2 border-t border-line-strong pt-2">
+              <p class="flex min-w-0 flex-1 items-center gap-3 px-1 text-sm text-muted">
+                <span aria-hidden="true" class="hud-label text-[#3dff7a]" data-ch-num>CH 01/{String(images.length).padStart(2, '0')}</span>
+                <span data-ch-caption>{images[0]!.alt}</span>
+              </p>
+              <span class="sr-only" role="status" data-ch-status></span>
+              <div class="flex items-stretch border border-line-strong">
+                <button type="button" class="wipe flex min-h-11 items-center px-3 hud-label" data-channel="prev" aria-controls={showId}>
+                  <span aria-hidden="true">◀ CH−</span><span class="sr-only">Previous screen</span>
+                </button>
+                <button type="button" class="wipe flex min-h-11 items-center border-x border-line-strong px-3 hud-label" data-channel="toggle" aria-controls={showId} aria-pressed="false">
+                  <span aria-hidden="true" data-ch-toggle-label>❚❚ Pause</span><span class="sr-only">Pause slideshow</span>
+                </button>
+                <button type="button" class="wipe flex min-h-11 items-center px-3 hud-label" data-channel="next" aria-controls={showId}>
+                  <span aria-hidden="true">CH+ ▶</span><span class="sr-only">Next screen</span>
+                </button>
+              </div>
+            </figcaption>
+          </>
+        ) : (
+          <>
+            <img
+              src={withBase(images[0]!.src)}
+              alt={images[0]!.alt}
+              width={images[0]!.width}
+              height={images[0]!.height}
+              class="h-auto w-full"
+              fetchpriority="high"
+            />
+            <figcaption class="sr-only">{images[0]!.alt}</figcaption>
+          </>
+        )}
       </figure>
     </HudFrame>
 
@@ -108,5 +149,35 @@ const frameLabel = project.image.frame === 'telemetry' ? 'Intercepted Telemetry 
       </a>
     </nav>
   </article>
+
+  <script>
+    function syncShows() {
+      document.querySelectorAll<HTMLElement>('channel-show[id]').forEach((show) => {
+        if (show.dataset.synced) return;
+        show.dataset.synced = '1';
+        const fig = show.closest('figure')!;
+        const num = fig.querySelector('[data-ch-num]');
+        const cap = fig.querySelector('[data-ch-caption]');
+        const status = fig.querySelector('[data-ch-status]');
+        const toggle = fig.querySelector<HTMLButtonElement>('[data-channel="toggle"]');
+        const setPaused = (paused: boolean) => {
+          if (!toggle) return;
+          toggle.querySelector('[data-ch-toggle-label]')!.textContent = paused ? '▶ Play' : '❚❚ Pause';
+          toggle.querySelector('.sr-only')!.textContent = paused ? 'Play slideshow' : 'Pause slideshow';
+        };
+        show.addEventListener('channelchange', (e) => {
+          const { index, total, alt, announce } = (e as CustomEvent).detail;
+          const pad = (n: number) => String(n).padStart(2, '0');
+          if (num) num.textContent = `CH ${pad(index + 1)}/${pad(total)}`;
+          if (cap) cap.textContent = alt;
+          // Announce only user-initiated changes, not autoplay.
+          if (status && announce) status.textContent = `Screen ${index + 1} of ${total}: ${alt}`;
+        });
+        show.addEventListener('channelpause', (e) => setPaused((e as CustomEvent).detail.paused));
+        setPaused(toggle?.getAttribute('aria-pressed') === 'true');
+      });
+    }
+    document.addEventListener('astro:page-load', syncShows);
+  </script>
   </Band>
 </BaseLayout>

@@ -6,8 +6,9 @@ import { withBase } from '@/lib/utils';
  *
  * Lazy by design: nothing from YouTube loads until the visitor clicks play —
  * the poster is a self-hosted lazy <img> (public/images/profile/video-poster.webp,
- * face-free on purpose: the portrait is already in this section; its centre is
- * left clear for the play button), and the iframe (youtube-nocookie) is injected
+ * Muybridge's "The Horse in Motion" (1878, public domain) as film strips in the
+ * About palette — face-free since the portrait is already in this section, with
+ * its centre left clear for the play button), and the iframe (youtube-nocookie) is injected
  * on open and removed on close, which also stops playback.
  * Crawl-friendly: a plain "Watch on YouTube" link is always in the HTML.
  */
@@ -54,7 +55,7 @@ const poster = withBase('/images/profile/video-poster.webp');
         />
       </span>
       <span aria-hidden="true" class="absolute inset-0 z-[4] grid place-items-center">
-        <!-- sized to sit inside the poster's targeting ring (ring ≈ 23% of the width) -->
+        <!-- the poster keeps its centre empty for this button -->
         <span class="wipe grid aspect-square w-[17%] place-items-center border-2 border-accent bg-bg/70 text-lg text-accent sm:text-xl">▶</span>
       </span>
       <span aria-hidden="true" class="crt-roll crt-hover"></span>

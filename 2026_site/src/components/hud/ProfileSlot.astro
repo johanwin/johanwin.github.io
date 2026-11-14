@@ -210,4 +210,11 @@ const meshEdges: [number, number][] = [
     .fs-eyes { opacity: .7; }
     .fs-beam { display: none; }
   }
+  /* Same settled frame when the nav "Motion" toggle is off. */
+  :global(html[data-motion="off"]) .fs-mesh line { stroke-dashoffset: 0; }
+  :global(html[data-motion="off"]) .fs-dots rect,
+  :global(html[data-motion="off"]) .fs-lock,
+  :global(html[data-motion="off"]) .fs-tags { opacity: 1; }
+  :global(html[data-motion="off"]) .fs-eyes { opacity: .7; }
+  :global(html[data-motion="off"]) .fs-beam { display: none; }
 </style>

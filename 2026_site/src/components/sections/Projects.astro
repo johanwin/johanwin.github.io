@@ -84,7 +84,7 @@ const total = projects.length;
   
         // Move focus to the first newly revealed card's title link.
         batch[0]?.querySelector<HTMLAnchorElement>('a[href]:not([tabindex="-1"])')?.focus({ preventScroll: true });
-        batch[0]?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
+        batch[0]?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motion === 'off' ? 'auto' : 'smooth', block: 'nearest' });
   
         if (!left) btn.closest('[data-more-ctrl]')?.remove();
       });

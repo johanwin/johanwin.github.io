@@ -6,6 +6,12 @@ import VideoBriefing from '@/components/hud/VideoBriefing.astro';
 import { site } from '@/data/site';
 import { skillMatrix } from '@/data/skills';
 
+/* Groups render in a 2-column grid; pair i with its row partner (i ^ 1). */
+const padRows = (i: number) => {
+  const partner = skillMatrix[i ^ 1];
+  return partner ? Math.max(0, partner.skills.length - skillMatrix[i]!.skills.length) : 0;
+};
+
 /* Third value = decorative row (flavor only), hidden from screen readers. */
 const dossier = [
   ['SUBJECT', site.name, false],
@@ -43,32 +49,36 @@ const dossier = [
         <p class="hud-label text-muted" id="skill-legend"><span aria-hidden="true">SIGNAL ▮ = PROFICIENCY 1–5</span><span class="sr-only">Proficiency rated 1 to 5.</span></p>
       </div>
       <div class="grid gap-px border border-line-strong bg-line-strong sm:grid-cols-2">
-        {skillMatrix.map((group) => (
+        {skillMatrix.map((group, gi) => (
           <section class="bg-bg" aria-labelledby={`skills-${group.id}`}>
             <h4 id={`skills-${group.id}`} class="flex items-center justify-between border-b border-line bg-surface px-3 py-2">
               <span class="hud-label">{group.label}</span>
               <span aria-hidden="true" class="hud-label text-muted">{group.id}</span>
             </h4>
             <table class="w-full text-sm" aria-describedby="skill-legend">
-              <caption class="sr-only">{group.label} skills with proficiency and years</caption>
+              <caption class="sr-only">{group.label} skills with proficiency</caption>
               <thead class="sr-only">
-                <tr><th scope="col">Skill</th><th scope="col">Proficiency</th><th scope="col">Years</th></tr>
+                <tr><th scope="col">Skill</th><th scope="col">Proficiency</th></tr>
               </thead>
               <tbody>
                 {group.skills.map((s) => (
                   <tr class="border-b border-line last:border-b-0">
                     <th scope="row" class="px-3 py-2 text-left font-normal">{s.name}</th>
-                    <td class="px-2 py-2">
+                    <td class="w-px px-3 py-2">
                       <span class="sr-only">{s.level} of 5</span>
-                      <span aria-hidden="true" class="flex gap-0.5">
+                      <span aria-hidden="true" class="flex justify-end gap-0.5">
                         {[1, 2, 3, 4, 5].map((n) => (
                           <span class:list={['h-3 w-2', n <= s.level ? 'bg-accent' : 'bg-surface-2']} />
                         ))}
                       </span>
                     </td>
-                    <td class="w-12 px-3 py-2 text-right tabular-nums text-muted">
-                      {s.years ? `${s.years}y` : '—'}
-                    </td>
+                  </tr>
+                ))}
+                {/* Blank ruled rows so side-by-side tables end on the same line
+                    (only in the 2-column layout; decorative). */}
+                {Array.from({ length: padRows(gi) }, () => (
+                  <tr aria-hidden="true" class="hidden border-b border-line last:border-b-0 sm:table-row">
+                    <td class="px-3 py-2 text-sm" colspan="2">&nbsp;</td>
                   </tr>
                 ))}
               </tbody>

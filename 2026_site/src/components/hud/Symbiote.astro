@@ -57,6 +57,7 @@ const { accent = '#ff6b1a', class: className } = Astro.props;
 </style>
 
 <script>
+  import { motionOff, onMotionChange } from '@/lib/motion';
   const VERT = `
 attribute vec2 aPos;
 void main() { gl_Position = vec4(aPos, 0.0, 1.0); }`;
@@ -225,6 +226,8 @@ void main() {
       gl.uniform3fv(u.uAccent, hexToRgb(this.dataset.accent ?? '#ff6b1a'));
 
       const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+      // Still when the OS asks for it or the nav "Motion" toggle is off (src/lib/motion.ts).
+      const still = () => reduce.matches || motionOff();
       const band = (this.closest('.tone-band') as HTMLElement) ?? this.parentElement!;
       band.style.touchAction = 'pan-y pinch-zoom';
 
@@ -273,7 +276,7 @@ void main() {
         const dt = Math.min((now - prev) / 1000, 0.05);
         prev = now;
 
-        const idle = reduce.matches ? 0 : 1;
+        const idle = still() ? 0 : 1;
         time += dt * (idle ? 1 : 0.15);
 
         // inertia + slow auto-orbit
@@ -300,7 +303,7 @@ void main() {
         if (fastFrames > 120 && scale < 0.9) { scale += 0.05; fastFrames = 0; resize(); }
 
         this.dataset.ready = '';
-        const moving = !reduce.matches || dragging || Math.abs(vel) > 0.01 || now - lastMove < 1500;
+        const moving = !still() || dragging || Math.abs(vel) > 0.01 || now - lastMove < 1500;
         if (visible && moving) raf = requestAnimationFrame(frame);
       };
       const kick = () => { if (!raf && visible) { prev = performance.now(); raf = requestAnimationFrame(frame); } };
@@ -382,6 +385,7 @@ void main() {
       const onLost = (e: Event) => { e.preventDefault(); cancelAnimationFrame(raf); raf = 0; delete this.dataset.ready; };
       canvas.addEventListener('webglcontextlost', onLost);
       reduce.addEventListener('change', kick);
+      const offMotion = onMotionChange(kick);
 
       resize();
       kick();
@@ -395,6 +399,7 @@ void main() {
         removeEventListener('pointercancel', onUp);
         canvas.removeEventListener('webglcontextlost', onLost);
         reduce.removeEventListener('change', kick);
+        offMotion();
         gl.getExtension('WEBGL_lose_context')?.loseContext();
       });
     }

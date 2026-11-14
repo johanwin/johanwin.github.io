@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { useMotionOff } from '@/lib/useMotionOff';
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation, m, type Variants } from 'framer-motion';
 import type { Project } from '@/data/projects';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,15 +26,17 @@ const STATUS_VARIANT = {
 } as const;
 
 export default function ProjectCard({ project, index }: ProjectCardProps) {
+  const motionOff = useMotionOff();
   const [view, setView] = useState<View>('capture');
   const uid = useId();
-  const { image } = project;
+  const { images } = project;
+  const image = images[0]!;
   const frameLabel = image.frame === 'telemetry' ? 'Intercepted Telemetry Capture' : 'System Schematic';
   const detailHref = withBase(`/projects/${project.slug}`);
 
   return (
     <LazyMotion features={domAnimation} strict>
-      <MotionConfig reducedMotion="user">
+      <MotionConfig reducedMotion={motionOff ? 'always' : 'user'}>
         {/*
           Entrance is a CSS scroll-driven animation (.card-in), not Framer's
           initial/whileInView: the server HTML stays fully visible for crawlers
@@ -113,15 +116,30 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
                       className="group/cap absolute inset-0 block cursor-pointer"
                     >
                       <span className="lazy-media absolute! inset-0 overflow-hidden">
-                        <img
-                          src={withBase(image.src)}
-                          alt=""
-                          width={image.width}
-                          height={image.height}
-                          loading="lazy"
-                          decoding="async"
-                          className="size-full object-cover transition-[opacity,transform] duration-500 group-hover/cap:scale-[1.03]"
-                        />
+                        {/*
+                          Hovering the capture flips through the project's screenshots
+                          like changing an old TV channel. Later images load only when
+                          the first switch needs them (data-src).
+                        */}
+                        <channel-show
+                          trigger="hover"
+                          className="size-full transition-transform duration-500 group-hover/cap:scale-[1.03]"
+                        >
+                          {images.map((im, i) => (
+                            <img
+                              key={im.src}
+                              {...(i === 0 ? { src: withBase(im.src) } : { 'data-src': withBase(im.src) })}
+                              alt=""
+                              width={im.width}
+                              height={im.height}
+                              loading="lazy"
+                              decoding="async"
+                              data-fit={im.fit}
+                              className="transition-opacity duration-500"
+                            />
+                          ))}
+                          {images.length > 1 && <ChannelFx />}
+                        </channel-show>
                       </span>
                       {/* CRT refresh: scanlines always, rolling band on hover */}
                       <span className="crt pointer-events-none absolute inset-0">
@@ -129,7 +147,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
                       </span>
                       {/* frame metadata overlay */}
                       <span className="absolute left-2 top-2 z-[4] bg-bg/85 px-1.5 py-1 hud-label text-[0.6rem] text-accent">
-                        ● REC {frameLabel}
+                        ● REC {frameLabel}{images.length > 1 && ` · ${images.length} CH`}
                       </span>
                       <span className="absolute bottom-2 right-2 z-[4] wipe absolute! bg-bg/85 px-1.5 py-1 hud-label text-[0.6rem] text-fg">
                         Open dossier →
@@ -215,6 +233,19 @@ function BracketLink({ href, label, sr }: { href: string; label: string; sr: str
       <span aria-hidden="true">→</span>
       <span className="sr-only">{sr}</span>
     </a>
+  );
+}
+
+/* Effect layers for <channel-show>; mirrors FX_MARKUP in src/scripts/channel-show.ts. */
+function ChannelFx() {
+  return (
+    <span className="ch-fx" aria-hidden="true">
+      <img className="ch-ghost ch-ghost-r" alt="" />
+      <img className="ch-ghost ch-ghost-c" alt="" />
+      <span className="ch-noise" />
+      <span className="ch-line" />
+      <span className="ch-osd">CH 01</span>
+    </span>
   );
 }
 

@@ -71,14 +71,23 @@ const yearsActive = new Date().getFullYear() - careerStart;
         <p class="hud-label text-muted">PRIMARY STACK</p>
         <p class="mt-2 text-sm">React / Angular / Web Components</p>
       </div>
-      <!-- Bauhaus geometry block: circle / square / triangle in primary-ish signal colours -->
-      <div aria-hidden="true" class="relative grid h-40 grid-cols-3 divide-x divide-line-strong">
-        <div class="grid place-items-center"><span class="size-14 rounded-full! bg-accent"></span></div>
-        <div class="grid place-items-center bg-hazard"><span class="size-14 border-4 border-hazard-fg"></span></div>
-        <div class="grid place-items-center">
-          <svg viewBox="0 0 60 52" class="w-14 text-fg"><polygon points="30,0 60,52 0,52" fill="currentColor"></polygon></svg>
-        </div>
-      </div>
+      <!-- Bauhaus geometry block, now a legend for how I work:
+           circle = Design · square = Systems · triangle = Performance & accessibility.
+           The shapes are decorative; the labels are real content. -->
+      <ul aria-label="How I work" class="relative grid grid-cols-3 divide-x divide-line-strong" role="list">
+        <li class="flex flex-col items-center justify-center gap-3 px-2 py-6">
+          <span aria-hidden="true" class="size-14 rounded-full! bg-accent"></span>
+          <span class="hud-label text-center text-fg">Design</span>
+        </li>
+        <li class="flex flex-col items-center justify-center gap-3 bg-hazard px-2 py-6">
+          <span aria-hidden="true" class="size-14 border-4 border-hazard-fg"></span>
+          <span class="hud-label text-center text-hazard-fg">Systems</span>
+        </li>
+        <li class="flex flex-col items-center justify-center gap-3 px-2 py-6">
+          <svg aria-hidden="true" viewBox="0 0 60 52" class="w-14 text-fg"><polygon points="30,0 60,52 0,52" fill="currentColor"></polygon></svg>
+          <span class="hud-label text-center leading-snug text-fg">Perf <span aria-hidden="true">+</span><span class="sr-only">and</span> A11y</span>
+        </li>
+      </ul>
       <div aria-hidden="true" class="flex items-center justify-between p-4">
         <span class="hud-label text-muted">LAT 32.78°N · LON 96.80°W</span>
         <span class="hud-label text-accent">◢◤</span>

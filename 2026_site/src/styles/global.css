@@ -585,3 +585,145 @@
     }
   }
 }
+
+/* ---------------------------------------------------------------------------
+   CHANNEL SHOW — old-TV channel-switch slideshow (src/scripts/channel-show.ts)
+   .ch-out  old picture jitters, over-exposes and collapses to a bright line
+   .ch-in   static + RGB-split ghosts + glitch slices as the new picture tunes in
+   Without JS only the first image shows.
+   --------------------------------------------------------------------------- */
+@layer components {
+  channel-show {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    isolation: isolate;
+    background: #050506;
+
+    & > img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      opacity: 0;
+    }
+    & > img:first-of-type, &[data-ready] > img[data-active] { opacity: 1; }
+    &[data-ready] > img:not([data-active]) { opacity: 0; }
+    & > img[data-fit="contain"] { object-fit: contain; object-position: center; }
+    /* crisp cuts: no fade between channels (beats .lazy-media img's fade) */
+    &[data-ready] > img { transition: none; }
+  }
+  channel-show[data-fit="contain"] > img { object-fit: contain; object-position: center; }
+
+  .ch-fx { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+  .ch-ghost {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-position: top; opacity: 0; mix-blend-mode: screen;
+  }
+  .ch-ghost-r { filter: sepia(1) saturate(9) hue-rotate(-45deg) brightness(.9); }
+  .ch-ghost-c { filter: sepia(1) saturate(9) hue-rotate(150deg) brightness(.9); }
+  .ch-noise {
+    position: absolute; inset: -50%; opacity: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.4 -.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+  }
+  .ch-line {
+    position: absolute; left: 0; right: 0; top: 50%; height: 3px; translate: 0 -50%;
+    background: #fff; box-shadow: 0 0 18px 4px rgb(255 255 255 / .7);
+    scale: 0 1; opacity: 0;
+  }
+  .ch-osd {
+    position: absolute; top: .5rem; right: .6rem;
+    font: 700 clamp(.8rem, 4.5cqi, 1.6rem)/1 var(--font-mono);
+    letter-spacing: .08em; color: #3dff7a;
+    text-shadow: 0 0 6px rgb(61 255 122 / .8), 2px 0 rgb(255 0 80 / .5), -2px 0 rgb(0 200 255 / .5);
+    opacity: 0; transition: opacity .25s;
+  }
+  channel-show { container-type: inline-size; }
+  channel-show.ch-osd-on .ch-osd { opacity: 1; transition: none; }
+
+  /* OUT: jitter → over-expose → collapse to a line */
+  channel-show.ch-out > img[data-active] { animation: ch-out 170ms steps(5, end) forwards; }
+  channel-show.ch-out .ch-line { animation: ch-line-out 170ms ease-in forwards; }
+  channel-show.ch-out .ch-noise { animation: ch-noise 170ms steps(3) forwards; }
+
+  /* IN: static burst, picture expands from the line with RGB split + slices */
+  channel-show.ch-in > img[data-active] { animation: ch-in 380ms steps(8, end) both; }
+  channel-show.ch-in .ch-ghost-r { animation: ch-ghost-r 380ms steps(6, end) both; }
+  channel-show.ch-in .ch-ghost-c { animation: ch-ghost-c 380ms steps(6, end) both; }
+  channel-show.ch-in .ch-noise { animation: ch-noise-in 380ms steps(6) both; }
+}
+
+@keyframes ch-out {
+  0%   { transform: none; filter: none; }
+  30%  { transform: translateX(-6px) skewX(-8deg); filter: contrast(1.8) saturate(2) brightness(1.2); }
+  60%  { transform: translateX(8px) scaleY(.4); filter: brightness(2.2) contrast(2); }
+  100% { transform: scaleY(.008); filter: brightness(4); }
+}
+@keyframes ch-line-out {
+  0%, 55% { opacity: 0; scale: 1 1; }
+  100%    { opacity: 1; scale: .15 1; }
+}
+@keyframes ch-in {
+  0%   { transform: scaleY(.01); filter: brightness(4); clip-path: inset(0); }
+  20%  { transform: scaleY(1.04) translateX(10px); filter: brightness(1.6) contrast(1.6); clip-path: inset(12% 0 55% 0); }
+  35%  { transform: translateX(-12px) skewX(6deg); clip-path: inset(48% 0 18% 0); }
+  50%  { transform: translateX(6px); filter: contrast(1.4) hue-rotate(-20deg); clip-path: inset(0 0 72% 0); }
+  65%  { transform: translateX(-3px); clip-path: inset(30% 0 30% 0); }
+  80%  { transform: translateX(2px); filter: none; clip-path: inset(0); }
+  100% { transform: none; filter: none; clip-path: none; }
+}
+@keyframes ch-ghost-r {
+  0%, 15% { opacity: 0; }
+  20% { opacity: .7; transform: translateX(-14px); clip-path: inset(10% 0 50% 0); }
+  45% { opacity: .6; transform: translateX(-8px);  clip-path: inset(55% 0 10% 0); }
+  70% { opacity: .4; transform: translateX(-4px);  clip-path: inset(0 0 60% 0); }
+  100% { opacity: 0; transform: none; }
+}
+@keyframes ch-ghost-c {
+  0%, 15% { opacity: 0; }
+  20% { opacity: .7; transform: translateX(14px); clip-path: inset(40% 0 20% 0); }
+  45% { opacity: .6; transform: translateX(8px);  clip-path: inset(5% 0 70% 0); }
+  70% { opacity: .4; transform: translateX(4px);  clip-path: inset(60% 0 0 0); }
+  100% { opacity: 0; transform: none; }
+}
+@keyframes ch-noise    { from { opacity: 0; translate: 0 0; } to { opacity: .55; translate: -12% 9%; } }
+@keyframes ch-noise-in { 0% { opacity: .9; translate: 7% -11%; } 60% { opacity: .35; translate: -9% 4%; } 100% { opacity: 0; translate: 3% 8%; } }
+
+/* Nav logo twirl: two fast turns that ease into a slow stop, ending upright.
+   Triggered from HUDNavigation (class added on hover/focus, removed on end). */
+@keyframes logo-twirl {
+  from { rotate: 0deg; }
+  to   { rotate: 720deg; }
+}
+.logo-twirl { animation: logo-twirl 1.6s cubic-bezier(0.12, 0.9, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) { .logo-twirl { animation: none; } }
+
+/* ---------------------------------------------------------------------------
+   MOTION OFF — the nav's "Motion" toggle (and the OS reduce-motion default)
+   sets <html data-motion="off">. Unlayered + !important so it beats every
+   component and utility. Things that need a specific resting state are set
+   in their own components (e.g. the face-scan overlay in ProfileSlot).
+   --------------------------------------------------------------------------- */
+html[data-motion="off"] {
+  scroll-behavior: auto;
+
+  & *, & *::before, & *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  /* page-to-page view transitions */
+  &::view-transition-group(*),
+  &::view-transition-old(*),
+  &::view-transition-new(*) { animation: none !important; }
+
+  /* hide moving-only layers that would otherwise freeze mid-frame */
+  & .crt-roll, & .ch-fx { display: none !important; }
+}
+
+/* Toggle label: state shown with CSS so it's right before React hydrates. */
+.motion-state-off { display: none; }
+html[data-motion="off"] .motion-state-on { display: none; }
+html[data-motion="off"] .motion-state-off { display: inline; }
