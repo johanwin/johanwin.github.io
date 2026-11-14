@@ -238,26 +238,22 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
             </ul>
           </nav>
 
-          {/* ── Motion toggle (a11y) ──────────────────
-               Stops every animation site-wide (src/lib/motion.ts). Accessible
-               name "Motion"; aria-pressed = animations on. The ON/OFF tag is
-               shown by CSS from <html data-motion>, so it's right pre-hydration. */}
+          {/* ── Reduce-motion switch (a11y setting, not a nav section) ──
+               role="switch" + aria-checked: on = animations stopped site-wide
+               (src/lib/motion.ts). Knob position comes from CSS on
+               <html data-motion>, so it's right before React hydrates. */}
           <button
             type="button"
-            aria-pressed={!motionOff}
-            title={motionOff ? 'Turn animations back on' : 'Stop animations on this site'}
+            role="switch"
+            aria-checked={motionOff}
+            title={motionOff ? 'Animations are off — click to turn them back on' : 'Stop animations on this site'}
             onClick={() => setMotion(!motionOff)}
-            className="wipe ml-auto flex min-w-14 items-center justify-center gap-2 border-l border-line-strong px-3 hud-label md:ml-0"
+            className="motion-switch ml-auto flex items-center gap-2 px-3 text-[0.65rem] tracking-wider text-muted hover:text-fg md:ml-2"
           >
-            <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4">
-              <path className="motion-state-on" d="M2 8c2-4 4-4 6 0s4 4 6 0" fill="none" stroke="currentColor" strokeWidth="1.6" />
-              <path className="motion-state-off" d="M2 8h12" fill="none" stroke="currentColor" strokeWidth="1.6" />
-            </svg>
-            <span className="sr-only lg:not-sr-only">Motion</span>
-            <span aria-hidden="true" className="hidden sm:inline">
-              <span className="motion-state-on text-signal">On</span>
-              <span className="motion-state-off text-muted">Off</span>
+            <span aria-hidden="true" className="motion-switch-track">
+              <span className="motion-switch-knob" />
             </span>
+            <span className="sr-only lg:not-sr-only">Reduce motion</span>
           </button>
 
           {/* ── Mobile drawer ───────────────────────── */}

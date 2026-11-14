@@ -723,7 +723,26 @@ html[data-motion="off"] {
   & .crt-roll, & .ch-fx { display: none !important; }
 }
 
-/* Toggle label: state shown with CSS so it's right before React hydrates. */
-.motion-state-off { display: none; }
-html[data-motion="off"] .motion-state-on { display: none; }
-html[data-motion="off"] .motion-state-off { display: inline; }
+/* Reduce-motion switch in the header: a small square track + knob (no radii,
+   matching the site). Knob slides right and turns hazard-yellow when on.
+   State is read from <html data-motion> so it's correct before hydration. */
+.motion-switch-track {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: 30px;
+  height: 16px;
+  border: 1.5px solid currentColor;
+}
+.motion-switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 9px;
+  height: 9px;
+  background: currentColor;
+  transition: left 0.2s, background-color 0.2s;
+}
+html[data-motion="off"] .motion-switch { color: var(--fg); }
+html[data-motion="off"] .motion-switch-track { border-color: var(--hazard); }
+html[data-motion="off"] .motion-switch-knob { left: 16px; background: var(--hazard); }
