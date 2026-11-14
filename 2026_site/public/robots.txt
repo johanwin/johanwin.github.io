@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://johnnguyen.org/sitemap-index.xml
+Sitemap: https://johnnguyen.net/sitemap-index.xml

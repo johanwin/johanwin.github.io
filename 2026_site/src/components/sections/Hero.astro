@@ -4,6 +4,7 @@ import HudFrame from '@/components/hud/HudFrame.astro';
 import Symbiote from '@/components/hud/Symbiote.astro';
 import DiagnosticTrigger from '@/components/hud/DiagnosticTrigger.astro';
 import { site } from '@/data/site';
+import AbbrText from '@/components/ui/AbbrText.astro';
 import { careerStart } from '@/data/experience';
 import { withBase } from '@/lib/utils';
 
@@ -59,17 +60,17 @@ const yearsActive = new Date().getFullYear() - careerStart;
       </div>
       <div class="grid grid-cols-2 divide-x divide-line-strong">
         <div class="p-4">
-          <p class="hud-label text-muted">LOC</p>
-          <p class="mt-2 text-sm">{site.location}</p>
+          <p class="hud-label text-muted"><AbbrText text="LOC" /></p>
+          <p class="mt-2 text-sm"><AbbrText text={site.location} /></p>
         </div>
         <div class="p-4">
-          <p class="hud-label text-muted">YRS ACTIVE</p>
+          <p class="hud-label text-muted"><AbbrText text="YRS" /> ACTIVE</p>
           <p class="mt-2 font-mono text-3xl font-bold tabular-nums text-accent">{yearsActive}<span class="text-base text-muted">+</span></p>
         </div>
       </div>
       <div class="p-4">
         <p class="hud-label text-muted">PRIMARY STACK</p>
-        <p class="mt-2 text-sm">React / Angular / Web Components</p>
+        <p class="mt-2 text-sm">React / TypeScript / Web Components</p>
       </div>
       <!-- Bauhaus geometry block, now a legend for how I work:
            circle = Design · square = Systems · triangle = Performance & accessibility.
@@ -85,7 +86,7 @@ const yearsActive = new Date().getFullYear() - careerStart;
         </li>
         <li class="flex flex-col items-center justify-center gap-3 px-2 py-6">
           <svg aria-hidden="true" viewBox="0 0 60 52" class="w-14 text-fg"><polygon points="30,0 60,52 0,52" fill="currentColor"></polygon></svg>
-          <span class="hud-label text-center leading-snug text-fg">Perf <span aria-hidden="true">+</span><span class="sr-only">and</span> A11y</span>
+          <span class="hud-label text-center leading-snug text-fg"><AbbrText text="Perf" /> <span aria-hidden="true">+</span><span class="sr-only">and</span> <AbbrText text="A11y" /></span>
         </li>
       </ul>
       <div aria-hidden="true" class="flex items-center justify-between p-4">

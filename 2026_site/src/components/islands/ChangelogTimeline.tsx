@@ -2,6 +2,7 @@ import { LazyMotion, MotionConfig, domAnimation, m, type Variants } from 'framer
 import { useMotionOff } from '@/lib/useMotionOff';
 import type { ChangeType, ExperienceEntry } from '@/data/experience';
 import { cn } from '@/lib/utils';
+import { AbbrText } from '@/components/ui/AbbrText';
 
 const TYPE_STYLE: Record<ChangeType, string> = {
   feat: 'text-signal',
@@ -67,10 +68,10 @@ export default function ChangelogTimeline({ entries }: { entries: ExperienceEntr
               </div>
 
               <h3 className="mt-3 text-2xl font-extrabold uppercase leading-none [font-stretch:115%] sm:text-3xl">
-                {e.role}
+                <AbbrText text={e.role} />
               </h3>
               <p className="mt-1 hud-label text-muted">
-                @ {e.org} <span aria-hidden="true">·</span> {e.location}
+                @ {e.org} <span aria-hidden="true">·</span> <AbbrText text={e.location} />
               </p>
 
               <ul className="mt-4 space-y-1.5 text-sm" aria-label={`Highlights at ${e.org}`}>
@@ -80,7 +81,7 @@ export default function ChangelogTimeline({ entries }: { entries: ExperienceEntr
                       {c.type}
                       <span className="text-muted">:</span>
                     </span>
-                    <span>{c.text}</span>
+                    <span><AbbrText text={c.text} /></span>
                   </m.li>
                 ))}
               </ul>

@@ -4,6 +4,7 @@ import { AnimatePresence, LazyMotion, MotionConfig, domAnimation, m, type Varian
 import type { Project } from '@/data/projects';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { AbbrText } from '@/components/ui/AbbrText';
 import { cn, pad, withBase } from '@/lib/utils';
 
 interface ProjectCardProps {
@@ -169,11 +170,11 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
                       {project.scope.map((line, i) => (
                         <li key={i} className="grid grid-cols-[2ch_1fr] gap-2">
                           <span aria-hidden="true" className="text-muted">{pad(i + 1)}</span>
-                          <span>{line}</span>
+                          <span><AbbrText text={line} /></span>
                         </li>
                       ))}
                     </ol>
-                    <p className="mt-4 text-xs leading-relaxed text-muted">{project.description}</p>
+                    <p className="mt-4 text-xs leading-relaxed text-muted"><AbbrText text={project.description} /></p>
                   </m.div>
                 )}
               </AnimatePresence>
@@ -183,8 +184,8 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
             <dl className="grid grid-cols-2 border-b border-line text-[0.6875rem] sm:grid-cols-4">
               {project.telemetry.map((t) => (
                 <div key={t.k} className="border-r border-line px-3 py-2 last:border-r-0 [&:nth-child(2)]:max-sm:border-r-0">
-                  <dt className="hud-label text-[0.58rem] text-muted">{t.k}</dt>
-                  <dd className="mt-1 font-semibold tabular-nums">{t.v}</dd>
+                  <dt className="hud-label text-[0.58rem] text-muted"><AbbrText text={t.k} /></dt>
+                  <dd className="mt-1 font-semibold tabular-nums"><AbbrText text={t.v} /></dd>
                 </div>
               ))}
             </dl>
@@ -195,14 +196,14 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
                   {project.title}
                 </a>
               </CardTitle>
-              <CardDescription>{project.summary}</CardDescription>
+              <CardDescription><AbbrText text={project.summary} /></CardDescription>
             </CardHeader>
 
             <CardContent>
               <ul aria-label="Tech stack" className="flex flex-wrap gap-1.5">
                 {project.stack.map((s) => (
                   <li key={s}>
-                    <Badge>{s}</Badge>
+                    <Badge><AbbrText text={s} /></Badge>
                   </li>
                 ))}
               </ul>

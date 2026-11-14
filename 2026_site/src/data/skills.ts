@@ -42,7 +42,6 @@ export const skillMatrix: SkillGroup[] = [
     label: 'Tooling',
     skills: [
       { name: 'Vite', level: 3 },
-      { name: 'Webpack', level: 3 },
       { name: 'Playwright', level: 3 },
       { name: 'Figma', level: 4 },
       { name: 'Storybook', level: 3 },

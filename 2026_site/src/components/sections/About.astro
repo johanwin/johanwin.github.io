@@ -4,6 +4,7 @@ import SectionHeader from '@/components/hud/SectionHeader.astro';
 import ProfileSlot from '@/components/hud/ProfileSlot.astro';
 import VideoBriefing from '@/components/hud/VideoBriefing.astro';
 import { site } from '@/data/site';
+import AbbrText from '@/components/ui/AbbrText.astro';
 import { skillMatrix } from '@/data/skills';
 
 /* Groups render in a 2-column grid; pair i with its row partner (i ^ 1). */
@@ -34,7 +35,7 @@ const dossier = [
         {dossier.map(([k, v, decorative]) => (
           <div aria-hidden={decorative ? 'true' : undefined} class="grid grid-cols-[11ch_1fr] border-b border-line last:border-b-0">
             <dt class="border-r border-line bg-surface-2 px-3 py-2.5 hud-label text-muted">{k}</dt>
-            <dd class="px-3 py-2.5 text-sm font-semibold">{v}</dd>
+            <dd class="px-3 py-2.5 text-sm font-semibold"><AbbrText text={v} /></dd>
           </div>
         ))}
       </dl>

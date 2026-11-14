@@ -1,4 +1,4 @@
-# johnnguyen.org
+# johnnguyen.net
 
 Personal portfolio — Astro (static) + React islands + TypeScript + Tailwind v4 + shadcn/ui + Framer Motion.
 Bauhaus grid × Designers Republic / Wipeout HUD. Single dark theme; each section is a full-bleed band with its own accessible dark tone,

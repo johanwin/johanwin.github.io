@@ -54,7 +54,7 @@ export const projects: Project[] = [
     summary: "Enterprise front-end work for Allstate, including the Mesh library of reusable web components.",
     description:
       "A shared library of reusable web components built for Allstate's eProposal, Milewise, Roadside Services and Cross-Enterprise projects, implemented with UX designers against the company's human interface guidelines.",
-    stack: ['Web Components', 'React', 'Angular'],
+    stack: ['Web Components', 'React', 'Angular', 'Unit Testing', 'WCAG'],
     images: shots('allstate', 'telemetry', [
       ['Roadside Services tow request with pickup and drop-off addresses, vehicle, payment and a live map', 1433, 831],
       ['Roadside Services mobile rescue tracker with ETA, rescue progress, assigned rescuer and map', 374, 765],
@@ -133,7 +133,7 @@ export const projects: Project[] = [
     slug: 'mitsubishi-build-price',
     code: 'PRJ-0x04',
     title: 'Mitsubishi Motors Build and Price',
-    // TODO: add era + agency once confirmed
+    era: '2012–2015',
     status: 'SHIPPED',
     summary: 'Vehicle configurator for building a Mitsubishi and seeing its price.',
     description:
@@ -144,9 +144,9 @@ export const projects: Project[] = [
     ]),
     telemetry: [
       { k: 'CLIENT', v: 'Mitsubishi' },
+      { k: 'AGENCY', v: 'iCrossing' },
       { k: 'TYPE', v: 'Configurator' },
-      { k: 'SECTOR', v: 'Automotive' },
-      { k: 'STATUS', v: 'Shipped' },
+      { k: 'ERA', v: '2012–2015' },
     ],
     scope: [
       'Step-by-step model, trim and option selection.',

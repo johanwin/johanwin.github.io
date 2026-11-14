@@ -13,7 +13,7 @@ export const site = {
   location: 'Dallas–Fort Worth, TX',
   timezone: 'America/Chicago',
   email: 'whatsup@johnnguyen.org',
-  domain: 'johnnguyen.org',
+  domain: 'johnnguyen.net',
   /** Profile photo for the About dossier. Leave src empty to show the placeholder slot. */
   portrait: { src: '/images/profile/portrait.webp', alt: 'Portrait of John Nguyen' },
   bio: 'Two decades turning design into fast, accessible interfaces — from agency sites and HTML email to enterprise component libraries at Capital One and Allstate.',

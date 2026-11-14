@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
 /**
- * Served from the custom domain johnnguyen.org (public/CNAME) via GitHub Pages,
+ * Served from the custom domain johnnguyen.net (public/CNAME) via GitHub Pages,
  * so the site lives at the domain root and `base` is '/'. If you ever serve it
  * from a project path instead (johanwin.github.io/portfolio), set
  * BASE_PATH=/portfolio in the workflow — every internal URL in the codebase is
@@ -15,7 +15,7 @@ import sitemap from '@astrojs/sitemap';
 const base = process.env.BASE_PATH ?? '/';
 
 export default defineConfig({
-  site: 'https://johnnguyen.org',
+  site: 'https://johnnguyen.net',
   base,
   output: 'static',
   trailingSlash: 'ignore',
