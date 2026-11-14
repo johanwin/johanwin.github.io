@@ -16,6 +16,8 @@ interface Props {
   id?: string;
   title?: string;
   blurb?: string;
+  /** Backstory shown under the player in the dialog (and read as its description). */
+  context?: string;
   class?: string;
 }
 const {
@@ -23,6 +25,7 @@ const {
   title = 'Get to Know John',
   class: className,
   blurb = 'A quick intro in my own words: who I am, how I work, and what I care about building.',
+  context = 'Made in early 2022, before ChatGPT was released to the public, for my employer\'s “Getting to Know You” series, where colleagues gave a short presentation about themselves. I leaned into the series name by theming the video on the film adaptation of',
 } = Astro.props;
 
 const watchUrl = `https://youtu.be/${id}`;
@@ -76,7 +79,8 @@ const poster = withBase('/images/profile/video-poster.webp');
   <dialog
     data-video-dialog
     aria-labelledby="video-dialog-title"
-    class="video-dialog m-auto w-[min(64rem,calc(100vw-2rem))] max-w-none border-2 border-accent bg-bg p-0 text-fg"
+    aria-describedby="video-dialog-context"
+    class="video-dialog m-auto max-h-[calc(100dvh-2rem)] w-[min(64rem,calc(100vw-2rem))] max-w-none overflow-y-auto border-2 border-accent bg-bg p-0 text-fg"
   >
     <div class="flex items-stretch border-b border-line-strong">
       <span aria-hidden="true" class="flex items-center bg-accent px-3 hud-label text-accent-fg">PLAYBACK</span>
@@ -86,6 +90,13 @@ const poster = withBase('/images/profile/video-poster.webp');
       </button>
     </div>
     <div data-video-slot class="aspect-video bg-black"></div>
+    <!-- Backstory: what the video was made for (also the dialog's description). -->
+    <div class="flex flex-col gap-1.5 border-t border-line-strong px-4 py-3 sm:flex-row sm:gap-3 sm:px-5 sm:py-4">
+      <span aria-hidden="true" class="hud-label shrink-0 text-accent sm:pt-1">// NOTE</span>
+      <p id="video-dialog-context" class="max-w-prose text-sm leading-relaxed text-muted">
+        {context} <cite class="not-italic text-fg"><i>The King and I</i></cite>, which features a song of the same name.
+      </p>
+    </div>
   </dialog>
 </div>
 
