@@ -371,28 +371,40 @@
 @keyframes band-in  { from { opacity: 0; translate: 0 3rem; } }
 @keyframes band-out { to   { opacity: 0; translate: 0 -3rem; } }
 
+/* NOTE: scroll-driven rules use animation-* LONGHANDS, never the `animation`
+   shorthand. The build's minifier (Lightning CSS) folds animation-timeline
+   into the shorthand ("animation: linear both x view()"), which browsers
+   reject — silently disabling the whole animation. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .tone-band > .shell {
-      animation: band-in linear both, band-out linear both;
+      animation-name: band-in, band-out;
+      animation-timing-function: linear, linear;
+      animation-fill-mode: both, both;
       animation-timeline: view(), view();
       animation-range: entry 10% entry 70%, exit 35% exit 95%;
     }
     /* The first band is already on screen at load — only fade it out. */
     .tone-band:first-of-type > .shell {
-      animation: band-out linear both;
+      animation-name: band-out;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: view();
       animation-range: exit 35% exit 95%;
     }
     /* The last band never scrolls fully away, so it only fades in. */
     .tone-band:last-of-type > .shell {
-      animation: band-in linear both;
+      animation-name: band-in;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: view();
       animation-range: entry 10% entry 70%;
     }
     /* Footer content fades up as the seam scrolls in. */
     .site-footer > .footer-inner {
-      animation: band-in linear both;
+      animation-name: band-in;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: view();
       animation-range: entry 0% entry 100%;
     }
@@ -579,7 +591,9 @@
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
     .card-in {
-      animation: card-in linear both;
+      animation-name: card-in;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: view();
       animation-range: entry calc(var(--card-i, 0) * 6%) entry calc(45% + var(--card-i, 0) * 6%);
     }
@@ -748,3 +762,42 @@ html[data-motion="off"] {
 html[data-motion="off"] .motion-switch { color: var(--fg); }
 html[data-motion="off"] .motion-switch-track { border-color: var(--hazard); }
 html[data-motion="off"] .motion-switch-knob { left: 16px; background: var(--hazard); }
+
+/* ---------------------------------------------------------------------------
+   UI ANIMATIONS (replace framer-motion). All plain CSS: content is visible in
+   the HTML without JS, and html[data-motion="off"] (Reduce motion) and the OS
+   setting stop them like every other animation on the site.
+   Elements use `--i` for their position in a staggered sequence.
+   --------------------------------------------------------------------------- */
+@keyframes hud-cell-in    { from { opacity: 0; translate: 0 -6px; } }
+@keyframes drawer-open    { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
+@keyframes drawer-close   { from { clip-path: inset(0); } to { clip-path: inset(100% 0 0 0); } }
+@keyframes drawer-item-in { from { opacity: 0; translate: -32px 0; } }
+@keyframes panel-wipe-in  { from { opacity: 0; clip-path: inset(0 0 0 100%); } to { opacity: 1; clip-path: inset(0); } }
+@keyframes log-in         { from { opacity: 0; translate: -16px 0; } }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Header status strip: fades in item by item on load. */
+  .hud-cell { animation: hud-cell-in 0.3s ease-out calc(0.1s + var(--i, 0) * 0.08s) both; }
+
+  /* Mobile menu (Radix sets data-state; it waits for the close animation). */
+  .nav-drawer[data-state="open"]   { animation: drawer-open 0.45s cubic-bezier(0.7, 0, 0.2, 1) both; }
+  .nav-drawer[data-state="closed"] { animation: drawer-close 0.3s cubic-bezier(0.7, 0, 0.2, 1) both; }
+  .nav-drawer[data-state="open"] .nav-drawer-item {
+    animation: drawer-item-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) calc(0.3s + var(--i, 0) * 0.06s) both;
+  }
+
+  /* Project card Capture/Scope switch (only after the first switch). */
+  .panel-wipe { animation: panel-wipe-in 0.3s cubic-bezier(0.7, 0, 0.2, 1) both; }
+
+  /* Activity Log entries slide in as they scroll into view. */
+  @supports (animation-timeline: view()) {
+    .log-in {
+      animation-name: log-in;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+}

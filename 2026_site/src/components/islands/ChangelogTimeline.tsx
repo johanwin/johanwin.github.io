@@ -1,5 +1,3 @@
-import { LazyMotion, MotionConfig, domAnimation, m, type Variants } from 'framer-motion';
-import { useMotionOff } from '@/lib/useMotionOff';
 import type { ChangeType, ExperienceEntry } from '@/data/experience';
 import { cn } from '@/lib/utils';
 import { AbbrText } from '@/components/ui/AbbrText';
@@ -15,32 +13,18 @@ const TYPE_STYLE: Record<ChangeType, string> = {
   docs: 'text-muted',
 };
 
-const list: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.12 } } };
-const entry: Variants = {
-  hidden: { opacity: 0, x: -16 },
-  show: { opacity: 1, x: 0, transition: { duration: 0.45, ease: [0.2, 0.8, 0.2, 1], staggerChildren: 0.05, delayChildren: 0.15 } },
-};
-const line: Variants = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: 0.2 } },
-};
-
 const fmt = (ym: string) => (ym === 'HEAD' ? 'PRESENT' : ym.replace('-', '.'));
 
+/**
+ * Static markup — no client JS. Entries slide in with a CSS scroll-driven
+ * animation (.log-in in global.css), so the HTML is always fully visible to
+ * crawlers and no-JS readers, and the Reduce motion switch stops it via CSS.
+ */
 export default function ChangelogTimeline({ entries }: { entries: ExperienceEntry[] }) {
-  const motionOff = useMotionOff();
   return (
-    <LazyMotion features={domAnimation} strict>
-      <MotionConfig reducedMotion={motionOff ? 'always' : 'user'}>
-        <m.ol
-          variants={list}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.1 }}
-          className="relative border-l border-line-strong"
-        >
+        <ol className="relative border-l border-line-strong">
           {entries.map((e) => (
-            <m.li key={e.hash} variants={entry} className="relative pb-10 pl-6 last:pb-0 sm:pl-10">
+            <li key={e.hash} className="log-in relative pb-10 pl-6 last:pb-0 sm:pl-10">
               {/* commit node */}
               <span
                 aria-hidden="true"
@@ -76,19 +60,17 @@ export default function ChangelogTimeline({ entries }: { entries: ExperienceEntr
 
               <ul className="mt-4 space-y-1.5 text-sm" aria-label={`Highlights at ${e.org}`}>
                 {e.changes.map((c, j) => (
-                  <m.li key={j} variants={line} className="grid grid-cols-[9ch_1fr] gap-2">
+                  <li key={j} className="grid grid-cols-[9ch_1fr] gap-2">
                     <span aria-hidden="true" className={cn('font-semibold', TYPE_STYLE[c.type])}>
                       {c.type}
                       <span className="text-muted">:</span>
                     </span>
                     <span><AbbrText text={c.text} /></span>
-                  </m.li>
+                  </li>
                 ))}
               </ul>
-            </m.li>
+            </li>
           ))}
-        </m.ol>
-      </MotionConfig>
-    </LazyMotion>
+        </ol>
   );
 }

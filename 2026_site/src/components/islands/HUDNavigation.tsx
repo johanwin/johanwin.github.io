@@ -3,7 +3,6 @@ import { useMotionOff } from '@/lib/useMotionOff';
 import { setMotion } from '@/lib/motion';
 import { navigate } from 'astro:transitions/client';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { AnimatePresence, LazyMotion, MotionConfig, domAnimation, m, type Variants } from 'framer-motion';
 import { cn, withBase } from '@/lib/utils';
 
 type NavLink = { code: string; label: string; href: string; tone: string };
@@ -20,27 +19,11 @@ interface HUDNavigationProps {
   build: string;
 }
 
-/* ---------- motion presets ------------------------------------------------ */
-const drawer: Variants = {
-  closed: { clipPath: 'inset(0 0 100% 0)' },
-  open: {
-    clipPath: 'inset(0 0 0% 0)',
-    transition: { duration: 0.45, ease: [0.7, 0, 0.2, 1], when: 'beforeChildren', staggerChildren: 0.06 },
-  },
-  exit: { clipPath: 'inset(100% 0 0 0)', transition: { duration: 0.3, ease: [0.7, 0, 0.2, 1] } },
-};
-const drawerItem: Variants = {
-  closed: { opacity: 0, x: -32 },
-  open: { opacity: 1, x: 0, transition: { duration: 0.35, ease: [0.2, 0.8, 0.2, 1] } },
-};
-const hudStrip: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
-};
-const hudCell: Variants = {
-  hidden: { opacity: 0, y: -6 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.3 } },
-};
+/* ---------- motion ------------------------------------------------------
+   All animation here is CSS (global.css): .hud-cell (status strip fade-in) and
+   .nav-drawer / .nav-drawer-item (mobile menu). The drawer uses Radix's
+   data-state="open|closed"; Radix waits for the closing animation before it
+   unmounts the menu, then onCloseAutoFocus runs any pending link scroll. */
 
 /* ---------- hooks --------------------------------------------------------- */
 function useClock(timeZone: string) {
@@ -131,8 +114,9 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
     pending.current = href;
     setOpen(false);
   };
+  // Called once the drawer has finished closing and unmounted (from onCloseAutoFocus).
   const afterExit = () => {
-    // two frames: let React unmount the dialog and react-remove-scroll unlock the page
+    // two frames: let react-remove-scroll unlock the page
     requestAnimationFrame(() => requestAnimationFrame(flushPending));
   };
   const flushPending = () => {
@@ -155,8 +139,6 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
   };
 
   return (
-    <LazyMotion features={domAnimation} strict>
-      <MotionConfig reducedMotion={motionOff ? 'always' : 'user'}>
         <div className="mx-auto flex h-14 max-w-7xl items-stretch border-x border-line-strong bg-bg/85 backdrop-blur-md md:h-16">
           {/* ── Unit ID ─────────────────────────────── */}
           <a
@@ -189,26 +171,20 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
           </a>
 
           {/* ── Live status readouts ───────────────── */}
-          <m.ul
-            variants={hudStrip}
-            initial="hidden"
-            animate="show"
-            aria-hidden="true"
-            className="hidden items-stretch lg:flex"
-          >
-            <m.li variants={hudCell} className="flex items-center gap-2 border-r border-line px-4">
+          <ul aria-hidden="true" className="hidden items-stretch lg:flex">
+            <li className="hud-cell flex items-center gap-2 border-r border-line px-4" style={{ ['--i' as string]: 0 }}>
               <span aria-hidden="true" className="size-2 bg-signal animate-blink" />
               <span className="hud-label text-signal">SYS NOMINAL</span>
-            </m.li>
-            <m.li variants={hudCell} className="flex flex-col justify-center border-r border-line px-4">
+            </li>
+            <li className="hud-cell flex flex-col justify-center border-r border-line px-4" style={{ ['--i' as string]: 1 }}>
               <span className="hud-label text-[0.6rem] text-muted">{tzShort}</span>
               <time className="hud-label tabular-nums text-fg" aria-live="off">{clock}</time>
-            </m.li>
-            <m.li variants={hudCell} className="flex flex-col justify-center border-r border-line px-4">
+            </li>
+            <li className="hud-cell flex flex-col justify-center border-r border-line px-4" style={{ ['--i' as string]: 2 }}>
               <span className="hud-label text-[0.6rem] text-muted">BUILD</span>
               <span className="hud-label text-fg">{build}</span>
-            </m.li>
-          </m.ul>
+            </li>
+          </ul>
 
           {/* ── Desktop nav ─────────────────────────── */}
           <nav aria-label="Primary" className="ml-auto hidden md:flex">
@@ -275,24 +251,18 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
               </span>
             </DialogPrimitive.Trigger>
 
-            <AnimatePresence onExitComplete={afterExit}>
-              {open && (
-                <DialogPrimitive.Portal forceMount>
+                <DialogPrimitive.Portal>
                   <DialogPrimitive.Content
-                    forceMount
-                    asChild
                     aria-describedby={undefined}
                     onCloseAutoFocus={(e) => {
-                      if (pending.current) e.preventDefault();
+                      // Runs after the closing animation, once the menu has unmounted.
+                      if (pending.current) {
+                        e.preventDefault();
+                        afterExit();
+                      }
                     }}
+                    className="nav-drawer fixed inset-0 z-[70] flex flex-col bg-bg scanlines"
                   >
-                    <m.div
-                      variants={drawer}
-                      initial="closed"
-                      animate="open"
-                      exit="exit"
-                      className="fixed inset-0 z-[70] flex flex-col bg-bg scanlines"
-                    >
                       <DialogPrimitive.Title className="sr-only">Navigation</DialogPrimitive.Title>
 
                       <div className="flex h-14 items-stretch border-b border-line-strong">
@@ -307,16 +277,16 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
 
                       <nav aria-label="Mobile" className="flex-1 overflow-y-auto">
                         <ul>
-                          <m.li variants={drawerItem} className="border-b border-line">
+                          <li className="nav-drawer-item border-b border-line" style={{ ['--i' as string]: 0 }}>
                             <a href={withBase('/')} onClick={(e) => go(e, withBase('/'))} className="flex items-baseline gap-4 px-5 py-6 hover:bg-surface-2 hover:text-accent">
                               <span aria-hidden="true" className="hud-label text-muted">00</span>
                               <span className="display-wide text-[clamp(2.25rem,11vw,3.5rem)]">Home</span>
                             </a>
-                          </m.li>
-                          {links.map((l) => {
+                          </li>
+                          {links.map((l, n) => {
                             const isActive = active === l.href.split('#')[1];
                             return (
-                              <m.li key={l.href} variants={drawerItem} className="border-b border-line" style={toneVar(l.tone)}>
+                              <li key={l.href} className="nav-drawer-item border-b border-line" style={{ ...toneVar(l.tone), ['--i' as string]: n + 1 }}>
                                 <a
                                   href={withBase(l.href)}
                                   onClick={(e) => go(e, withBase(l.href))}
@@ -337,13 +307,13 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
                                   <span aria-hidden="true" className="hud-label text-muted">{l.code}</span>
                                   <span className="display-wide text-[clamp(2.25rem,11vw,3.5rem)]">{l.label}</span>
                                 </a>
-                              </m.li>
+                              </li>
                             );
                           })}
                         </ul>
                       </nav>
 
-                      <m.div variants={drawerItem} className="grid grid-cols-2 border-t border-line-strong">
+                      <div className="nav-drawer-item grid grid-cols-2 border-t border-line-strong" style={{ ['--i' as string]: links.length + 1 }}>
                         <div className="border-r border-line p-4">
                           <p className="hud-label text-[0.6rem] text-muted">{tzShort}</p>
                           <p className="hud-label tabular-nums mt-1">{clock}</p>
@@ -352,15 +322,10 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
                           <p className="hud-label text-[0.6rem] text-muted">STATUS</p>
                           <p className="hud-label mt-1 text-signal">NOMINAL</p>
                         </div>
-                      </m.div>
-                    </m.div>
+                      </div>
                   </DialogPrimitive.Content>
                 </DialogPrimitive.Portal>
-              )}
-            </AnimatePresence>
           </DialogPrimitive.Root>
         </div>
-      </MotionConfig>
-    </LazyMotion>
   );
 }
