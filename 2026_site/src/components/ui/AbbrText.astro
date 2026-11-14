@@ -1,0 +1,20 @@
+---
+/**
+ * Renders text with every known abbreviation (src/lib/abbr.ts) wrapped as
+ * <abbr title> + a screen-reader expansion. Usage: <AbbrText text="Sr. UI Eng." />
+ */
+import { splitAbbr } from '@/lib/abbr';
+
+interface Props {
+  text: string;
+}
+const segments = splitAbbr(Astro.props.text);
+---
+
+{segments.map((s) =>
+  s.title ? (
+    <abbr title={s.title} class="cursor-help no-underline"><span aria-hidden="true">{s.text}</span><span class="sr-only">{s.title}</span></abbr>
+  ) : (
+    s.text
+  ),
+)}

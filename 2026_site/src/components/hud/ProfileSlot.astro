@@ -1,0 +1,220 @@
+---
+/**
+ * Profile image slot for the About dossier, framed as a live CRT feed.
+ * Set `site.portrait.src` (path in /public, e.g. '/images/portrait.jpg') to
+ * replace the placeholder silhouette with a real photo — 3:4 works best.
+ */
+import { site } from '@/data/site';
+import { withBase } from '@/lib/utils';
+
+const { src, alt } = site.portrait;
+const hasPhoto = Boolean(src);
+
+/* Facial landmarks in the portrait's 720×940 pixel space. Re-map these if the photo changes. */
+const pts: [number, number][] = [
+  [345, 170], // 0 forehead
+  [240, 330], // 1 brow L
+  [450, 330], // 2 brow R
+  [262, 378], // 3 eye L
+  [442, 378], // 4 eye R
+  [350, 385], // 5 nose bridge
+  [345, 470], // 6 nose tip
+  [200, 460], // 7 cheek L
+  [510, 450], // 8 cheek R
+  [292, 555], // 9 mouth L
+  [398, 550], // 10 mouth R
+  [345, 548], // 11 mouth C
+  [345, 650], // 12 chin
+  [215, 590], // 13 jaw L
+  [490, 580], // 14 jaw R
+  [180, 300], // 15 temple L
+  [520, 300], // 16 temple R
+];
+const meshEdges: [number, number][] = [
+  [0, 15], [0, 16], [0, 1], [0, 2], [1, 2], [15, 1], [16, 2], [1, 3], [2, 4], [3, 5], [4, 5],
+  [1, 5], [2, 5], [15, 7], [16, 8], [3, 7], [4, 8], [5, 6], [3, 6], [4, 6], [7, 6], [8, 6],
+  [7, 9], [8, 10], [6, 9], [6, 10], [9, 11], [10, 11], [6, 11], [7, 13], [8, 14], [9, 13],
+  [10, 14], [13, 12], [14, 12], [9, 12], [10, 12],
+];
+---
+
+<figure class="mb-6 grid grid-cols-[minmax(0,3fr)_minmax(0,2fr)] border border-line-strong">
+  <div class="crt aspect-[3/4] border-r border-line-strong bg-bg">
+    {hasPhoto ? (
+      <>
+        <span class="lazy-media size-full">
+          <img
+            src={withBase(src)}
+            alt={alt}
+            width="720"
+            height="940"
+            loading="lazy"
+            decoding="async"
+            class="size-full object-cover"
+          />
+        </span>
+        <!--
+          Face-scan overlay. viewBox matches the image's pixel size and
+          `slice` mirrors object-cover, so landmarks stay pinned to the face.
+        -->
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 720 940"
+          preserveAspectRatio="xMidYMid slice"
+          class="face-scan absolute inset-0 z-[1] size-full"
+        >
+          <defs>
+            <linearGradient id="fs-beam" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="var(--accent)" stop-opacity="0" />
+              <stop offset=".85" stop-color="var(--accent)" stop-opacity=".28" />
+              <stop offset="1" stop-color="var(--hazard)" stop-opacity=".9" />
+            </linearGradient>
+            <clipPath id="fs-clip"><rect x="130" y="100" width="430" height="580" /></clipPath>
+          </defs>
+
+          <!-- landmark mesh -->
+          <g class="fs-mesh" fill="none" stroke="var(--accent)" stroke-width="1.5">
+            {meshEdges.map(([a, b], i) => (
+              <line
+                x1={pts[a][0]} y1={pts[a][1]} x2={pts[b][0]} y2={pts[b][1]}
+                pathLength="1"
+                style={`--d:${(i * 0.035).toFixed(3)}s`}
+              />
+            ))}
+          </g>
+          <g class="fs-dots" fill="var(--hazard)">
+            {pts.map(([x, y], i) => (
+              <rect x={x - 3} y={y - 3} width="6" height="6" style={`--d:${(0.6 + i * 0.07).toFixed(2)}s`} />
+            ))}
+          </g>
+
+          <!-- eye reticles -->
+          <g class="fs-eyes" fill="none" stroke="var(--fg)" stroke-width="1.5">
+            {[pts[3], pts[4]].map(([x, y]) => (
+              <g>
+                <circle cx={x} cy={y} r="22" stroke-dasharray="6 5" />
+                <path d={`M${x - 34} ${y}h10M${x + 24} ${y}h10M${x} ${y - 34}v10M${x} ${y + 24}v10`} />
+              </g>
+            ))}
+          </g>
+
+          <!-- sweeping scan beam, clipped to the face box -->
+          <g clip-path="url(#fs-clip)">
+            <g class="fs-beam">
+              <rect x="130" y="-60" width="430" height="60" fill="url(#fs-beam)" />
+              <rect x="130" y="-2" width="430" height="2" fill="var(--hazard)" />
+            </g>
+          </g>
+
+          <!-- lock-on brackets -->
+          <g class="fs-lock" fill="none" stroke="var(--accent)" stroke-width="4">
+            <path d="M130 150V100h50M510 100h50v50M560 630v50h-50M180 680h-50v-50" />
+          </g>
+
+          <!-- tags -->
+          <g class="fs-tags" font-family="var(--font-mono)" font-weight="700" letter-spacing="2">
+            <!-- top-right so it clears the LIVE badge pinned top-left -->
+            <rect x="310" y="50" width="250" height="40" fill="var(--accent)" />
+            <text x="435" y="79" font-size="25" text-anchor="middle" fill="var(--accent-fg)">TARGET LOCK</text>
+            <text x="130" y="722" font-size="24" fill="var(--hazard)">MATCH 98.7%</text>
+            <text x="560" y="722" font-size="24" text-anchor="end" fill="var(--fg)">ID:{site.callsign}</text>
+          </g>
+        </svg>
+      </>
+    ) : (
+      <svg viewBox="0 0 300 400" class="size-full" role="img" aria-label="Profile photo placeholder">
+        <defs>
+          <pattern id="pf-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M20 0H0V20" fill="none" stroke="var(--line)" stroke-width="1"></path>
+          </pattern>
+        </defs>
+        <rect width="300" height="400" fill="url(#pf-grid)"></rect>
+        <!-- wireframe bust -->
+        <g fill="none" stroke="var(--fg)" stroke-width="2" opacity=".85">
+          <ellipse cx="150" cy="150" rx="62" ry="76"></ellipse>
+          <path d="M150 74v152M88 150h124" stroke-dasharray="4 6" opacity=".45"></path>
+          <path d="M120 222q30 22 60 0v34q60 8 92 46l14 98H14l14-98q32-38 92-46z"></path>
+        </g>
+        <!-- reticle -->
+        <g stroke="var(--accent)" stroke-width="2" fill="none">
+          <path d="M70 60h24M70 60v24M230 60h-24M230 60v24M70 240h24M70 240v-24M230 240h-24M230 240v-24"></path>
+          <circle cx="150" cy="150" r="6"></circle>
+        </g>
+        <text x="150" y="372" text-anchor="middle" fill="var(--accent)" font-family="var(--font-mono)" font-size="13" font-weight="700" letter-spacing="3">NO SIGNAL</text>
+      </svg>
+    )}
+    <span aria-hidden="true" class="crt-roll"></span>
+    <span aria-hidden="true" class="absolute left-2 top-2 z-[4] flex items-center gap-1.5 bg-bg/80 px-1.5 py-1 hud-label text-[0.6rem] text-accent">
+      <span class="size-1.5 bg-accent animate-blink"></span> LIVE
+    </span>
+  </div>
+
+  <!-- Camera readouts are flavor; the photo's alt text carries the meaning. -->
+  <figcaption aria-hidden="true" class="flex flex-col justify-between gap-4 p-3 sm:p-4">
+    <div class="space-y-3">
+      <div>
+        <p class="hud-label text-[0.6rem] text-muted">FEED</p>
+        <p class="mt-1 hud-label">CAM-01</p>
+      </div>
+      <div>
+        <p class="hud-label text-[0.6rem] text-muted">REFRESH</p>
+        <p class="mt-1 hud-label tabular-nums">60 HZ</p>
+      </div>
+      <div>
+        <p class="hud-label text-[0.6rem] text-muted">SIGNAL</p>
+        <p aria-hidden="true" class="mt-1.5 flex h-4 items-end gap-0.5">
+          <span class="h-1/4 w-1.5 bg-accent"></span>
+          <span class="h-2/4 w-1.5 bg-accent"></span>
+          <span class="h-3/4 w-1.5 bg-accent"></span>
+          <span class:list={['h-full w-1.5', hasPhoto ? 'bg-accent' : 'bg-surface-2']}></span>
+        </p>
+      </div>
+    </div>
+    <p class="hud-label text-[0.6rem] leading-relaxed text-muted">
+      {hasPhoto ? 'SUBJECT IDENTIFIED' : 'AWAITING UPLINK'}
+    </p>
+  </figcaption>
+</figure>
+
+<style>
+  /* One 6s cycle: mesh draws in → beam sweeps → brackets lock → hold. */
+  .face-scan { pointer-events: none; }
+  .face-scan * { transform-box: view-box; }
+
+  .fs-mesh line {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    opacity: 0.55;
+    animation: fs-draw 6s var(--d) ease-out infinite;
+  }
+  .fs-dots rect { opacity: 0; animation: fs-pop 6s var(--d) steps(1, end) infinite; }
+  .fs-eyes { opacity: 0; animation: fs-fade 6s 1.6s ease-out infinite; }
+  .fs-eyes circle { transform-origin: center; transform-box: fill-box; animation: fs-spin 8s linear infinite; }
+  .fs-beam { animation: fs-sweep 6s 0.2s cubic-bezier(.45,0,.55,1) infinite; translate: 0 100px; }
+  .fs-lock { transform-origin: 345px 390px; animation: fs-lock 6s 2.2s cubic-bezier(.2,.9,.3,1.2) infinite; }
+  .fs-tags { animation: fs-tag 6s 2.4s steps(1, end) infinite; }
+
+  @keyframes fs-draw { 0% { stroke-dashoffset: 1; } 20%, 85% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+  @keyframes fs-pop { 0% { opacity: 0; } 2% { opacity: 1; } 4% { opacity: .35; } 6%, 82% { opacity: 1; } 90%, 100% { opacity: 0; } }
+  @keyframes fs-fade { 0% { opacity: 0; } 8%, 60% { opacity: .7; } 70%, 100% { opacity: 0; } }
+  @keyframes fs-spin { to { rotate: 360deg; } }
+  @keyframes fs-sweep { 0% { translate: 0 100px; opacity: 1; } 40% { translate: 0 740px; opacity: 1; } 41%, 100% { translate: 0 740px; opacity: 0; } }
+  @keyframes fs-lock { 0% { scale: 1.25; opacity: 0; } 8% { scale: 1; opacity: 1; } 10% { opacity: .3; } 12%, 70% { opacity: 1; scale: 1; } 80%, 100% { opacity: 0; scale: 1; } }
+  @keyframes fs-tag { 0% { opacity: 0; } 4% { opacity: 1; } 6% { opacity: 0; } 8%, 66% { opacity: 1; } 76%, 100% { opacity: 0; } }
+
+  /* Reduced motion: show the settled, fully-locked frame. */
+  @media (prefers-reduced-motion: reduce) {
+    .face-scan * { animation: none !important; }
+    .fs-mesh line { stroke-dashoffset: 0; }
+    .fs-dots rect, .fs-lock, .fs-tags { opacity: 1; }
+    .fs-eyes { opacity: .7; }
+    .fs-beam { display: none; }
+  }
+  /* Same settled frame when the nav "Motion" toggle is off. */
+  :global(html[data-motion="off"]) .fs-mesh line { stroke-dashoffset: 0; }
+  :global(html[data-motion="off"]) .fs-dots rect,
+  :global(html[data-motion="off"]) .fs-lock,
+  :global(html[data-motion="off"]) .fs-tags { opacity: 1; }
+  :global(html[data-motion="off"]) .fs-eyes { opacity: .7; }
+  :global(html[data-motion="off"]) .fs-beam { display: none; }
+</style>

@@ -1,0 +1,223 @@
+<!doctype html>
+<!--
+  Source for public/resume.pdf. Rebuild with:  npm run resume
+  Kept deliberately machine-friendly: one column, real text in reading order,
+  standard section names, contact details in the body (not a page header),
+  no tables, icons or text inside images. Branding is CSS-only decoration.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>John Nguyen — Senior Software Engineer — Resume</title>
+<meta name="author" content="John Nguyen" />
+<meta name="description" content="Resume of John Nguyen, senior software engineer specializing in front-end systems, reusable web components and accessibility." />
+<style>
+  @font-face {
+    font-family: "Archivo";
+    src: url("../../node_modules/@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2") format("woff2");
+    font-weight: 100 900;
+    font-stretch: 62% 125%;
+  }
+
+  @page { size: Letter; margin: 0.4in 0.55in; }
+
+  :root {
+    --ink: #16161a;
+    --muted: #55555c;
+    --accent: #ff6b1a;      /* site hazard orange (rules, accents) */
+    --accent-text: #b4470c; /* darker orange for readable text on white */
+    --hazard: #ffd60a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { color: var(--ink); background: #fff; }
+  /* Machine readability: variable web fonts get embedded as several subsets in
+     Chrome's PDF, and text extractors (ATS, AI parsers) then split words at the
+     seams ("SE NIOR"). So body/labels use standard static fonts (Helvetica Neue,
+     Menlo); only the name uses the site's Archivo, which extracts cleanly.
+     Letter-spacing, kerning and ligatures are off for the same reason. */
+  body {
+    font-kerning: none;
+    font-variant-ligatures: none;
+    text-rendering: optimizeSpeed;
+    font: 400 9pt/1.34 "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── Header ───────────────────────────────────────── */
+  header { padding-bottom: 8pt; border-bottom: 2pt solid var(--ink); }
+  .stripe {
+    width: 64pt; height: 6pt; margin-bottom: 9pt;
+    background: linear-gradient(-45deg, var(--hazard) 0 25%, var(--ink) 25% 50%, var(--hazard) 50% 75%, var(--ink) 75% 100%);
+    background-size: 8pt 8pt;
+  }
+  h1 {
+    font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 900; font-stretch: 125%;
+    font-size: 24pt; line-height: 1; letter-spacing: 0;
+    text-transform: uppercase;
+  }
+  h1 .last { color: var(--accent); }
+  .headline {
+    margin-top: 5pt;
+    font: 700 9pt/1.3 Menlo, "SF Mono", Consolas, monospace;
+    letter-spacing: 0; text-transform: uppercase;
+  }
+  .contact {
+    margin-top: 6pt;
+    font: 400 8.6pt/1.4 Menlo, "SF Mono", Consolas, monospace;
+    color: var(--muted);
+  }
+  .contact a { color: var(--ink); text-decoration: none; }
+  .contact .sep { color: var(--accent); padding: 0 4pt; }
+
+  /* ── Sections ─────────────────────────────────────── */
+  section { margin-top: 8pt; }
+  h2 {
+    display: flex; align-items: center; gap: 6pt;
+    font: 700 8.6pt/1 Menlo, "SF Mono", Consolas, monospace;
+    letter-spacing: 0; text-transform: uppercase;
+    color: var(--accent-text);
+    margin-bottom: 5pt;
+  }
+  h2::after { content: ""; flex: 1; height: 0.75pt; background: var(--accent); }
+
+  .summary { max-width: 100%; }
+
+  .job { margin-top: 5pt; break-inside: avoid; }
+  .job:first-of-type { margin-top: 0; }
+  .job-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12pt; }
+  h3 { font-size: 10pt; font-weight: 700; }
+  h3 .org { font-weight: 600; }
+  .dates, .where {
+    font: 500 8.4pt/1.3 Menlo, "SF Mono", Consolas, monospace; color: var(--muted); white-space: nowrap;
+  }
+  .where { display: block; margin-top: 1pt; }
+  ul { margin-top: 2pt; padding-left: 12pt; }
+  li { margin-top: 0.8pt; padding-left: 2pt; }
+  li::marker { color: var(--accent); font-size: 0.85em; }
+
+  .skills p { margin-top: 1.5pt; }
+  .skills b { font-weight: 700; }
+
+  .edu .job-head h3 { font-size: 10pt; }
+
+  footer {
+    margin-top: 10pt; padding-top: 5pt; border-top: 0.75pt solid #d6d6db;
+    font: 400 7.4pt/1.3 Menlo, "SF Mono", Consolas, monospace; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="stripe" aria-hidden="true"></div>
+    <h1>John <span class="last">Nguyen</span></h1>
+    <p class="headline">Senior Software Engineer · Front-End Systems &amp; Accessibility</p>
+    <p class="contact">
+      Dallas–Fort Worth, TX<span class="sep">|</span><a href="mailto:whatsup@johnnguyen.org">whatsup@johnnguyen.org</a><span class="sep">|</span><a href="https://johnnguyen.net">johnnguyen.net</a><span class="sep">|</span><a href="https://www.linkedin.com/in/johannguyen/">linkedin.com/in/johannguyen</a>
+    </p>
+  </header>
+
+  <section>
+    <h2>Summary</h2>
+    <p class="summary">
+      Front-end engineer with 20+ years of experience designing, building, testing and shipping web applications for
+      enterprise and agency clients, including Allstate, Capital One and Mitsubishi Motors. Specializes in reusable web
+      component libraries, accessible (WCAG) interfaces and front-end performance, partnering closely with UX designers.
+    </p>
+  </section>
+
+  <section>
+    <h2>Experience</h2>
+
+    <div class="job">
+      <div class="job-head">
+        <h3>Senior Software Engineer, <span class="org">Allstate</span></h3>
+        <span class="dates">2018 – Present</span>
+      </div>
+      <span class="where">Irving, TX</span>
+      <ul>
+        <li>Develop reusable web components adopted across Allstate's eProposal, Milewise, Roadside Services and Cross-Enterprise products.</li>
+        <li>Design UI specifications and prototypes for new product concepts across multiple product lines.</li>
+        <li>Build multi-tier applications with React, ASP.NET and Java in fast-paced delivery environments.</li>
+        <li>Partner with UX designers to implement the company's Human Interface Guidelines.</li>
+        <li>Integrate WCAG accessibility standards and unit testing into shared component development.</li>
+      </ul>
+    </div>
+
+    <div class="job">
+      <div class="job-head">
+        <h3>Senior User Interface Engineer, <span class="org">Capital One</span></h3>
+        <span class="dates">2015 – 2018</span>
+      </div>
+      <span class="where">Plano, TX</span>
+      <ul>
+        <li>Developed and maintained Capital One's Home Loans website and applications in Angular.</li>
+        <li>Created reusable web components shared across multiple Home Loans projects.</li>
+        <li>Improved download performance across the Home Loans web properties.</li>
+        <li>Integrated the front-end codebase with the company's enterprise content management system.</li>
+        <li>Implemented unit tests for the pre-qualification application and incorporated WCAG accessibility guidelines throughout.</li>
+      </ul>
+    </div>
+
+    <div class="job">
+      <div class="job-head">
+        <h3>UI Engineer, <span class="org">iCrossing</span></h3>
+        <span class="dates">2012 – 2015</span>
+      </div>
+      <span class="where">Dallas, TX</span>
+      <ul>
+        <li>Built websites for agency clients including Hilton and BlueCross BlueShield of Tennessee, and Mitsubishi Motors' Build &amp; Price vehicle configurator.</li>
+        <li>Established project workflow environments from inception for multiple client engagements.</li>
+        <li>Resolved defects on existing websites and delivered enhancements that improved functionality and speed.</li>
+        <li>Managed concurrent assignments for several large clients, adapting quickly to new projects.</li>
+      </ul>
+    </div>
+
+    <div class="job">
+      <div class="job-head">
+        <h3>Interactive Developer, <span class="org">Hawkeye</span></h3>
+        <span class="dates">2008 – 2012</span>
+      </div>
+      <span class="where">Dallas, TX</span>
+      <ul>
+        <li>Built websites, landing pages and HTML emails on rapid timelines for clients including ThyssenKrupp Elevator and Raising Cane's.</li>
+        <li>Collaborated with art directors and UI designers to translate creative concepts into the final build.</li>
+        <li>Led development of the agency's new website.</li>
+      </ul>
+    </div>
+
+    <div class="job">
+      <div class="job-head">
+        <h3>Web &amp; Graphic Designer, <span class="org">The Canyon News</span></h3>
+        <span class="dates">2006 – 2008</span>
+      </div>
+      <span class="where">Canyon, TX</span>
+      <ul>
+        <li>Led the redesign and development of the newspaper's website, establishing a new web presence and improving usability; designed print advertisements.</li>
+        <li>Maintained workstations, servers, production equipment and software as a volunteer information technology (IT) resource.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="skills">
+    <h2>Skills</h2>
+    <p><b>Languages:</b> TypeScript, JavaScript, HTML, CSS, SQL, PHP</p>
+    <p><b>Frameworks &amp; Libraries:</b> React, Astro, Node.js, Tailwind CSS, Web Components</p>
+    <p><b>Testing &amp; Accessibility:</b> Unit Testing, React Testing Library, Playwright, Web Accessibility (WCAG), SEO</p>
+    <p><b>Tools &amp; Infrastructure:</b> Git, GitHub Actions, Jenkins, Docker, Vite, Storybook, AWS, MySQL; Figma, Photoshop, Illustrator</p>
+  </section>
+
+  <section class="edu">
+    <h2>Education</h2>
+    <div class="job">
+      <div class="job-head">
+        <h3>Bachelor's Degree, Marketing, <span class="org">West Texas A&amp;M University</span></h3>
+        <span class="dates">2006</span>
+      </div>
+      <span class="where">Canyon, TX</span>
+    </div>
+  </section>
+
+</body>
+</html>

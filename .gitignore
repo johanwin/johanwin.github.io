@@ -1,0 +1,7 @@
+# Dependencies and build output — never committed; `npm install` recreates node_modules.
+node_modules/
+dist/
+.astro/
+
+# OS / editor noise
+.DS_Store

@@ -1,0 +1,31 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/sections/Hero.astro';
+import About from '@/components/sections/About.astro';
+import Projects from '@/components/sections/Projects.astro';
+import Experience from '@/components/sections/Experience.astro';
+import Contact from '@/components/sections/Contact.astro';
+import { site, socials } from '@/data/site';
+
+// Structured data so search engines understand this is a personal profile.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: site.title,
+  url: Astro.site?.toString(),
+  sameAs: socials.filter((s) => s.href.startsWith('http')).map((s) => s.href),
+};
+---
+
+<BaseLayout>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <!-- Each section is a toned <Band>; adjacent bands cross-fade (see global.css). -->
+  <Hero />
+
+  <About />
+  <Projects />
+  <Experience />
+  <Contact />
+</BaseLayout>

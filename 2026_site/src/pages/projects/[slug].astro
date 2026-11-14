@@ -1,0 +1,184 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AbbrText from '@/components/ui/AbbrText.astro';
+import HudFrame from '@/components/hud/HudFrame.astro';
+import Band from '@/components/hud/Band.astro';
+import { projects, type Project } from '@/data/projects';
+import { pad, withBase } from '@/lib/utils';
+
+export const getStaticPaths = (() =>
+  projects.map((project) => ({ params: { slug: project.slug }, props: { project } }))) satisfies GetStaticPaths;
+
+interface Props { project: Project }
+const { project } = Astro.props;
+
+const i = projects.findIndex((p) => p.slug === project.slug);
+const next = projects[(i + 1) % projects.length]!;
+const { images } = project;
+const multi = images.length > 1;
+const showId = `show-${project.slug}`;
+const frameLabel = images[0]!.frame === 'telemetry' ? 'Intercepted Telemetry Capture' : 'System Schematic';
+---
+
+<BaseLayout title={project.title} description={project.summary}>
+  <!-- Case studies inherit the Projects band tone (deep navy). -->
+  <Band tone="projects" labelledby="project-title">
+  <article class="py-10 sm:py-16">
+    <nav aria-label="Breadcrumb" class="mb-8">
+      <ol class="flex flex-wrap items-center gap-2 hud-label text-muted">
+        <li><a href={withBase('/')} class="hover:text-accent">Root</a></li>
+        <li aria-hidden="true">/</li>
+        <li><a href={withBase('/#projects')} class="hover:text-accent">Projects</a></li>
+        <li aria-hidden="true">/</li>
+        <li aria-current="page" class="text-fg"><span aria-hidden="true">{project.code}</span><span class="sr-only">{project.title}</span></li>
+      </ol>
+    </nav>
+
+    <header class="grid gap-6 lg:grid-cols-12 lg:items-end">
+      <div class="lg:col-span-8">
+        <p class="hud-label text-accent"><span aria-hidden="true">// {project.code} · </span>{[project.era, project.status].filter(Boolean).join(' · ')}</p>
+        <!-- Same view-transition name as the card title → the title morphs between pages. -->
+        <h1
+          id="project-title"
+          class="mt-4 display-wide text-[clamp(2.5rem,9vw,6.5rem)]"
+          transition:name={`project-${project.slug}`}
+        >
+          {project.title}
+        </h1>
+      </div>
+      <p class="text-muted lg:col-span-4"><AbbrText text={project.summary} /></p>
+    </header>
+
+    <HudFrame label="CAPTURE" meta={frameLabel.toUpperCase()} class="mt-14 bg-bg p-2 sm:p-3">
+      <figure data-channel-host>
+        {multi ? (
+          <>
+            <!-- Channel-switch slideshow: autoplays on screen, holds on hover/focus,
+                 and has pause + prev/next controls below (WCAG 2.2.2). -->
+            <channel-show id={showId} trigger="auto" interval="5000" data-fit="contain" class="aspect-[16/10] w-full">
+              {images.map((im, i) => (
+                <img
+                  {...(i === 0 ? { src: withBase(im.src), fetchpriority: 'high' } : { 'data-src': withBase(im.src) })}
+                  alt={im.alt}
+                  width={im.width}
+                  height={im.height}
+                  decoding="async"
+                />
+              ))}
+            </channel-show>
+            <figcaption class="mt-2 flex flex-wrap items-stretch gap-2 border-t border-line-strong pt-2">
+              <p class="flex min-w-0 flex-1 items-center gap-3 px-1 text-sm text-muted">
+                <span aria-hidden="true" class="hud-label text-[#3dff7a]" data-ch-num>CH 01/{String(images.length).padStart(2, '0')}</span>
+                <span data-ch-caption>{images[0]!.alt}</span>
+              </p>
+              <span class="sr-only" role="status" data-ch-status></span>
+              <div class="flex items-stretch border border-line-strong">
+                <button type="button" class="wipe flex min-h-11 items-center px-3 hud-label" data-channel="prev" aria-controls={showId}>
+                  <span aria-hidden="true">◀ CH−</span><span class="sr-only">Previous screen</span>
+                </button>
+                <button type="button" class="wipe flex min-h-11 items-center border-x border-line-strong px-3 hud-label" data-channel="toggle" aria-controls={showId} aria-pressed="false">
+                  <span aria-hidden="true" data-ch-toggle-label>❚❚ Pause</span><span class="sr-only">Pause slideshow</span>
+                </button>
+                <button type="button" class="wipe flex min-h-11 items-center px-3 hud-label" data-channel="next" aria-controls={showId}>
+                  <span aria-hidden="true">CH+ ▶</span><span class="sr-only">Next screen</span>
+                </button>
+              </div>
+            </figcaption>
+          </>
+        ) : (
+          <>
+            <img
+              src={withBase(images[0]!.src)}
+              alt={images[0]!.alt}
+              width={images[0]!.width}
+              height={images[0]!.height}
+              class="h-auto w-full"
+              fetchpriority="high"
+            />
+            <figcaption class="sr-only">{images[0]!.alt}</figcaption>
+          </>
+        )}
+      </figure>
+    </HudFrame>
+
+    <div class="mt-14 grid gap-10 lg:grid-cols-12">
+      <section class="lg:col-span-7" aria-labelledby="brief">
+        <h2 id="brief" class="hud-label text-accent"><span aria-hidden="true">// </span>Mission brief</h2>
+        <p class="mt-4 text-lg leading-relaxed"><AbbrText text={project.description} /></p>
+
+        <h2 class="mt-10 hud-label text-accent"><span aria-hidden="true">// </span>Scope</h2>
+        <ol class="mt-4 border border-line-strong">
+          {project.scope.map((line, n) => (
+            <li class="grid grid-cols-[4ch_1fr] gap-3 border-b border-line p-3 last:border-b-0">
+              <span aria-hidden="true" class="text-accent">{pad(n + 1)}</span><span><AbbrText text={line} /></span>
+            </li>
+          ))}
+        </ol>
+
+      </section>
+
+      <aside class="space-y-6 lg:col-span-5" aria-label="Project metadata">
+        <dl class="grid grid-cols-2 border border-line-strong">
+          {project.telemetry.map((t) => (
+            <div class="border-b border-r border-line p-3 even:border-r-0">
+              <dt class="hud-label text-muted"><AbbrText text={t.k} /></dt>
+              <dd class="mt-1 text-lg font-bold tabular-nums"><AbbrText text={t.v} /></dd>
+            </div>
+          ))}
+        </dl>
+
+        <div>
+          <h2 class="hud-label text-accent"><span aria-hidden="true">// </span>Stack</h2>
+          <ul class="mt-3 flex flex-wrap gap-2">
+            {project.stack.map((s) => (
+              <li class="border border-line-strong px-2 py-1 hud-label"><AbbrText text={s} /></li>
+            ))}
+          </ul>
+        </div>
+
+        <p class="flex items-center gap-2 hud-label text-muted">
+          <span aria-hidden="true" class="size-2 bg-line-strong"></span> Source and production links not public
+        </p>
+      </aside>
+    </div>
+
+    <nav aria-label="Next project" class="mt-20 border-t border-line-strong pt-6">
+      <a href={withBase(`/projects/${next.slug}`)} class="group flex flex-wrap items-baseline justify-between gap-4">
+        <span aria-hidden="true" class="hud-label text-muted">NEXT // {next.code}</span>
+        <span class="display-wide text-3xl group-hover:text-accent sm:text-5xl"><span class="sr-only">Next project: </span>{next.title} <span aria-hidden="true">→</span></span>
+      </a>
+    </nav>
+  </article>
+
+  <script>
+    function syncShows() {
+      document.querySelectorAll<HTMLElement>('channel-show[id]').forEach((show) => {
+        if (show.dataset.synced) return;
+        show.dataset.synced = '1';
+        const fig = show.closest('figure')!;
+        const num = fig.querySelector('[data-ch-num]');
+        const cap = fig.querySelector('[data-ch-caption]');
+        const status = fig.querySelector('[data-ch-status]');
+        const toggle = fig.querySelector<HTMLButtonElement>('[data-channel="toggle"]');
+        const setPaused = (paused: boolean) => {
+          if (!toggle) return;
+          toggle.querySelector('[data-ch-toggle-label]')!.textContent = paused ? '▶ Play' : '❚❚ Pause';
+          toggle.querySelector('.sr-only')!.textContent = paused ? 'Play slideshow' : 'Pause slideshow';
+        };
+        show.addEventListener('channelchange', (e) => {
+          const { index, total, alt, announce } = (e as CustomEvent).detail;
+          const pad = (n: number) => String(n).padStart(2, '0');
+          if (num) num.textContent = `CH ${pad(index + 1)}/${pad(total)}`;
+          if (cap) cap.textContent = alt;
+          // Announce only user-initiated changes, not autoplay.
+          if (status && announce) status.textContent = `Screen ${index + 1} of ${total}: ${alt}`;
+        });
+        show.addEventListener('channelpause', (e) => setPaused((e as CustomEvent).detail.paused));
+        setPaused(toggle?.getAttribute('aria-pressed') === 'true');
+      });
+    }
+    document.addEventListener('astro:page-load', syncShows);
+  </script>
+  </Band>
+</BaseLayout>

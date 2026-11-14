@@ -1,0 +1,109 @@
+---
+import Band from '@/components/hud/Band.astro';
+import SectionHeader from '@/components/hud/SectionHeader.astro';
+import ProfileSlot from '@/components/hud/ProfileSlot.astro';
+import VideoBriefing from '@/components/hud/VideoBriefing.astro';
+import { site } from '@/data/site';
+import AbbrText from '@/components/ui/AbbrText.astro';
+import { skillMatrix } from '@/data/skills';
+
+/* Groups render in a 2-column grid; pair i with its row partner (i ^ 1). */
+const padRows = (i: number) => {
+  const partner = skillMatrix[i ^ 1];
+  return partner ? Math.max(0, partner.skills.length - skillMatrix[i]!.skills.length) : 0;
+};
+
+/* Third value = decorative row (flavor only), hidden from screen readers. */
+const dossier = [
+  ['SUBJECT', site.name, false],
+  ['CALLSIGN', site.callsign, true],
+  ['ROLE', site.title, false],
+  ['SPECIALTY', site.subtitle, false],
+  ['BASE', site.location, false],
+  ['CLEARANCE', 'PUBLIC', true],
+] as const;
+---
+
+<Band tone="about" id="about" labelledby="about-title" class="pt-12 pb-8 sm:pt-16">
+  <SectionHeader index="01" code="SYSTEM.PROFILE" title="About" id="about-title" />
+
+  <div class="grid gap-10 lg:grid-cols-12">
+    <!-- Dossier -->
+    <article class="lg:col-span-5" aria-label="System profile">
+      <ProfileSlot />
+      <dl class="border border-line-strong">
+        {dossier.map(([k, v, decorative]) => (
+          <div aria-hidden={decorative ? 'true' : undefined} class="grid grid-cols-[11ch_1fr] border-b border-line last:border-b-0">
+            <dt class="border-r border-line bg-surface-2 px-3 py-2.5 hud-label text-muted">{k}</dt>
+            <dd class="px-3 py-2.5 text-sm font-semibold"><AbbrText text={v} /></dd>
+          </div>
+        ))}
+      </dl>
+
+    </article>
+
+    <!-- Right column: skills matrix, then bio + video side by side -->
+    <div class="flex flex-col gap-8 lg:col-span-7">
+      <div>
+      <div class="mb-3 flex items-center justify-between">
+        <h3 class="hud-label text-accent"><span aria-hidden="true">// </span>Capability matrix</h3>
+        <p class="hud-label text-muted" id="skill-legend"><span aria-hidden="true">SIGNAL ▮ = PROFICIENCY 1–5</span><span class="sr-only">Proficiency rated 1 to 5.</span></p>
+      </div>
+      <div class="grid gap-px border border-line-strong bg-line-strong sm:grid-cols-2">
+        {skillMatrix.map((group, gi) => (
+          <section class="bg-bg" aria-labelledby={`skills-${group.id}`}>
+            <h4 id={`skills-${group.id}`} class="flex items-center justify-between border-b border-line bg-surface px-3 py-2">
+              <span class="hud-label">{group.label}</span>
+              <span aria-hidden="true" class="hud-label text-muted">{group.id}</span>
+            </h4>
+            <table class="w-full text-sm" aria-describedby="skill-legend">
+              <caption class="sr-only">{group.label} skills with proficiency</caption>
+              <thead class="sr-only">
+                <tr><th scope="col">Skill</th><th scope="col">Proficiency</th></tr>
+              </thead>
+              <tbody>
+                {group.skills.map((s) => (
+                  <tr class="border-b border-line last:border-b-0">
+                    <th scope="row" class="px-3 py-2 text-left font-normal">{s.name}</th>
+                    <td class="w-px px-3 py-2">
+                      <span class="sr-only">{s.level} of 5</span>
+                      <span aria-hidden="true" class="flex justify-end gap-0.5">
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <span class:list={['h-3 w-2', n <= s.level ? 'bg-accent' : 'bg-surface-2']} />
+                        ))}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+                {/* Blank ruled rows so side-by-side tables end on the same line
+                    (only in the 2-column layout; decorative). */}
+                {Array.from({ length: padRows(gi) }, () => (
+                  <tr aria-hidden="true" class="hidden border-b border-line last:border-b-0 sm:table-row">
+                    <td class="px-3 py-2 text-sm" colspan="2">&nbsp;</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        ))}
+      </div>
+      </div>
+
+      <div class="grid items-start gap-8 sm:grid-cols-2">
+        <div class="space-y-4 border-l-2 border-accent pl-5 text-[0.95rem] leading-relaxed">
+          <p aria-hidden="true" class="hud-label text-accent">// OPERATOR NOTES</p>
+          <p>
+            I'm a frontend-leaning engineer who treats the interface as a system: tokens, primitives, data flow and
+            build tooling designed together so the product stays fast and consistent as it grows.
+          </p>
+          <p class="text-muted">
+            Lately: design systems, performance budgets, and shipping more HTML with less JavaScript.
+            <!-- TODO: add a line about life outside work. -->
+          </p>
+        </div>
+
+        <VideoBriefing />
+      </div>
+    </div>
+  </div>
+</Band>

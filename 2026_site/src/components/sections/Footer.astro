@@ -1,0 +1,28 @@
+---
+import { site } from '@/data/site';
+import AbbrText from '@/components/ui/AbbrText.astro';
+const year = new Date().getFullYear();
+const LICENSE_URL = 'https://creativecommons.org/licenses/by/4.0/';
+---
+
+<!-- .site-footer overlaps the last band and cross-fades out of it (global.css). -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div aria-hidden="true" class="mx-auto h-2 max-w-7xl hazard-stripes"></div>
+    <div class="mx-auto grid max-w-7xl gap-x-8 gap-y-4 border-t border-line-strong px-4 py-10 sm:px-8 md:grid-cols-[auto_1fr_auto]">
+      <p class="hud-label text-muted">
+        © {year} {site.name} ·
+        <a href={LICENSE_URL} rel="license noopener" target="_blank" class="hover:text-accent"><AbbrText text="CC BY" /> 4.0<span class="sr-only"> license (opens in new tab)</span></a>
+      </p>
+      <p class="hud-label text-muted md:whitespace-nowrap md:text-center">Built with Astro + AI co-pilot</p>
+      <p class="hud-label text-muted md:text-right">
+        <a href="#top" class="hover:text-accent">Return to top ▲</a>
+      </p>
+    </div>
+    <p class="mx-auto max-w-7xl px-4 pb-8 text-xs leading-relaxed text-muted sm:px-8">
+      Site content is licensed under
+      <a href={LICENSE_URL} rel="license noopener" target="_blank" class="underline decoration-line-strong underline-offset-2 hover:text-accent">Creative Commons Attribution 4.0</a>:
+      share and adapt it freely with credit to {site.name}. Client project screenshots, names and logos remain the property of their respective owners and are not covered by this license.
+    </p>
+  </div>
+</footer>

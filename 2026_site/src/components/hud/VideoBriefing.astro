@@ -1,0 +1,133 @@
+---
+import { withBase } from '@/lib/utils';
+/**
+ * "Get to Know John" video: a thumbnail card in the About dossier that opens a
+ * native <dialog> with the YouTube player.
+ *
+ * Lazy by design: nothing from YouTube loads until the visitor clicks play —
+ * the poster is a self-hosted lazy <img> (public/images/profile/video-poster.webp,
+ * Muybridge's "The Horse in Motion" (1878, public domain) as film strips in the
+ * About palette — face-free since the portrait is already in this section, with
+ * its centre left clear for the play button), and the iframe (youtube-nocookie) is injected
+ * on open and removed on close, which also stops playback.
+ * Crawl-friendly: a plain "Watch on YouTube" link is always in the HTML.
+ */
+interface Props {
+  id?: string;
+  title?: string;
+  blurb?: string;
+  class?: string;
+}
+const {
+  id = 'klY4DYcGslI',
+  title = 'Get to Know John',
+  class: className,
+  blurb = 'A quick intro in my own words: who I am, how I work, and what I care about building.',
+} = Astro.props;
+
+const watchUrl = `https://youtu.be/${id}`;
+const poster = withBase('/images/profile/video-poster.webp');
+---
+
+<div class:list={['border border-line-strong bg-bg/40', className]} data-video data-video-id={id} data-video-title={title}>
+  <div aria-hidden="true" class="flex items-center justify-between border-b border-line-strong px-3 py-2">
+    <p class="hud-label text-accent">// TRANSMISSION.VID-01</p>
+    <p class="hud-label text-[0.6rem] text-muted">UNLISTED FEED</p>
+  </div>
+
+  <button
+    type="button"
+    data-video-open
+    aria-haspopup="dialog"
+    class="group/wipe block w-full cursor-pointer text-left"
+  >
+    <span class="crt block aspect-video border-b border-line-strong">
+      <span class="lazy-media absolute! inset-0">
+        <img
+          src={poster}
+          alt=""
+          width="960"
+          height="540"
+          loading="lazy"
+          decoding="async"
+          class="size-full object-cover"
+        />
+      </span>
+      <span aria-hidden="true" class="absolute inset-0 z-[4] grid place-items-center">
+        <!-- the poster keeps its centre empty for this button -->
+        <span class="wipe grid aspect-square w-[17%] place-items-center border-2 border-accent bg-bg/70 text-lg text-accent sm:text-xl">▶</span>
+      </span>
+      <span aria-hidden="true" class="crt-roll crt-hover"></span>
+    </span>
+    <span class="flex items-center gap-3 px-3 py-3">
+      <span class="font-semibold uppercase tracking-wider">{title}</span>
+      <span class="ml-auto hud-label text-accent"><span aria-hidden="true">▶ </span>Play video</span>
+    </span>
+  </button>
+
+  <p class="border-t border-line px-3 py-3 text-sm leading-relaxed text-muted">
+    {blurb}
+    <a href={watchUrl} target="_blank" rel="noopener noreferrer" class="whitespace-nowrap text-fg underline decoration-accent underline-offset-4 hover:text-accent">
+      Watch on YouTube ↗<span class="sr-only"> (opens in new tab)</span>
+    </a>
+  </p>
+
+  <dialog
+    data-video-dialog
+    aria-labelledby="video-dialog-title"
+    class="video-dialog m-auto w-[min(64rem,calc(100vw-2rem))] max-w-none border-2 border-accent bg-bg p-0 text-fg"
+  >
+    <div class="flex items-stretch border-b border-line-strong">
+      <span aria-hidden="true" class="flex items-center bg-accent px-3 hud-label text-accent-fg">PLAYBACK</span>
+      <h2 id="video-dialog-title" class="flex min-w-0 items-center truncate px-3 hud-label">{title}</h2>
+      <button type="button" data-video-close class="wipe ml-auto flex min-h-11 items-center gap-2 border-l border-line-strong px-4 hud-label">
+        Close <span aria-hidden="true">✕</span>
+      </button>
+    </div>
+    <div data-video-slot class="aspect-video bg-black"></div>
+  </dialog>
+</div>
+
+<style>
+  .video-dialog::backdrop {
+    background: rgb(0 0 0 / 0.8);
+    backdrop-filter: blur(4px);
+  }
+  .video-dialog[open] { animation: hud-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  :global(html:has(.video-dialog[open])) { overflow: hidden; }
+</style>
+
+<script>
+  function init() {
+    document.querySelectorAll<HTMLElement>('[data-video]').forEach((root) => {
+      if (root.dataset.bound) return;
+      root.dataset.bound = '1';
+
+      const dialog = root.querySelector<HTMLDialogElement>('[data-video-dialog]')!;
+      const slot = root.querySelector<HTMLElement>('[data-video-slot]')!;
+      const opener = root.querySelector<HTMLButtonElement>('[data-video-open]')!;
+      const { videoId, videoTitle } = root.dataset;
+
+      opener.addEventListener('click', () => {
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&playsinline=1`;
+        iframe.title = videoTitle ?? 'Video';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+        iframe.allowFullscreen = true;
+        iframe.className = 'size-full';
+        slot.replaceChildren(iframe);
+        dialog.showModal();
+        (window as { gtag?: (...a: unknown[]) => void }).gtag?.('event', 'video_open', { video_id: videoId, video_title: videoTitle });
+      });
+
+      root.querySelector('[data-video-close]')!.addEventListener('click', () => dialog.close());
+      // Click on the backdrop (the dialog box itself, outside its content) closes it.
+      dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+      // Tear down the player so audio stops and nothing keeps running.
+      dialog.addEventListener('close', () => { slot.replaceChildren(); opener.focus(); });
+    });
+  }
+
+  document.addEventListener('astro:page-load', init);
+</script>

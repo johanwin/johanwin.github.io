@@ -1,0 +1,145 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import HUDNavigation from '@/components/islands/HUDNavigation';
+import Footer from '@/components/sections/Footer.astro';
+import Analytics from '@/components/Analytics.astro';
+import { nav, site } from '@/data/site';
+import { withBase } from '@/lib/utils';
+import '@/styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Absolute or base-relative path to a 1200×630 social image. */
+  ogImage?: string;
+}
+
+const { title, description = site.description, ogImage = '/og.png' } = Astro.props;
+
+const pageTitle = title ? `${title} — ${site.name}` : `${site.name} · ${site.title}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogUrl = new URL(withBase(ogImage), Astro.site);
+
+// Build stamp shown in the HUD (GitHub Actions provides GITHUB_SHA).
+const build = (process.env.GITHUB_SHA ?? 'local').slice(0, 7).toUpperCase();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <!-- Content license (see footer: client work is excluded). -->
+    <link rel="license" href="https://creativecommons.org/licenses/by/4.0/" />
+    <meta name="generator" content={Astro.generator} />
+
+    <meta name="theme-color" content="#0a0a0b" />
+    <meta name="color-scheme" content="dark" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!--
+      Progressive-loading flags. Runs before first paint and is never re-run on
+      client-side navigations (identical head scripts are kept by the router).
+        data-js      → JS is available, so lazy images may fade in (no-JS shows them as-is)
+        data-loaded  → page + assets finished; hides the top boot bar
+        data-motion="off" → animations stopped (nav toggle, saved in localStorage;
+                          defaults to the OS "reduce motion" setting). See src/lib/motion.ts.
+      A capturing load/error listener flags every <img> the moment it finishes,
+      including ones React islands mount later.
+    -->
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        root.dataset.js = '';
+
+        // Motion preference — applied before first paint so nothing flashes.
+        const KEY = 'motion';
+        const mq = matchMedia('(prefers-reduced-motion: reduce)');
+        const saved = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
+        const applyMotion = () => {
+          const s = saved();
+          const off = s === 'off' || (s !== 'on' && mq.matches);
+          if (off) root.dataset.motion = 'off'; else delete root.dataset.motion;
+          return off;
+        };
+        applyMotion();
+
+        if (window.__progressive) return;
+        window.__progressive = true;
+
+        const announce = () => document.dispatchEvent(new CustomEvent('motionchange', { detail: { off: applyMotion() } }));
+        window.__setMotion = (off) => { try { localStorage.setItem(KEY, off ? 'off' : 'on'); } catch {} announce(); };
+        mq.addEventListener('change', announce);
+        const flag = (e) => { if (e.target instanceof HTMLImageElement) e.target.dataset.loaded = ''; };
+        document.addEventListener('load', flag, true);
+        document.addEventListener('error', flag, true);
+        const sweep = () => document.querySelectorAll('img[src]:not([data-loaded])').forEach((img) => {
+          if (img.complete) img.dataset.loaded = '';
+        });
+        const done = () => { sweep(); root.dataset.loaded = ''; };
+        window.addEventListener('load', done, { once: true });
+        // The router swaps <html> attributes on navigation; restore ours.
+        document.addEventListener('astro:after-swap', () => { root.dataset.js = ''; applyMotion(); sweep(); });
+        document.addEventListener('astro:page-load', () => { if (document.readyState === 'complete') done(); });
+      })();
+    </script>
+
+    <!-- Native View Transitions + client-side routing for same-origin links. -->
+    <ClientRouter fallback="swap" />
+
+    <Analytics />
+  </head>
+
+  <body id="top" class="overflow-x-hidden antialiased">
+    <div aria-hidden="true" class="boot-bar"></div>
+    <a
+      href="#main"
+      class="sr-only-focusable fixed left-3 top-3 z-[100] bg-hazard px-4 py-3 hud-label text-hazard-fg"
+    >
+      Skip to content
+    </a>
+
+    <!--
+      transition:persist keeps the same island instance (clock, scroll-spy) alive
+      across page navigations instead of re-hydrating it.
+    -->
+    <header class="sticky top-0 z-50 border-b border-line-strong" transition:persist="hud-header">
+      <!-- client:idle — the header is server-rendered HTML; its JS (clock,
+           scroll-spy, drawer) hydrates once the main thread is free. -->
+      <HUDNavigation
+        client:idle
+        links={nav}
+        callsign={site.callsign}
+        name={site.name}
+        timezone={site.timezone}
+        build={build}
+      />
+    </header>
+
+    <main
+      id="main"
+      tabindex="-1"
+      class="focus:outline-none"
+      transition:name="main"
+    >
+      <slot />
+    </main>
+
+    <Footer />
+
+    <!-- <channel-show> custom element (project slideshows). Bundled module: runs once. -->
+    <script>
+      import '@/scripts/channel-show';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+---
+/**
+ * Bauhaus-style section header: index number in a solid block, oversized wide
+ * title, and a rule that runs to the grid edge with a terminal code.
+ */
+interface Props {
+  index: string;
+  title: string;
+  code: string;
+  id: string;
+}
+const { index, title, code, id } = Astro.props;
+---
+
+<header class="mb-10 grid grid-cols-[auto_1fr] items-end gap-x-4 sm:mb-14">
+  <span aria-hidden="true" class="row-span-2 grid size-14 place-items-center bg-fg font-mono text-xl font-bold text-bg sm:size-20 sm:text-3xl">
+    {index}
+  </span>
+  <!-- Section code (SYSTEM.PROFILE…) is flavor; the <h2> carries the meaning. -->
+  <p aria-hidden="true" class="hud-label text-accent">// {code}</p>
+  <h2 id={id} class="display-wide text-[clamp(2.25rem,8vw,5.5rem)]">{title}</h2>
+  <div aria-hidden="true" class="col-span-2 mt-4 flex items-center gap-2">
+    <span class="h-3 w-16 hazard-stripes"></span>
+    <span class="h-px flex-1 bg-line-strong"></span>
+    <span class="hud-label text-muted">SEC.{index}</span>
+  </div>
+</header>
