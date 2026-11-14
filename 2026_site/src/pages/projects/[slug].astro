@@ -21,10 +21,15 @@ const showId = `show-${project.slug}`;
 const frameLabel = images[0]!.frame === 'telemetry' ? 'Intercepted Telemetry Capture' : 'System Schematic';
 ---
 
-<BaseLayout title={project.title} description={project.summary}>
+<BaseLayout
+  title={project.title}
+  description={project.summary}
+  ogImage={`/og/${project.slug}.jpg`}
+  ogImageAlt={`${project.title} — project by John Nguyen`}
+>
   <!-- Case studies inherit the Projects band tone (deep navy). -->
   <Band tone="projects" labelledby="project-title">
-  <article class="py-10 sm:py-16">
+  <article class="py-10 sm:py-16" data-track-project={project.slug} data-track-section="project_page">
     <nav aria-label="Breadcrumb" class="mb-8">
       <ol class="flex flex-wrap items-center gap-2 hud-label text-muted">
         <li><a href={withBase('/')} class="hover:text-accent">Root</a></li>
@@ -75,13 +80,13 @@ const frameLabel = images[0]!.frame === 'telemetry' ? 'Intercepted Telemetry Cap
               </p>
               <span class="sr-only" role="status" data-ch-status></span>
               <div class="flex w-full items-stretch border border-line-strong sm:w-auto">
-                <button type="button" class="wipe flex min-h-11 flex-1 items-center justify-center px-3 hud-label sm:flex-none" data-channel="prev" aria-controls={showId}>
+                <button type="button" class="wipe flex min-h-11 flex-1 items-center justify-center px-3 hud-label sm:flex-none" data-channel="prev" data-track="slideshow_prev" aria-controls={showId}>
                   <span aria-hidden="true">◀ CH−</span><span class="sr-only">Previous screen</span>
                 </button>
-                <button type="button" class="wipe flex min-h-11 flex-1 items-center justify-center border-x border-line-strong px-3 hud-label sm:flex-none" data-channel="toggle" aria-controls={showId} aria-pressed="false">
+                <button type="button" class="wipe flex min-h-11 flex-1 items-center justify-center border-x border-line-strong px-3 hud-label sm:flex-none" data-channel="toggle" data-track="slideshow_toggle" aria-controls={showId} aria-pressed="false">
                   <span aria-hidden="true" data-ch-toggle-label>❚❚ Pause</span><span class="sr-only">Pause slideshow</span>
                 </button>
-                <button type="button" class="wipe flex min-h-11 flex-1 items-center justify-center px-3 hud-label sm:flex-none" data-channel="next" aria-controls={showId}>
+                <button type="button" class="wipe flex min-h-11 flex-1 items-center justify-center px-3 hud-label sm:flex-none" data-channel="next" data-track="slideshow_next" aria-controls={showId}>
                   <span aria-hidden="true">CH+ ▶</span><span class="sr-only">Next screen</span>
                 </button>
               </div>

@@ -44,6 +44,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
           and no-JS readers instead of shipping as opacity:0.
         */}
         <m.article
+          data-track-project={project.slug}
           whileHover="hover"
           className="card-in group h-full"
           style={{ ['--card-i' as string]: index % 3 }}
@@ -113,6 +114,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
                     <a
                       href={detailHref}
                       tabIndex={-1}
+                      data-track="project_open_capture"
                       aria-hidden="true"
                       className="group/cap absolute inset-0 block cursor-pointer"
                     >
@@ -192,7 +194,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
 
             <CardHeader>
               <CardTitle id={`${uid}-title`} style={{ viewTransitionName: `project-${project.slug}` }}>
-                <a href={detailHref} className="after:absolute after:inset-0 after:content-[''] hover:text-accent focus-visible:outline-none">
+                <a href={detailHref} data-track="project_open_title" className="after:absolute after:inset-0 after:content-[''] hover:text-accent focus-visible:outline-none">
                   {project.title}
                 </a>
               </CardTitle>
@@ -226,6 +228,7 @@ function BracketLink({ href, label, sr }: { href: string; label: string; sr: str
   return (
     <a
       href={href}
+      data-track="project_open"
       className="wipe group/l flex min-h-11 flex-1 items-center justify-center gap-1 px-2 hud-label"
     >
       <span aria-hidden="true" className="text-accent transition-transform group-hover/l:-translate-x-0.5 group-hover/l:text-accent-fg">[</span>

@@ -1,7 +1,8 @@
 ---
 import { site } from '@/data/site';
+import { yearIn } from '@/lib/time';
 import AbbrText from '@/components/ui/AbbrText.astro';
-const year = new Date().getFullYear();
+const year = yearIn(); // Chicago-time year at build
 const LICENSE_URL = 'https://creativecommons.org/licenses/by/4.0/';
 ---
 
@@ -12,7 +13,7 @@ const LICENSE_URL = 'https://creativecommons.org/licenses/by/4.0/';
     <!-- Phones: stacked lines with real line-height and breathing room; md+: one row. -->
     <div class="mx-auto grid max-w-7xl items-center gap-x-8 gap-y-5 border-t border-line-strong px-4 pt-10 pb-6 sm:px-8 md:grid-cols-[auto_1fr_auto] md:py-10">
       <p class="hud-label leading-relaxed! text-muted">
-        © {year} {site.name} ·
+        © <span data-current-year>{year}</span> {site.name} ·
         <a href={LICENSE_URL} rel="license noopener" target="_blank" class="hover:text-accent"><AbbrText text="CC BY" /> 4.0<span class="sr-only"> license (opens in new tab)</span></a>
       </p>
       <p class="hud-label leading-relaxed! text-muted md:whitespace-nowrap md:text-center">Built with Astro + AI co-pilot</p>
@@ -27,4 +28,14 @@ const LICENSE_URL = 'https://creativecommons.org/licenses/by/4.0/';
       share and adapt it freely with credit to {site.name}. Client project screenshots, names and logos remain the property of their respective owners and are not covered by this license.
     </p>
   </div>
+  <!--
+    Keeps the © year current even between builds: re-reads the year in the site's
+    time zone in the visitor's browser (the Jan 1 scheduled rebuild covers the HTML
+    itself; this covers a skipped/disabled scheduled run). Re-runs on each page swap.
+  -->
+  <script is:inline define:vars={{ tz: site.timezone }}>
+    for (const el of document.querySelectorAll('[data-current-year]')) {
+      el.textContent = new Intl.DateTimeFormat('en-US', { timeZone: tz, year: 'numeric' }).format(new Date());
+    }
+  </script>
 </footer>

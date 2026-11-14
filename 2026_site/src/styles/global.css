@@ -642,6 +642,8 @@
     opacity: 0; transition: opacity .25s;
   }
   channel-show { container-type: inline-size; }
+  /* Project-page shows take horizontal swipes; vertical drags still scroll the page. */
+  channel-show[trigger="auto"] { touch-action: pan-y; }
   channel-show.ch-osd-on .ch-osd { opacity: 1; transition: none; }
 
   /* OUT: jitter → over-expose → collapse to a line */

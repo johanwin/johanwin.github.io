@@ -250,6 +250,7 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
           <button
             type="button"
             role="switch"
+            data-track="motion_toggle"
             aria-checked={motionOff}
             title={motionOff ? 'Animations are off — click to turn them back on' : 'Stop animations on this site'}
             onClick={() => setMotion(!motionOff)}
