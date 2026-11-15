@@ -12,6 +12,7 @@
  *   - touch drag    → spin it; vertical swipes still scroll the page
  *
  * Performance guards: starts only on first interaction (pointer/touch/scroll/key),
+ * 30 fps cap on touch devices,
  * renders only while on screen (IntersectionObserver),
  * adaptive resolution that drops when frames run slow, DPR capped, bounding
  * sphere early-out in the shader, and a CSS fallback if WebGL is unavailable.
@@ -253,6 +254,10 @@ void main() {
 
       /* ── state ─────────────────────────────────────────────────────── */
       let scale = 0.7;                     // adaptive render scale
+      // Phones and tablets (coarse pointer): cap at 30 fps to save battery.
+      const capped = matchMedia('(pointer: coarse)').matches;
+      const FRAME_MS = capped ? 1000 / 30 : 0;
+      let ceiling = 0.9;                   // highest render scale known to keep up
       let yaw = 0.4, pitch = -0.15;        // current camera
       let spin = 0;                        // accumulated drag yaw
       let vel = 0;                         // drag inertia (rad/s)
@@ -293,6 +298,8 @@ void main() {
 
       const frame = (now: number) => {
         raf = 0;
+        // Under the cap, skip this vsync (4 ms slack so 60 Hz screens land on every other frame).
+        if (now - prev < FRAME_MS - 4) { raf = requestAnimationFrame(frame); return; }
         const dt = Math.min((now - prev) / 1000, 0.05);
         prev = now;
 
@@ -315,12 +322,13 @@ void main() {
         gl.uniform1f(u.uPtrAmt, ptrAmt);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-        // adaptive resolution: >28ms frames drop scale, sustained <14ms raise it
+        // adaptive resolution: slow frames drop scale, sustained fast frames raise it
         const ms = dt * 1000;
-        if (ms > 28) slowFrames++; else slowFrames = 0;
-        if (ms < 14) fastFrames++; else fastFrames = 0;
-        if (slowFrames > 20 && scale > 0.35) { scale -= 0.1; slowFrames = 0; resize(); }
-        if (fastFrames > 120 && scale < 0.9) { scale += 0.05; fastFrames = 0; resize(); }
+        if (ms > (capped ? 45 : 28)) slowFrames++; else slowFrames = 0;
+        if (ms < (capped ? 36 : 14)) fastFrames++; else fastFrames = 0;
+        // A scale that ran slow becomes the ceiling, so it doesn't climb back and stutter again.
+        if (slowFrames > 20 && scale > 0.35) { ceiling = scale - 0.05; scale -= 0.1; slowFrames = 0; resize(); }
+        if (fastFrames > 120 && scale + 0.05 <= ceiling + 1e-6) { scale += 0.05; fastFrames = 0; resize(); }
 
         this.dataset.ready = '';
         const moving = !still() || dragging || Math.abs(vel) > 0.01 || now - lastMove < 1500;
