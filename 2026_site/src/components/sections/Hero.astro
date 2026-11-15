@@ -60,9 +60,11 @@ const yearsActive = yearIn() - careerStart; // Chicago-time year; refreshed by t
         </p>
       </div>
       <div class="grid grid-cols-2 divide-x divide-line-strong">
-        <div class="p-4">
+        <div class="p-4 lg:px-3 xl:px-4">
           <p class="hud-label text-muted"><AbbrText text="LOC" /></p>
-          <p class="mt-2 text-sm"><AbbrText text={site.location} /></p>
+          <!-- non-breaking spaces: in this narrow cell the only break is after "Dallas–",
+               never inside "Fort Worth" or before a lone "TX" -->
+          <p class="mt-2 text-sm"><AbbrText text={site.location.replaceAll(' ', ' ')} /></p>
         </div>
         <div class="p-4">
           <p class="hud-label text-muted"><AbbrText text="YRS" /> ACTIVE</p>
