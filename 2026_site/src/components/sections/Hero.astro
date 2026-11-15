@@ -5,12 +5,14 @@ import Symbiote from '@/components/hud/Symbiote.astro';
 import DiagnosticTrigger from '@/components/hud/DiagnosticTrigger.astro';
 import { site } from '@/data/site';
 import AbbrText from '@/components/ui/AbbrText.astro';
-import { careerStart } from '@/data/experience';
+import { careerStart, yearsActiveDecade } from '@/data/experience';
 import { withBase } from '@/lib/utils';
 import { yearIn } from '@/lib/time';
 
 const [first, ...rest] = site.name.toUpperCase().split(' ');
-const yearsActive = yearIn() - careerStart; // Chicago-time year; refreshed by the Jan 1 rebuild
+// Decade-rounded (20+, then 30+ from 2031). The inline script below re-checks it in
+// the browser, so it rolls over even if the Jan 1 scheduled rebuild is skipped.
+const yearsActive = yearsActiveDecade(yearIn());
 ---
 
 <Band tone="hero" labelledby="hero-title" class="pt-10 pb-16 sm:pt-16 sm:pb-24">
@@ -68,7 +70,13 @@ const yearsActive = yearIn() - careerStart; // Chicago-time year; refreshed by t
         </div>
         <div class="p-4">
           <p class="hud-label text-muted"><AbbrText text="YRS" /> ACTIVE</p>
-          <p class="mt-2 font-mono text-3xl font-bold tabular-nums text-accent">{yearsActive}<span class="text-base text-muted">+</span></p>
+          <p class="mt-2 font-mono text-3xl font-bold tabular-nums text-accent"><span data-years-active>{yearsActive}</span><span class="text-base text-muted">+</span></p>
+          <script is:inline define:vars={{ tz: site.timezone, start: careerStart }}>
+            {
+              const y = Number(new Intl.DateTimeFormat('en-US', { timeZone: tz, year: 'numeric' }).format(new Date()));
+              for (const el of document.querySelectorAll('[data-years-active]')) el.textContent = String(Math.floor((y - start) / 10) * 10);
+            }
+          </script>
         </div>
       </div>
       <div class="p-4">

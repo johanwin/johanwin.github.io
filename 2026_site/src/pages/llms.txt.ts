@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { site, socials } from '@/data/site';
 import { projects } from '@/data/projects';
-import { experience, careerStart } from '@/data/experience';
+import { experience, yearsActiveDecade } from '@/data/experience';
 import { skillMatrix } from '@/data/skills';
 import { yearIn } from '@/lib/time';
 
@@ -12,7 +12,7 @@ import { yearIn } from '@/lib/time';
  */
 export const GET: APIRoute = ({ site: siteUrl }) => {
   const url = (path: string) => new URL(path, siteUrl).href;
-  const years = yearIn() - careerStart;
+  const years = yearsActiveDecade(yearIn()); // same decade-rounded figure as the hero
   const range = (start?: string, end?: string) =>
     [start?.slice(0, 4), end === 'HEAD' ? 'Present' : end?.slice(0, 4)].filter(Boolean).join('–');
 
