@@ -19,7 +19,7 @@ const dossier = [
   ['CALLSIGN', site.callsign, true],
   ['ROLE', site.title, false],
   ['SPECIALTY', site.subtitle, false],
-  ['BASE', site.location, false],
+  ['BASE', site.location.replaceAll(' ', ' '), false], // keep "Fort Worth, TX" on one line
   ['CLEARANCE', 'PUBLIC', true],
 ] as const;
 ---
