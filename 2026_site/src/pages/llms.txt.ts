@@ -1,9 +1,8 @@
 import type { APIRoute } from 'astro';
 import { site, socials } from '@/data/site';
 import { projects } from '@/data/projects';
-import { experience, yearsActiveDecade } from '@/data/experience';
+import { experience } from '@/data/experience';
 import { skillMatrix } from '@/data/skills';
-import { yearIn } from '@/lib/time';
 
 /**
  * /llms.txt — a plain-Markdown summary of the site for AI assistants and agents
@@ -12,7 +11,6 @@ import { yearIn } from '@/lib/time';
  */
 export const GET: APIRoute = ({ site: siteUrl }) => {
   const url = (path: string) => new URL(path, siteUrl).href;
-  const years = yearsActiveDecade(yearIn()); // same decade-rounded figure as the hero
   const range = (start?: string, end?: string) =>
     [start?.slice(0, 4), end === 'HEAD' ? 'Present' : end?.slice(0, 4)].filter(Boolean).join('–');
 
@@ -22,7 +20,7 @@ export const GET: APIRoute = ({ site: siteUrl }) => {
   const lines = [
     `# ${site.name}`,
     '',
-    `> ${site.title} in ${site.location}, specializing in front-end systems, reusable web component libraries and accessible (WCAG) interfaces. ${years}+ years building for enterprise and agency clients including Allstate, Capital One and Mitsubishi Motors. Adaptable to change, with hands-on experience working with generative and agentic AI.`,
+    `> ${site.title} in ${site.location}, specializing in front-end systems, reusable web component libraries and accessible (WCAG) interfaces. Builds for enterprise and agency clients including Allstate, Capital One and Mitsubishi Motors. Adaptable to change, with hands-on experience working with generative and agentic AI.`,
     '',
     `${site.name} is ${site.availability.toLowerCase()}. This site is his portfolio; each project has a case-study page with screenshots, scope and stack. Client work: source and production links aren't public.`,
     '',
