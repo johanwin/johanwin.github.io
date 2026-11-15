@@ -2,6 +2,7 @@
 import Band from '@/components/hud/Band.astro';
 import SectionHeader from '@/components/hud/SectionHeader.astro';
 import HudFrame from '@/components/hud/HudFrame.astro';
+import Bird from '@/components/hud/Bird.astro';
 import { site, socials } from '@/data/site';
 import { withBase } from '@/lib/utils';
 
@@ -9,10 +10,13 @@ const [emailUser, emailDomain] = site.email.split('@');
 ---
 
 <Band tone="contact" id="contact" labelledby="contact-title" class="pt-12 pb-8 sm:pt-16">
+  <!-- WebGL symbiote bird behind the panels; hover / drag anywhere in the section to move it. -->
+  <Bird slot="backdrop" />
+
   <SectionHeader index="04" code="UPLINK.OPEN" title="Contact" id="contact-title" />
 
-  <div class="grid gap-10 lg:grid-cols-12">
-    <HudFrame label="TX" meta="PRIMARY CHANNEL" class="@container bg-surface/60 p-6 pt-10 sm:p-10 lg:col-span-7">
+  <div class="grid gap-10 lg:grid-cols-12" data-bird-anchor>
+    <HudFrame label="TX" meta="PRIMARY CHANNEL" data-hud-panel class="@container bg-surface/60 backdrop-blur-sm p-6 pt-10 sm:p-10 lg:col-span-7">
       <p class="hud-label text-muted">EMAIL COORDINATES</p>
       <a
         href={`mailto:${site.email}`}
@@ -28,9 +32,9 @@ const [emailUser, emailDomain] = site.email.split('@');
       </p>
     </HudFrame>
 
-    <nav aria-label="Social channels" class="lg:col-span-5">
+    <nav aria-label="Social channels" data-hud-panel class="lg:col-span-5">
       <p aria-hidden="true" class="mb-3 hud-label text-accent">// SECURE CHANNELS</p>
-      <ul class="border border-line-strong">
+      <ul class="border border-line-strong bg-bg/75 backdrop-blur-md">
         {socials.map((s) => {
           const external = s.href.startsWith('http');
           return (
