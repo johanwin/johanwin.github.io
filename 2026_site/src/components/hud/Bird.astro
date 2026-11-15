@@ -43,6 +43,11 @@ const { accent = '#ff6b1a', class: className } = Astro.props;
     );
   }
   .bird[data-ready] { background: none; }
+  /* Phones (portrait, or landscape with a short screen): too small to read
+     behind the panels, so it's hidden and WebGL never starts. Tablets keep it. */
+  @media (max-width: 767px), (pointer: coarse) and (max-height: 500px) {
+    .bird { display: none; }
+  }
   .bird canvas {
     display: block;
     width: 100%;
@@ -56,6 +61,9 @@ const { accent = '#ff6b1a', class: className } = Astro.props;
 
 <script>
   import { motionOff, onMotionChange } from '@/lib/motion';
+
+  // Must match the @media rule in <style>: phones skip the model entirely.
+  const PHONE = matchMedia('(max-width: 767px), (pointer: coarse) and (max-height: 500px)');
 
   const VERT = `
 attribute vec2 aPos;
@@ -240,7 +248,16 @@ void main() {
       const events = ['pointermove', 'pointerdown', 'touchstart', 'keydown', 'scroll', 'wheel'] as const;
       const go = () => {
         events.forEach((e) => removeEventListener(e, go));
-        if (!this.#started && this.isConnected) { this.#started = true; this.#start(); }
+        if (this.#started || !this.isConnected) return;
+        if (PHONE.matches) {
+          // Start later only if the window grows past phone size (desktop resize).
+          const later = () => { if (!PHONE.matches) { PHONE.removeEventListener('change', later); go(); } };
+          PHONE.addEventListener('change', later);
+          this.#cleanup.push(() => PHONE.removeEventListener('change', later));
+          return;
+        }
+        this.#started = true;
+        this.#start();
       };
       events.forEach((e) => addEventListener(e, go, { passive: true }));
       this.#cleanup.push(() => events.forEach((e) => removeEventListener(e, go)));
