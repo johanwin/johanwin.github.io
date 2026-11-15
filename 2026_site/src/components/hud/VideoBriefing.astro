@@ -30,6 +30,8 @@ const {
 
 const watchUrl = `https://youtu.be/${id}`;
 const poster = withBase('/images/profile/video-poster.webp');
+// 10-frame sprite cut from the same artwork (built by design/video-sprite.mjs).
+const gallop = withBase('/images/profile/video-gallop.webp');
 ---
 
 <div class:list={['border border-line-strong bg-bg/40', className]} data-video data-video-id={id} data-video-title={title}>
@@ -57,9 +59,15 @@ const poster = withBase('/images/profile/video-poster.webp');
           class="size-full object-cover"
         />
       </span>
-      <span aria-hidden="true" class="absolute inset-0 z-[4] grid place-items-center">
-        <!-- the poster keeps its centre empty for this button -->
-        <span class="wipe grid aspect-square w-[17%] place-items-center border-2 border-accent bg-bg/70 text-lg text-accent sm:text-xl">▶</span>
+      <!-- Projector: the poster's 10 frames play back in its empty centre band at
+           a choppy ~8 fps, while a playhead jumps to the matching cell on the strip.
+           Motion off → frame 01 with the playhead parked on cell 01. -->
+      <span aria-hidden="true" class="vb-gallop">
+        <img src={gallop} alt="" width="1820" height="114" loading="lazy" decoding="async" />
+      </span>
+      <span aria-hidden="true" class="vb-playhead"></span>
+      <span aria-hidden="true" class="vb-play absolute z-[4] grid place-items-center">
+        <span class="wipe grid size-full place-items-center border-2 border-accent bg-bg/70 text-accent sm:text-lg">▶</span>
       </span>
       <span aria-hidden="true" class="crt-roll crt-hover"></span>
     </span>
@@ -107,6 +115,61 @@ const poster = withBase('/images/profile/video-poster.webp');
   }
   .video-dialog[open] { animation: hud-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
   :global(html:has(.video-dialog[open])) { overflow: hidden; }
+
+  /* All boxes are % of the 16:9 poster (1280×720): centre band y 236–484,
+     film cells 244×152 at x = 10 + 254·i on rows y = 62 and 506. */
+  .vb-gallop {
+    position: absolute;
+    z-index: 1;
+    left: 36.5%;
+    top: 35%;
+    width: 27%;
+    aspect-ratio: 182 / 114;
+    overflow: hidden;
+    filter: drop-shadow(0 0 10px color-mix(in oklab, var(--accent) 35%, transparent));
+  }
+  .vb-gallop img {
+    display: block;
+    width: 1000%;
+    max-width: none;
+    height: 100%;
+    animation: vb-gallop 1.2s steps(10, end) infinite;
+  }
+  @keyframes vb-gallop { to { translate: -100% 0; } }
+
+  .vb-playhead {
+    position: absolute;
+    z-index: 1;
+    left: 0.78%;
+    top: 8.61%;
+    width: 19.06%;
+    height: 21.11%;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 12px color-mix(in oklab, var(--accent) 45%, transparent);
+    pointer-events: none;
+    animation: vb-playhead 1.2s steps(1, end) infinite;
+  }
+  @keyframes vb-playhead {
+    0%   { left: 0.78%;  top: 8.61%; }
+    10%  { left: 20.63%; top: 8.61%; }
+    20%  { left: 40.47%; top: 8.61%; }
+    30%  { left: 60.31%; top: 8.61%; }
+    40%  { left: 80.16%; top: 8.61%; }
+    50%  { left: 0.78%;  top: 70.28%; }
+    60%  { left: 20.63%; top: 70.28%; }
+    70%  { left: 40.47%; top: 70.28%; }
+    80%  { left: 60.31%; top: 70.28%; }
+    90%, 100% { left: 80.16%; top: 70.28%; }
+  }
+
+  /* Play button moves to the right of the centre band so the horse owns the middle. */
+  .vb-play {
+    right: 4%;
+    top: 50%;
+    width: 11%;
+    aspect-ratio: 1;
+    translate: 0 -50%;
+  }
 </style>
 
 <script>

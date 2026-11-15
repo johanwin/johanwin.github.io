@@ -57,11 +57,11 @@ export const projects: Project[] = [
       "A shared library of reusable web components built for Allstate's eProposal, Milewise, Roadside Services and Cross-Enterprise projects, implemented with UX designers against the company's human interface guidelines.",
     stack: ['Web Components', 'React', 'Angular', 'Unit Testing', 'WCAG'],
     images: shots('allstate', 'telemetry', [
+      ['eProposal personalized auto and homeowners insurance summary page', 750, 1523],
       ['Roadside Services tow request with pickup and drop-off addresses, vehicle, payment and a live map', 1433, 831],
       ['Roadside Services mobile rescue tracker with ETA, rescue progress, assigned rescuer and map', 374, 765],
       ['Mesh vehicle card component: a 2019 Toyota Highlander marked as added', 991, 262, 'contain'],
       ['Mesh loading screen with a "Did you know?" Allstate fact and spinner', 887, 442],
-      ['eProposal personalized auto and homeowners insurance summary page', 250, 640, 'contain'],
     ]),
     telemetry: [
       { k: 'CLIENT', v: 'Allstate' },

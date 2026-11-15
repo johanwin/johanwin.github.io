@@ -22,7 +22,6 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
   const uid = useId();
   const { images } = project;
   const image = images[0]!;
-  const frameLabel = image.frame === 'telemetry' ? 'Intercepted Telemetry Capture' : 'System Schematic';
   const detailHref = withBase(`/projects/${project.slug}`);
 
   // Entrance is a CSS scroll-driven animation (.card-in): the server HTML stays
@@ -138,7 +137,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
                       </span>
                       {/* frame metadata overlay */}
                       <span className="absolute left-2 top-2 z-[4] bg-bg/85 px-1.5 py-1 hud-label text-[0.6rem] text-accent">
-                        ● REC {frameLabel}{images.length > 1 && ` · ${images.length} CH`}
+                        ● REC{images.length > 1 && ` · ${images.length} CH`}
                       </span>
                       <span className="absolute bottom-2 right-2 z-[4] wipe absolute! bg-bg/85 px-1.5 py-1 hud-label text-[0.6rem] text-fg">
                         Open dossier →
