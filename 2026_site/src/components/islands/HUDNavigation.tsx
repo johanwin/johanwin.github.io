@@ -171,18 +171,30 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
           </a>
 
           {/* ── Live status readouts ───────────────── */}
-          <ul aria-hidden="true" className="hidden items-stretch lg:flex">
-            <li className="hud-cell flex items-center gap-2 border-r border-line px-4" style={{ ['--i' as string]: 0 }}>
+          {/* Decorative cells are aria-hidden one by one; the build stamp is a real
+              link (to the deployed gh-pages branch), so it must stay exposed. */}
+          <ul className="hidden items-stretch lg:flex">
+            <li aria-hidden="true" className="hud-cell flex items-center gap-2 border-r border-line px-4" style={{ ['--i' as string]: 0 }}>
               <span aria-hidden="true" className="size-2 bg-signal animate-blink" />
               <span className="hud-label text-signal">SYS NOMINAL</span>
             </li>
-            <li className="hud-cell flex flex-col justify-center border-r border-line px-4" style={{ ['--i' as string]: 1 }}>
+            <li aria-hidden="true" className="hud-cell flex flex-col justify-center border-r border-line px-4" style={{ ['--i' as string]: 1 }}>
               <span className="hud-label text-[0.6rem] text-muted">{tzShort}</span>
               <time className="hud-label tabular-nums text-fg" aria-live="off">{clock}</time>
             </li>
-            <li className="hud-cell flex flex-col justify-center border-r border-line px-4" style={{ ['--i' as string]: 2 }}>
-              <span className="hud-label text-[0.6rem] text-muted">BUILD</span>
-              <span className="hud-label text-fg">{build}</span>
+            <li className="hud-cell flex border-r border-line" style={{ ['--i' as string]: 2 }}>
+              <a
+                href="https://github.com/johanwin/johanwin.github.io/tree/gh-pages"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-track="build_stamp"
+                aria-label={`Build ${build}: deployed site on GitHub, gh-pages branch (opens in new tab)`}
+                title="View the deployed build on GitHub"
+                className="group/build flex flex-col justify-center px-4"
+              >
+                <span className="hud-label text-[0.6rem] text-muted">BUILD</span>
+                <span className="hud-label text-fg decoration-accent underline-offset-4 group-hover/build:underline">{build}</span>
+              </a>
             </li>
           </ul>
 
