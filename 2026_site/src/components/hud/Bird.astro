@@ -1,0 +1,458 @@
+---
+/**
+ * <symbiote-bird> — the Contact section's companion to the hero's <symbiote-canvas>:
+ * a bird grown from the same wet-black, orange-rimmed symbiote skin, slowly
+ * flapping in place. One raymarched WebGL fragment shader, no libraries.
+ *
+ * Interaction (window-level listeners hit-tested against its own box, so it
+ * responds even though it sits behind the panels):
+ *   - mouse hover   → the bird turns toward the cursor and beats its wings a little faster
+ *   - mouse drag    → spin it (starts on empty space, not on the panels' text)
+ *   - touch drag    → spin it; vertical swipes still scroll the page
+ *
+ * Same performance guards as the symbiote: starts on first interaction, renders
+ * only while on screen, adaptive resolution, DPR cap, bounding-sphere early-out,
+ * CSS glow fallback. Reduce motion (OS or the site switch): it holds still and
+ * only moves while you move it.
+ */
+interface Props {
+  /** Rim/specular colour. Defaults to the site accent. */
+  accent?: string;
+  class?: string;
+}
+const { accent = '#ff6b1a', class: className } = Astro.props;
+---
+
+<symbiote-bird data-accent={accent} aria-hidden="true" class:list={['bird', className]}>
+  <canvas></canvas>
+</symbiote-bird>
+
+<style>
+  .bird {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    display: block;
+    overflow: hidden;
+    pointer-events: none;
+    /* Fallback glow (no WebGL / before first frame). */
+    background: radial-gradient(
+      closest-side at 62% 45%,
+      color-mix(in oklab, var(--accent) 16%, transparent),
+      transparent 70%
+    );
+  }
+  .bird[data-ready] { background: none; }
+  .bird canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+  }
+  .bird[data-ready] canvas { opacity: 1; }
+  :global(html[data-bird-drag]) { user-select: none; cursor: grabbing; }
+</style>
+
+<script>
+  import { motionOff, onMotionChange } from '@/lib/motion';
+
+  const VERT = `
+attribute vec2 aPos;
+void main() { gl_Position = vec4(aPos, 0.0, 1.0); }`;
+
+  // Bird space: +z is forward (beak), +y up, wings span ±x (mirrored with abs(x)).
+  const FRAG = `
+precision highp float;
+uniform vec2  uRes;
+uniform vec2  uCenter;   // bird centre in canvas UV (0..1)
+uniform float uTime;
+uniform float uPhase;    // wingbeat phase (integrated in JS so speed can change smoothly)
+uniform mat3  uRot;      // camera orbit
+uniform vec3  uAccent;
+
+#define MAX_STEPS 80
+#define BOUND 3.3
+
+float hash(vec3 p) {
+  p = fract(p * 0.3183099 + 0.1);
+  p *= 17.0;
+  return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+}
+float noise(vec3 x) {
+  vec3 i = floor(x), f = fract(x);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(hash(i),               hash(i + vec3(1,0,0)), f.x),
+                 mix(hash(i + vec3(0,1,0)), hash(i + vec3(1,1,0)), f.x), f.y),
+             mix(mix(hash(i + vec3(0,0,1)), hash(i + vec3(1,0,1)), f.x),
+                 mix(hash(i + vec3(0,1,1)), hash(i + vec3(1,1,1)), f.x), f.y), f.z);
+}
+float fbm(vec3 p) {
+  float a = 0.5, s = 0.0;
+  for (int i = 0; i < 2; i++) { s += a * noise(p); p = p * 2.03 + vec3(1.7, 9.2, 3.1); a *= 0.5; }
+  return s;
+}
+float smin(float a, float b, float k) {
+  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+  return mix(b, a, h) - k * h * (1.0 - h);
+}
+float sdEllipsoid(vec3 p, vec3 r) {
+  float k0 = length(p / r), k1 = length(p / (r * r));
+  return k0 * (k0 - 1.0) / k1;
+}
+// Capsule that tapers toward its tip: beak and trailing wingtip tendrils.
+float sdTendril(vec3 p, vec3 a, vec3 b, float r) {
+  vec3 pa = p - a, ba = b - a;
+  float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+  return length(pa - ba * h) - r * (1.0 - 0.85 * h);
+}
+mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }
+
+float map(vec3 p) {
+  float t = uTime;
+  float ph = uPhase;
+  float down = sin(ph);                     // +1 wings up, -1 wings down
+
+  // Body rises on the downstroke and pitches gently with each beat.
+  p.y += 0.14 * sin(ph + 1.4);
+  p.yz *= rot(0.08 * cos(ph));
+
+  // Body, chest and head, boiled very lightly by the symbiote noise.
+  float d = sdEllipsoid(p - vec3(0.0, 0.0, 0.05), vec3(0.34, 0.32, 0.95));
+  d = smin(d, length(p - vec3(0.0, 0.26, 0.92)) - 0.26, 0.22);
+  d = smin(d, sdTendril(p, vec3(0.0, 0.24, 1.08), vec3(0.0, 0.14, 1.55), 0.09), 0.06);
+  // Tail fan, flattened and fanned slightly upward.
+  vec3 tp = p - vec3(0.0, 0.04, -1.05);
+  tp.yz *= rot(-0.18);
+  d = smin(d, sdEllipsoid(tp, vec3(0.38, 0.05, 0.5)), 0.2);
+  d += (fbm(p * 2.2 + vec3(0.0, t * 0.2, t * 0.3)) - 0.5) * 0.12;
+
+  // Wings: shoulder → elbow (inner) and elbow → tip (outer, lagging behind).
+  vec3 w = p;
+  w.x = abs(w.x);
+  vec3 q = w - vec3(0.22, 0.12, 0.15);
+  float a1 = 0.62 * down + 0.08;
+  float a2 = 0.85 * sin(ph - 0.7) + 0.05;
+  q.xy *= rot(-a1);
+  float wing = sdEllipsoid(q - vec3(0.72, 0.0, -0.08), vec3(0.78, 0.055, 0.42));
+  vec3 q2 = q - vec3(1.38, 0.0, -0.06);
+  q2.xy *= rot(-(a2 - a1));
+  q2.xz *= rot(0.32);                      // hand swept back
+  wing = smin(wing, sdEllipsoid(q2 - vec3(0.72, 0.0, -0.1), vec3(0.82, 0.04, 0.3)), 0.16);
+
+  // Primaries: tendrils trailing off the wingtip, wavering like the symbiote's.
+  for (int i = 0; i < 3; i++) {
+    float fi = float(i);
+    vec3 a = vec3(1.05 + 0.18 * fi, 0.0, -0.18 - 0.06 * fi);
+    vec3 wob = 0.07 * vec3(sin(t * 1.3 + fi * 2.1), cos(t * 1.1 + fi) - 1.4 * sin(ph - 1.2), sin(t * 0.9 + fi));
+    vec3 b = a + vec3(0.55 - 0.08 * fi, 0.0, -0.5 - 0.12 * fi) + wob;
+    wing = smin(wing, sdTendril(q2, a, b, 0.08), 0.1);
+  }
+  d = smin(d, wing, 0.24);
+  return d * 0.6; // noise and the rotations break the distance bound; step conservatively
+}
+
+vec3 calcNormal(vec3 p) {
+  const vec2 k = vec2(1.0, -1.0);
+  const float e = 0.0025;
+  return normalize(k.xyy * map(p + k.xyy * e) + k.yyx * map(p + k.yyx * e) +
+                   k.yxy * map(p + k.yxy * e) + k.xxx * map(p + k.xxx * e));
+}
+
+void main() {
+  float s = min(uRes.x, uRes.y);
+  vec2 uv = (gl_FragCoord.xy - uCenter * uRes) / s;
+
+  vec3 ro = uRot * vec3(0.0, 0.0, 10.5);
+  vec3 rd = uRot * normalize(vec3(uv, -1.75));
+
+  // Bounding sphere: skip every pixel whose ray can't reach the bird.
+  float b = dot(ro, rd);
+  float c = dot(ro, ro) - BOUND * BOUND;
+  float disc = b * b - c;
+  if (disc < 0.0) { gl_FragColor = vec4(0.0); return; }
+  float tNear = max(-b - sqrt(disc), 0.0);
+  float tFar  = -b + sqrt(disc);
+
+  float t = tNear, minD = 1e3;
+  float hit = 0.0;
+  int steps = 0;
+  for (int i = 0; i < MAX_STEPS; i++) {
+    vec3 p = ro + rd * t;
+    float d = map(p);
+    minD = min(minD, d);
+    if (d < 0.0015 * t) { hit = 1.0; break; }
+    t += d;
+    steps = i;
+    if (t > tFar) break;
+  }
+
+  float aura = exp(-max(minD, 0.0) * 9.0) * 0.26 * (1.0 - hit);
+  if (hit < 0.5) { gl_FragColor = vec4(uAccent * aura, aura); return; }
+
+  vec3 p = ro + rd * t;
+  vec3 n = calcNormal(p);
+  vec3 v = -rd;
+  vec3 l1 = normalize(vec3(0.6, 0.8, 0.5));
+  vec3 l2 = normalize(vec3(-0.7, -0.3, 0.4));
+
+  float ndv  = max(dot(n, v), 0.0);
+  float fres = pow(1.0 - ndv, 3.0);
+  float spec1 = pow(max(dot(reflect(-l1, n), v), 0.0), 64.0);
+  float spec2 = pow(max(dot(reflect(-l2, n), v), 0.0), 20.0);
+  vec3 irid = 0.5 + 0.5 * cos(6.2831 * (fres * 1.3 + n.y * 0.25 + uTime * 0.04 + vec3(0.0, 0.33, 0.67)));
+
+  vec3 col = vec3(0.010, 0.010, 0.014);
+  col += uAccent * fres * 0.85;
+  col += irid * fres * 0.30;
+  col += vec3(1.0) * spec1 * 0.85;
+  col += uAccent * spec2 * 0.35;
+  col *= 1.0 - float(steps) / float(MAX_STEPS) * 0.55;
+
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+  type Uniforms = Record<'uRes' | 'uCenter' | 'uTime' | 'uPhase' | 'uRot' | 'uAccent', WebGLUniformLocation | null>;
+
+  const hexToRgb = (hex: string) => {
+    const m = hex.replace('#', '').match(/.{2}/g) ?? ['ff', '6b', '1a'];
+    return m.map((h) => parseInt(h, 16) / 255) as [number, number, number];
+  };
+
+  const rotation = (yaw: number, pitch: number) => {
+    const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+    // Ry(yaw) * Rx(pitch), column-major for WebGL
+    return new Float32Array([cy, 0, -sy, sy * sp, cp, cy * sp, sy * cp, -sp, cy * cp]);
+  };
+
+  // Resting view: three-quarter, from a little above, so both wings read.
+  const BASE_YAW = 0.75, BASE_PITCH = -0.32;
+  // Seconds per wingbeat at rest; hovering speeds it up a little.
+  const BEAT = 5;
+
+  class SymbioteBird extends HTMLElement {
+    #cleanup: Array<() => void> = [];
+    #started = false;
+
+    // Deferred start, as with the symbiote: the static glow shows first and
+    // WebGL spins up on the visitor's first interaction (a scroll, in practice).
+    connectedCallback() {
+      const events = ['pointermove', 'pointerdown', 'touchstart', 'keydown', 'scroll', 'wheel'] as const;
+      const go = () => {
+        events.forEach((e) => removeEventListener(e, go));
+        if (!this.#started && this.isConnected) { this.#started = true; this.#start(); }
+      };
+      events.forEach((e) => addEventListener(e, go, { passive: true }));
+      this.#cleanup.push(() => events.forEach((e) => removeEventListener(e, go)));
+    }
+
+    #start() {
+      const canvas = this.querySelector('canvas')!;
+      const gl = canvas.getContext('webgl', { premultipliedAlpha: true, antialias: false, alpha: true, powerPreference: 'low-power' });
+      if (!gl) return;
+
+      const program = this.#compile(gl);
+      if (!program) return;
+
+      const u = Object.fromEntries(
+        ['uRes', 'uCenter', 'uTime', 'uPhase', 'uRot', 'uAccent'].map((k) => [k, gl.getUniformLocation(program, k)]),
+      ) as Uniforms;
+
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const aPos = gl.getAttribLocation(program, 'aPos');
+      gl.enableVertexAttribArray(aPos);
+      gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+      gl.uniform3fv(u.uAccent, hexToRgb(this.dataset.accent ?? '#ff6b1a'));
+
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+      const still = () => reduce.matches || motionOff();
+      const band = (this.closest('.tone-band') as HTMLElement) ?? this.parentElement!;
+      band.style.touchAction = 'pan-y pinch-zoom';
+
+      let scale = 0.7;
+      let yaw = BASE_YAW, pitch = BASE_PITCH;
+      let spin = 0, vel = 0;
+      let hoverYaw = 0, hoverPitch = 0;
+      let excite = 0, exciteTarget = 0;    // hover → faster wingbeat
+      let dragging = false, lastX = 0, lastY = 0, lastT = 0, lastMove = 0;
+      let visible = true, raf = 0, prev = performance.now(), time = 0, phase = 0, slowFrames = 0, fastFrames = 0;
+
+      // Centre on [data-bird-anchor] (the Contact grid) vertically at every width;
+      // on desktop sit right of centre, behind the gap between the two panels,
+      // and below lg centre it over the stacked panels. Canvas UV, y from the bottom.
+      const anchor = band.querySelector<HTMLElement>('[data-bird-anchor]');
+      let center: [number, number] = [0.6, 0.55];
+      const updateCenter = () => {
+        const r = this.getBoundingClientRect();
+        if (!r.height || !anchor) return;
+        const a = anchor.getBoundingClientRect();
+        const cx = innerWidth >= 1024 ? 0.6 : (a.left + a.width / 2 - r.left) / r.width;
+        const cy = 1 - (a.top + a.height * 0.4 - r.top) / r.height;
+        center = [Math.min(0.9, Math.max(0.1, cx)), Math.min(0.95, Math.max(0.05, cy))];
+      };
+
+      const resize = () => {
+        const dpr = Math.min(devicePixelRatio || 1, 1.5);
+        const w = Math.max(1, Math.round(this.clientWidth * dpr * scale));
+        const h = Math.max(1, Math.round(this.clientHeight * dpr * scale));
+        if (canvas.width !== w || canvas.height !== h) {
+          canvas.width = w;
+          canvas.height = h;
+          gl.viewport(0, 0, w, h);
+        }
+        gl.uniform2f(u.uRes, w, h);
+        updateCenter();
+        gl.uniform2fv(u.uCenter, center);
+      };
+
+      const frame = (now: number) => {
+        raf = 0;
+        const dt = Math.min((now - prev) / 1000, 0.05);
+        prev = now;
+
+        const idle = still() ? 0.15 : 1;
+        excite += (exciteTarget - excite) * (1 - Math.pow(0.05, dt));
+        time += dt * idle;
+        phase += dt * idle * ((Math.PI * 2) / BEAT) * (1 + 0.3 * excite);
+
+        // Drag inertia; at rest the bird slowly sways around its three-quarter view.
+        if (!dragging) { spin += vel * dt; vel *= Math.pow(0.04, dt); }
+        const sway = 0.35 * Math.sin(time * 0.12);
+        const ease = 1 - Math.pow(0.002, dt);
+        yaw += (BASE_YAW + sway + spin + hoverYaw - yaw) * ease;
+        pitch += (BASE_PITCH + hoverPitch - pitch) * ease;
+
+        gl.uniform1f(u.uTime, time);
+        gl.uniform1f(u.uPhase, phase);
+        gl.uniformMatrix3fv(u.uRot, false, rotation(yaw, pitch));
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+        const ms = dt * 1000;
+        if (ms > 28) slowFrames++; else slowFrames = 0;
+        if (ms < 14) fastFrames++; else fastFrames = 0;
+        if (slowFrames > 20 && scale > 0.35) { scale -= 0.1; slowFrames = 0; resize(); }
+        if (fastFrames > 120 && scale < 0.9) { scale += 0.05; fastFrames = 0; resize(); }
+
+        this.dataset.ready = '';
+        const moving = !still() || dragging || Math.abs(vel) > 0.01 || now - lastMove < 1500;
+        if (visible && moving) raf = requestAnimationFrame(frame);
+      };
+      const kick = () => { if (!raf && visible) { prev = performance.now(); raf = requestAnimationFrame(frame); } };
+
+      const toLocal = (e: PointerEvent) => {
+        const r = this.getBoundingClientRect();
+        const s = Math.min(r.width, r.height);
+        return [(e.clientX - r.left - center[0] * r.width) / s, -((e.clientY - r.top) - (1 - center[1]) * r.height) / s];
+      };
+      const inside = (e: PointerEvent) => {
+        if ((e.target as Element).closest?.('header, [role="dialog"]')) return false;
+        const r = this.getBoundingClientRect();
+        return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      };
+      let wasInside = false;
+      const onMove = (e: PointerEvent) => {
+        if (!inside(e) && !dragging) {
+          if (wasInside && e.pointerType === 'mouse') { exciteTarget = 0; hoverYaw = 0; hoverPitch = 0; kick(); }
+          wasInside = false;
+          return;
+        }
+        wasInside = true;
+        const [x, y] = toLocal(e);
+        exciteTarget = 1;
+        lastMove = performance.now();
+        if (e.pointerType === 'mouse' && !dragging) {
+          hoverYaw = Math.max(-0.6, Math.min(0.6, x * 0.5));
+          hoverPitch = Math.max(-0.35, Math.min(0.35, y * 0.3));
+        }
+        if (dragging) {
+          const dx = e.clientX - lastX, dy = e.clientY - lastY;
+          const dtm = Math.max(e.timeStamp - lastT, 8);
+          spin += dx * 0.008;
+          hoverPitch = Math.max(-0.6, Math.min(0.6, hoverPitch + dy * 0.004));
+          vel = Math.max(-12, Math.min(12, (dx * 0.008) / (dtm / 1000)));
+          lastT = e.timeStamp;
+          lastX = e.clientX; lastY = e.clientY;
+        }
+        kick();
+      };
+      const onDown = (e: PointerEvent) => {
+        if (!inside(e)) return;
+        const t = e.target as Element;
+        if (t.closest('a, button, input, textarea, select, [role="tab"]')) return;
+        if (e.pointerType === 'mouse' && t.closest('[data-hud-panel]')) return;
+        dragging = true; vel = 0;
+        lastX = e.clientX; lastY = e.clientY; lastT = e.timeStamp;
+        document.documentElement.dataset.birdDrag = '';
+        onMove(e);
+      };
+      const onUp = () => {
+        if (!dragging) return;
+        dragging = false;
+        delete document.documentElement.dataset.birdDrag;
+        kick();
+      };
+
+      addEventListener('pointermove', onMove, { passive: true });
+      addEventListener('pointerdown', onDown, { passive: true });
+      addEventListener('pointerup', onUp, { passive: true });
+      addEventListener('pointercancel', onUp, { passive: true });
+
+      const ro = new ResizeObserver(() => { resize(); kick(); });
+      ro.observe(this);
+      if (anchor) ro.observe(anchor);
+      const io = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible) kick(); });
+      io.observe(this);
+      const onLost = (e: Event) => { e.preventDefault(); cancelAnimationFrame(raf); raf = 0; delete this.dataset.ready; };
+      canvas.addEventListener('webglcontextlost', onLost);
+      reduce.addEventListener('change', kick);
+      const offMotion = onMotionChange(kick);
+
+      resize();
+      kick();
+
+      this.#cleanup.push(() => {
+        cancelAnimationFrame(raf);
+        ro.disconnect(); io.disconnect();
+        removeEventListener('pointermove', onMove);
+        removeEventListener('pointerdown', onDown);
+        removeEventListener('pointerup', onUp);
+        removeEventListener('pointercancel', onUp);
+        canvas.removeEventListener('webglcontextlost', onLost);
+        reduce.removeEventListener('change', kick);
+        offMotion();
+        gl.getExtension('WEBGL_lose_context')?.loseContext();
+      });
+    }
+
+    disconnectedCallback() {
+      this.#cleanup.forEach((fn) => fn());
+      this.#cleanup = [];
+      this.#started = false;
+    }
+
+    #compile(gl: WebGLRenderingContext) {
+      const sh = (type: number, src: string) => {
+        const s = gl.createShader(type)!;
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+          console.warn('[bird] shader:', gl.getShaderInfoLog(s));
+          return null;
+        }
+        return s;
+      };
+      const vs = sh(gl.VERTEX_SHADER, VERT), fs = sh(gl.FRAGMENT_SHADER, FRAG);
+      if (!vs || !fs) return null;
+      const p = gl.createProgram()!;
+      gl.attachShader(p, vs); gl.attachShader(p, fs);
+      gl.linkProgram(p);
+      if (!gl.getProgramParameter(p, gl.LINK_STATUS)) { console.warn('[bird] link:', gl.getProgramInfoLog(p)); return null; }
+      gl.useProgram(p);
+      return p;
+    }
+  }
+
+  if (!customElements.get('symbiote-bird')) customElements.define('symbiote-bird', SymbioteBird);
+</script>

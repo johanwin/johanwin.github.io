@@ -234,7 +234,8 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
           {/* ── Reduce-motion switch (a11y setting, not a nav section) ──
                role="switch" + aria-checked: on = animations stopped site-wide
                (src/lib/motion.ts). Knob position comes from CSS on
-               <html data-motion>, so it's right before React hydrates. */}
+               <html data-motion>, so it's right before React hydrates.
+               Below md it lives in the menu drawer instead, with its label. */}
           <button
             type="button"
             role="switch"
@@ -242,7 +243,7 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
             aria-checked={motionOff}
             title={motionOff ? 'Animations are off — click to turn them back on' : 'Stop animations on this site'}
             onClick={() => setMotion(!motionOff)}
-            className="motion-switch ml-auto flex items-center gap-2 px-3 text-[0.65rem] tracking-wider text-muted hover:text-fg md:ml-2"
+            className="motion-switch ml-2 hidden items-center gap-2 px-3 text-[0.65rem] tracking-wider text-muted hover:text-fg md:flex"
           >
             <span aria-hidden="true" className="motion-switch-track">
               <span className="motion-switch-knob" />
@@ -253,7 +254,7 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
           {/* ── Mobile drawer ───────────────────────── */}
           <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
             <DialogPrimitive.Trigger
-              className="flex min-w-14 items-center justify-center border-l border-line-strong px-3 md:hidden"
+              className="ml-auto flex min-w-14 items-center justify-center border-l border-line-strong px-3 md:hidden"
               aria-label="Open navigation menu"
             >
               <span aria-hidden="true" className="flex w-6 flex-col gap-1.5">
@@ -325,7 +326,30 @@ export default function HUDNavigation({ links, callsign, name, timezone, build }
                         </ul>
                       </nav>
 
-                      <div className="nav-drawer-item grid grid-cols-2 border-t border-line-strong" style={{ ['--i' as string]: links.length + 1 }}>
+                      {/* Reduce-motion switch, labelled (the header copy is md+ only). */}
+                      <div className="nav-drawer-item border-t border-line-strong" style={{ ['--i' as string]: links.length + 1 }}>
+                        <button
+                          type="button"
+                          role="switch"
+                          data-track="motion_toggle"
+                          aria-checked={motionOff}
+                          aria-describedby="motion-switch-hint"
+                          onClick={() => setMotion(!motionOff)}
+                          className="motion-switch flex w-full items-center gap-4 px-5 py-4 text-left hover:bg-surface-2"
+                        >
+                          <span className="flex-1">
+                            <span className="hud-label block text-fg">Reduce motion</span>
+                            <span id="motion-switch-hint" className="mt-1 block text-xs text-muted">
+                              {motionOff ? 'Animations are off' : 'Stop animations on this site'}
+                            </span>
+                          </span>
+                          <span aria-hidden="true" className="motion-switch-track">
+                            <span className="motion-switch-knob" />
+                          </span>
+                        </button>
+                      </div>
+
+                      <div className="nav-drawer-item grid grid-cols-2 border-t border-line-strong" style={{ ['--i' as string]: links.length + 2 }}>
                         <div className="border-r border-line p-4">
                           <p className="hud-label text-[0.6rem] text-muted">{tzShort}</p>
                           <p className="hud-label tabular-nums mt-1">{clock}</p>

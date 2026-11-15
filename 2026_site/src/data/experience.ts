@@ -102,7 +102,11 @@ export const experience: ExperienceEntry[] = [
   },
 ];
 
-/** Earliest year in the log — used for "years active" readouts. */
-export const careerStart = Math.min(
-  ...experience.filter((e) => e.start).map((e) => Number(e.start!.slice(0, 4))),
-);
+/** First year of professional work (predates the earliest log entry, 2006). */
+export const careerStart = 2001;
+
+/**
+ * "Years active" rounded down to the decade: 20 for 2021–2030, 30 from 2031.
+ * Shown as "20+", so it only changes once every ten years.
+ */
+export const yearsActiveDecade = (year: number): number => Math.floor((year - careerStart) / 10) * 10;
